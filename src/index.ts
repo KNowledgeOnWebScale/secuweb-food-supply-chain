@@ -1,20 +1,20 @@
 import {FromSchema} from "json-schema-to-ts";
+import fastify from 'fastify'
+import {Type} from '@sinclair/typebox'
 
 console.log('index.ts')
-import fastify from 'fastify'
-import {Static, Type} from '@sinclair/typebox'
 
 const ActorID = Type.String()
 const ProductID = Type.String()
 const Location = Type.String()
 const ProductState = Type.Object({
-  // productId: ProductID,
-  quantity: Type.BigInt(),
+  productId: ProductID,
+  quantity: Type.Number(),
   status: Type.String(), // currently we use Type.String(), TODO (later): use Enum
-  // sender: ActorID,
-  // recipient: ActorID,
-  // from: Location,
-  // to: Location,
+  sender: ActorID,
+  recipient: ActorID,
+  from: Location,
+  to: Location,
 })
 
 const ProductSpec = Type.Object({
@@ -34,7 +34,7 @@ const querySchema = {
 
 type QueryType = FromSchema<typeof querySchema>
 
-server.get<{ Querystring: QueryType }>('/product', { schema: {querystring: querySchema}},
+server.get<{ Querystring: QueryType }>('/product', {schema: {querystring: querySchema}},
   async (request, reply) => {
     console.log(request.url)
     const {productId} = request.query
@@ -42,7 +42,7 @@ server.get<{ Querystring: QueryType }>('/product', { schema: {querystring: query
     // TODO: fetch product spec from Consortium Pod
     // TODO: add product spec to response
     return {productId}
-});
+  });
 
 
 server.post('/product', {schema: {body: ProductSpec}},
@@ -50,12 +50,14 @@ server.post('/product', {schema: {body: ProductSpec}},
     // TODO: register product at Consortium Pod
     // TODO: return ProductID
     return 'TODO'
-  })
+  });
 
-// server.post('/productstate', { schema: { body: ProductState }},
-//   async (request, reply) => {
-//   return 'TODO'
-// })
+server.post('/productstate', {schema: {body: ProductState}},
+  async (request, reply) => {
+    // TODO: add transaction to BC to update product state
+    // TODO: return transaction ID?
+    return 'TODO'
+  })
 
 server.listen({port: 8080}, (err, address) => {
   if (err) {
