@@ -25,7 +25,6 @@ const ProductState = Type.Object({
 const ProductSpec = Type.Object({
   productId: ProductID,
   name: Type.String(),
-  foodType: Type.String(), // e.g., fruit, vegetable, meat, poultry
 })
 
 
