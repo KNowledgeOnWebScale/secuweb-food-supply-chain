@@ -34,29 +34,30 @@ const querySchema = {
 
 type QueryType = FromSchema<typeof querySchema>
 
-server.get<{Querystring: QueryType}>('/product', {
-  schema: { querystring: querySchema }
-}, async (request, reply) => {
-  console.log(request.url)
-  const {productId} = request.query
-  console.log('productId', productId)
-  // const { q, page } = request.query;
-  // return { query: q, page };
-  return {productId}
+server.get<{ Querystring: QueryType }>('/product', { schema: {querystring: querySchema}},
+  async (request, reply) => {
+    console.log(request.url)
+    const {productId} = request.query
+    console.log('productId', productId)
+    // TODO: fetch product spec from Consortium Pod
+    // TODO: add product spec to response
+    return {productId}
 });
 
 
-server.post('/product', { schema: { body: ProductSpec }},
+server.post('/product', {schema: {body: ProductSpec}},
   async (request, reply) => {
-  return 'TODO'
-})
+    // TODO: register product at Consortium Pod
+    // TODO: return ProductID
+    return 'TODO'
+  })
 
 // server.post('/productstate', { schema: { body: ProductState }},
 //   async (request, reply) => {
 //   return 'TODO'
 // })
 
-server.listen({ port: 8080 }, (err, address) => {
+server.listen({port: 8080}, (err, address) => {
   if (err) {
     console.error(err)
     process.exit(1)
