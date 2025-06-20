@@ -1,9 +1,14 @@
+import {config} from './config'
 import {FromSchema} from "json-schema-to-ts";
 import fastify from 'fastify'
 import {Type} from '@sinclair/typebox'
+import swagger from '@fastify/swagger';
+import swaggerUI from '@fastify/swagger-ui'
+import {TypeBoxTypeProvider} from "@fastify/type-provider-typebox";
 
-console.log('index.ts')
-
+/**
+ * Type definitions
+ */
 const ActorID = Type.String()
 const ProductID = Type.String()
 const Location = Type.String()
@@ -23,7 +28,7 @@ const ProductSpec = Type.Object({
   foodType: Type.String(), // e.g., fruit, vegetable, meat, poultry
 })
 
-const server = fastify()
+const server = fastify().withTypeProvider<TypeBoxTypeProvider>()
 const querySchema = {
   type: 'object',
   properties: {
@@ -34,6 +39,9 @@ const querySchema = {
 
 type QueryType = FromSchema<typeof querySchema>
 
+/**
+ * Endpoints
+ */
 server.get<{ Querystring: QueryType }>('/product', {schema: {querystring: querySchema}},
   async (request, reply) => {
     console.log(request.url)
@@ -59,7 +67,7 @@ server.post('/productstate', {schema: {body: ProductState}},
     return 'TODO'
   })
 
-server.listen({port: 8080}, (err, address) => {
+server.listen({port: config.server.port}, (err, address) => {
   if (err) {
     console.error(err)
     process.exit(1)
