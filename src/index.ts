@@ -28,7 +28,7 @@ const ProductSpec = Type.Object({
   foodType: Type.String(), // e.g., fruit, vegetable, meat, poultry
 })
 
-const server = fastify().withTypeProvider<TypeBoxTypeProvider>()
+
 const querySchema = {
   type: 'object',
   properties: {
@@ -39,38 +39,48 @@ const querySchema = {
 
 type QueryType = FromSchema<typeof querySchema>
 
-/**
- * Endpoints
- */
-server.get<{ Querystring: QueryType }>('/product', {schema: {querystring: querySchema}},
-  async (request, reply) => {
-    console.log(request.url)
-    const {productId} = request.query
-    console.log('productId', productId)
-    // TODO: fetch product spec from Consortium Pod
-    // TODO: add product spec to response
-    return {productId}
-  });
+async function main() {
+  const server = fastify()
+    .withTypeProvider<TypeBoxTypeProvider>()
+
+  // Register swagger plugins
+  await server.register(swagger, {swagger: { info: { title: 'FSC API', version: '1.0.0' } }})
+  await server.register(swaggerUI, {routePrefix: '/docs'})
+
+  /**
+   * Endpoints
+   */
+  server.get<{ Querystring: QueryType }>('/product', {schema: {querystring: querySchema}},
+    async (request, reply) => {
+      console.log(request.url)
+      const {productId} = request.query
+      console.log('productId', productId)
+      // TODO: fetch product spec from Consortium Pod
+      // TODO: add product spec to response
+      return {productId}
+    });
 
 
-server.post('/product', {schema: {body: ProductSpec}},
-  async (request, reply) => {
-    // TODO: register product at Consortium Pod
-    // TODO: return ProductID
-    return 'TODO'
-  });
+  server.post('/product', {schema: {body: ProductSpec}},
+    async (request, reply) => {
+      // TODO: register product at Consortium Pod
+      // TODO: return ProductID
+      return 'TODO'
+    });
 
-server.post('/productstate', {schema: {body: ProductState}},
-  async (request, reply) => {
-    // TODO: add transaction to BC to update product state
-    // TODO: return transaction ID?
-    return 'TODO'
+  server.post('/productstate', {schema: {body: ProductState}},
+    async (request, reply) => {
+      // TODO: add transaction to BC to update product state
+      // TODO: return transaction ID?
+      return 'TODO'
+    })
+
+  server.listen({port: config.server.port}, (err, address) => {
+    if (err) {
+      console.error(err)
+      process.exit(1)
+    }
+    console.log(`Server listening at ${address}`)
   })
-
-server.listen({port: config.server.port}, (err, address) => {
-  if (err) {
-    console.error(err)
-    process.exit(1)
-  }
-  console.log(`Server listening at ${address}`)
-})
+}
+main().then().catch(console.error)
