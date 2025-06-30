@@ -1,5 +1,17 @@
 [
   {
+    "email": "consortium@fsc.com",
+    "password": "consortium123",
+    "pods": [
+      {
+        "name": "consortium",
+        "settings": {
+          "name": "Consortium"
+         }
+      }
+    ]
+  },
+  {
     "email": "info@farmer.com",
     "password": "farmer123",
     "pods": [
