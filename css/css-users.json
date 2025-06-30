@@ -1,0 +1,74 @@
+[
+  {
+    "email": "info@farmer.com",
+    "password": "farmer123",
+    "pods": [
+      {
+        "name": "farmer",
+        "settings": {
+          "name": "Farmer"
+         }
+      }
+    ]
+  },
+  {
+    "email": "info@packager.com",
+    "password": "packager123",
+    "pods": [
+      {
+        "name": "packager",
+        "settings": {
+          "name": "Packager"
+         }
+      }
+    ]
+  },
+  {
+    "email": "info@transporter.com",
+    "password": "transporter123",
+    "pods": [
+      {
+        "name": "transporter",
+        "settings": {
+          "name": "Transporter"
+         }
+      }
+    ]
+  },
+  {
+    "email": "info@wholesaler.com",
+    "password": "wholesaler123",
+    "pods": [
+      {
+        "name": "wholesaler",
+        "settings": {
+          "name": "Wholesaler"
+         }
+      }
+    ]
+  },
+  {
+    "email": "info@retailer.com",
+    "password": "retailer123",
+    "pods": [
+      {
+        "name": "retailer",
+        "settings": {
+          "name": "Retailer"
+         }
+      }
+    ]
+  },
+  {
+    "email": "info@transporter2.com",
+    "password": "transporter2123",
+    "pods": [
+      {
+        "name": "transporter2",
+        "settings": {
+          "name": "Transporter2"
+         }
+      }
+    ]
+  } 
+]
