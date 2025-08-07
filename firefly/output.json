@@ -1,0 +1,30 @@
+[
+  {
+    "header": {
+      "id": "6f6a4233-4c3b-4621-99f1-0bdbefece00b",
+      "type": "broadcast",
+      "txtype": "batch_pin",
+      "author": "did:firefly:org/org_e768c0",
+      "key": "0xdc0376707cd540eb7b1ea83bcab333ba7d66832c",
+      "created": "2025-06-29T01:01:31.905762251Z",
+      "namespace": "default",
+      "topics": [
+        "topic2"
+      ],
+      "tag": "shipment",
+      "datahash": "914fa16badb8add097962ac30fbd94804cf36177e1c69d2d6a7503464253e1e2"
+    },
+    "localNamespace": "default",
+    "hash": "e1112e9276791681f211e1a616af5f31a84fbafd2b8712a2d07996ce925c89a6",
+    "batch": "2beff27b-430a-44c9-ac2b-642b3e57523a",
+    "txid": "9a77a752-d06b-40b3-bbc9-86434dff003d",
+    "state": "confirmed",
+    "confirmed": "2025-06-29T01:01:33.570474794Z",
+    "data": [
+      {
+        "id": "4dda276a-32e7-4102-9cb9-ab42659d5668",
+        "hash": "6d2ad31e6cd426654ae4f7e352436b08b5e17f10b89e28592966633a59a215ea"
+      }
+    ]
+  }
+]
