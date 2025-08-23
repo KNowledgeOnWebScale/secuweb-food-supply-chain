@@ -9,7 +9,7 @@ TODO
 ```bash
 # Start from a clean CSS
 rm -rf css/root
-npm run pod:dev
+npm run pod
 ```
 
 ## FireFly
