@@ -2,3 +2,5 @@
 node_modules
 build
 css/root
+
+.DS_Store
