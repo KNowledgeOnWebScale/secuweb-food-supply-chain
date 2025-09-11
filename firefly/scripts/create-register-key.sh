@@ -38,3 +38,8 @@ echo "Parent Organization UUID: $PARENT_UUID"
 
 banner "Registering keypair"
 ./register-key.sh $KEYNAME $KEY_ADDRESS $PARENT_UUID $HOST
+
+banner "Fetching updated identities"
+./get-identities.sh
+SELECTOR='.[] | .name'
+jq "$SELECTOR" identities.json
