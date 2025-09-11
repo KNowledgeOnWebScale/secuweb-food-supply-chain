@@ -27,5 +27,5 @@ curl -s -X POST "$API_URL" \
     \"name\": \"${IDENTITY_NAME}\",
     \"key\": \"${KEY_ADDRESS}\",
     \"parent\": \"${PARENT_UUID}\"
-  }" | jq .
+  }" > register-key-response.$IDENTITY_NAME.json
   
