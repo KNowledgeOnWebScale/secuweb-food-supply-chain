@@ -4,11 +4,14 @@
 set -e
 set -u
 set -o pipefail
-FPATH_IDENTITIES_JSON="identities.json"
-if [ ! -f "$FPATH_IDENTITIES_JSON" ]; then
-  echo "❌ Error: $FPATH_IDENTITIES_JSON file not found!"
+
+source $PWD/firefly/scripts/.env
+
+
+if [ ! -f "$FPATH_IDENTITIES" ]; then
+  echo "❌ Error: $FPATH_IDENTITIES file not found!"
   exit 1
 fi
 NAME=$1
 SELECTOR='.[] | select(.name == "'$NAME'")'
-jq "$SELECTOR" "$FPATH_IDENTITIES_JSON"
+jq "$SELECTOR" "$FPATH_IDENTITIES"
