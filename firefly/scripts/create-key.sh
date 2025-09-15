@@ -1,3 +1,7 @@
+set -e
+set -o pipefail
+
+source $PWD/firefly/scripts/.env
 # Create a new keypair
 STACK=$1
 KEYNAME=$2
@@ -8,7 +12,7 @@ if [ -z "$STACK" ] || [ -z "$KEYNAME" ]; then
 fi
 
 KEY_OUTPUT=$(firefly accounts create $STACK)
-FPATH_OUTPUT="./${KEYNAME}.json"
+FPATH_OUTPUT="${FPATH_DIR_KEYS}/${KEYNAME}.json"
 
 echo $KEY_OUTPUT > "${FPATH_OUTPUT}"
 
