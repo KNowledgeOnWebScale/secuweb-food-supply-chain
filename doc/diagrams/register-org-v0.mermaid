@@ -1,0 +1,26 @@
+sequenceDiagram
+  autonumber
+  participant a as Actor A
+  participant p as A's Solid Pod
+  participant bc as Blockchain
+
+  critical Action Create & Register Key
+    a ->> a: Generate key pair
+    a ->> bc: Register public key
+    bc ->> a: Key Registration Response (incl. FireFly DID)
+  end
+
+  critical Action Update WebID Profile
+    a ->> p: N3 Patch: Update WebID Profile with FireFly DID
+    p ->> a: Response (200)
+  end
+
+  critical Action Identity Binding
+    a ->> a: Create Identity Binding VC: VC_IDB = {id1: <webid>, id2: <FireFly DID>})
+    a ->> p: POST VC_IDB
+    p ->> a: Response (200, URI VC_IDB)
+
+    a ->> bc: Broadcast Message (URI VC_IDB)
+    bc ->> a: Response
+
+  end
