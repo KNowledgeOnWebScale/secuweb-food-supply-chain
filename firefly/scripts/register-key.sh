@@ -7,9 +7,10 @@ IDENTITY_NAME="$1"
 KEY_ADDRESS="$2"
 PARENT_UUID="$3"
 HOST="$4"
+FPATH_OUTPUT=$5
 
-if [ -z "$IDENTITY_NAME" ] || [ -z "$KEY_ADDRESS" ] || [ -z "$PARENT_UUID" ] || [ -z "$HOST" ]; then
-  echo "⚠️ Usage: $0 <identity_name> <key_address> <parent_org_uuid> <host>"
+if [ -z "$IDENTITY_NAME" ] || [ -z "$KEY_ADDRESS" ] || [ -z "$PARENT_UUID" ] || [ -z "$HOST" ] || [ -z "$FPATH_OUTPUT" ]; then
+  echo "⚠️ Usage: $0 <identity_name> <key_address> <parent_org_uuid> <host> <fpath response>"
   exit 1
 fi
 
@@ -27,5 +28,5 @@ curl -s -X POST "$API_URL" \
     \"name\": \"${IDENTITY_NAME}\",
     \"key\": \"${KEY_ADDRESS}\",
     \"parent\": \"${PARENT_UUID}\"
-  }" > register-key-response.$IDENTITY_NAME.json
+  }" > $FPATH_OUTPUT
   

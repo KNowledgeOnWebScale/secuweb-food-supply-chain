@@ -1,0 +1,23 @@
+direction: right
+
+sequence: {
+  title: "Flow: Register Product"
+
+  ActorA: "Actor A"
+  Scripts: "Bash Scripts (run by Actor A)"
+  Chain: "Blockchain"
+  WebID: "WebID Profile Document"
+
+  # (2.a) Actor A creates a keypair and registers it at the Blockchain
+  ActorA -> Scripts: "(2.a) Execute: create keypair & register DID"
+  Scripts -> ActorA: "Keypair generated (public/private)"
+  Scripts -> Chain: "Register public key / create DID"
+  Chain -> Scripts: "Return Firefly DID"
+  Scripts -> ActorA: "Firefly DID obtained"
+
+  # (2.b) Actor A updates its WebID Profile Document by referencing the Firefly DID
+  ActorA -> Scripts: "(2.b) Execute: update WebID profile with DID"
+  Scripts -> WebID: "Write DID reference into profile"
+  WebID -> Scripts: "Profile updated"
+  Scripts -> ActorA: "Update complete"
+}

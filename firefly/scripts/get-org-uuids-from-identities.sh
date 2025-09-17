@@ -1,9 +1,7 @@
-# This script retrieves the UUID of an organization by its name from the identities.json file.
-# Usage: ./get-org-uuid-by-name.sh <org_name>
-source $PWD/firefly/scripts/.env
-
+# This script extracts organizations' UUIDs from the identities (JSON) file.
+# Usage: ./get-org-uuids-from-identities.sh <path to identities file>
 set -e
 set -u
 set -o pipefail
 
-jq '[.[] | select(.type == "org") | {id, type, name}]' $FPATH_IDENTITIES
+jq '[.[] | select(.type == "org") | {id, type, name}]' $1
