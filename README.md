@@ -2,6 +2,17 @@
 
 TODO
 
+## Install
+
+```bash
+# Install this package
+npm i
+
+# Install VC package
+cd vc
+npm i
+```
+
 ## Usage
 
 ### Setup
