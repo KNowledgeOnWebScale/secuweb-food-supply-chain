@@ -5,10 +5,14 @@ import { createContainer, addFileToContainer } from "../css/helpers";
 
 const urlServer = 'http://localhost:3000';
 
+/**
+ * Add a file to a Solid Pod container, creating the container if it does not exist.
+ */
 async function main() {
   const program = new Command();
 
   program
+    .description('Add a file to a Solid Pod container, creating the container if it does not exist.')
     .requiredOption("--name <string>", "User's name")
     .requiredOption("--email <string>", "User's email")
     .requiredOption("--password <string>", "User's password")
@@ -39,7 +43,7 @@ async function main() {
     await addFileToContainer(urlContainer, inputFile, authFetch);
 
   } catch (error) {
-    console.error('Error during the process:', error);
+    console.error('❌ Error during the process:', error);
   }
 }
 
