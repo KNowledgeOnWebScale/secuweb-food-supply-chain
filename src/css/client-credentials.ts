@@ -96,3 +96,12 @@ export async function createAuthenticatedFetch(accessToken: any, dpopKey: any): 
   // authFetch can now be used as a standard fetch function that will authenticate as your WebID.
   return authFetch
 }
+
+export async function wrapper_createAuthenticatedFetch(name: string, email: string, password: string, urlServer: string) {
+    const urlAccount = `${urlServer}/.account/`;
+    const authorizationToken = await getAuthorizationToken(urlAccount, email, password);
+    const clientCredentials = await getClientCredentials(urlServer, urlAccount, authorizationToken, name);
+    const step3Output = await getAccessTokenAndDpopKey(urlServer, clientCredentials);
+    const authenticatedFetch = await createAuthenticatedFetch(step3Output.accessToken, step3Output.dpopKey);
+    return authenticatedFetch
+}
