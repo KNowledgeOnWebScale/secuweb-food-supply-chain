@@ -1,0 +1,7 @@
+{
+  "name": "farmer",
+  "email": "info@farmer.com",
+  "password": "farmer123",
+  "css": "http://localhost:3000/",
+  "webId": "http://localhost:3000/farmer/profile/card#me"
+}
