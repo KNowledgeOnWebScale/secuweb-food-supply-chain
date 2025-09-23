@@ -3,4 +3,5 @@ node_modules
 build
 css/root
 src/scratch.ts
+src/flows/output/** */
 .DS_Store
