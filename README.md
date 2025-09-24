@@ -1,6 +1,12 @@
+<!-- omit in toc -->
 # Food Supply Chain - PoC
 
-TODO
+- [Install](#install)
+- [Usage](#usage)
+  - [Setup](#setup)
+- [Flows](#flows)
+  - [Flow 1](#flow-1)
+- [License (TODO)](#license-todo)
 
 ## Install
 
@@ -23,6 +29,26 @@ rm -rf css/root
 npm run pod
 ```
 
-## FireFly
+## Flows
 
-https://github.com/hyperledger/firefly-sdk-nodejs
+### Flow 1
+
+Prelims:
+
+- User A
+
+- Given a data file, `X`
+
+Steps:
+
+1. Store `X` on Solid Pod, under container `<c>`
+
+2. Create VC from `X`, resulting in `VC_X`
+
+3. Store `VC_X` on Solid Pod, , under container `<c>/<vc>`
+
+These above steps are executed in [`src/flows/flow1.sh`](src/flows/flow1.sh).
+
+## License (TODO)
+
+TODO
