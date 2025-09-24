@@ -9,7 +9,11 @@
     "ff": "npm run build && node build/bc/ff.js",
     "ff:dev": "nodemon --config nodemon.json --exec npm run ff",
     "pod": "community-solid-server --rootFilePath ./css/root --config ./css/css.json --seedConfig ./css/css-users.json",
-    "add-firefly-did-to-webid-profile": "npm run build && node build/css/add-firefly-did-to-webid-profile.js"
+    "add-firefly-did-to-webid-profile": "npm run build && node build/css/add-firefly-did-to-webid-profile.js",
+    "scratch": "npm run build && node build/scratch.js",
+    "scratch:dev": "nodemon --config nodemon.json --exec npm run scratch",
+    "flows:create-vc": "npm run build && node build/flows/create-vc.js",
+    "flows:add-file-to-solid-pod": "npm run build && node build/flows/add-file-to-solid-pod.js"
   },
   "config": {
     "community-solid-server": {
@@ -28,7 +32,9 @@
     "@fastify/swagger-ui": "^5.2.3",
     "@fastify/type-provider-typebox": "^5.1.0",
     "@hyperledger/firefly-sdk": "^1.3.3",
+    "@inrupt/solid-client": "^1.23.1",
     "@inrupt/solid-client-authn-core": "^3.1.0",
+    "@inrupt/universal-fetch": "^1.0.1",
     "@sinclair/typebox": "^0.34.35",
     "commander": "^14.0.0",
     "fastify": "^5.4.0",
