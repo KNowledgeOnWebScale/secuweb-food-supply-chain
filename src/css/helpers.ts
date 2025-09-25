@@ -63,9 +63,18 @@ export function getExtensionByMimeType(mimeType: string): string|undefined {
   return extensions[mimeType]?.[0] || undefined;
 }
 
+/**
+ *
+ * @param container
+ * @param inputFile
+ * @param fileName If undefined, the filename will be based on the hash(file || date), and determines the extension
+ * based on the content
+ * @param authFetch
+ */
 export async function addFileToContainer(
   container: string, 
   inputFile: string,
+  fileName: string|undefined,
   authFetch: any
 ) {
 
@@ -73,7 +82,7 @@ export async function addFileToContainer(
   const fileIdentifier = createFileHashIdentifier(inputFile)
   const fileMimeType = getMimeTypeByExtension(inputFile)
   const fileExt = getExtensionByMimeType(fileMimeType)
-  const fileName = `${fileIdentifier}${fileExt?'.'+fileExt:''}`
+  fileName = fileName??`${fileIdentifier}${fileExt?'.'+fileExt:''}`
   const file = new File([new Uint8Array(await readFile(inputFile))], fileName)
   // Store file
   const result = await saveFileInContainer(container, file,
