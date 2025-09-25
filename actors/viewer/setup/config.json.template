@@ -20,9 +20,18 @@
   ],
   "queries": [
     {
+      "id": "0",
+      "queryLocation": "spo.rq",
+      "name": "SPO",
+      "comunicaContext": {
+        "sources": ["${OD_CSS0_BASE_URL}/farmer/shipments/vc/shipment1-vc.jsonld"],
+        "lenient": true
+      }
+    },
+    {
       "id": "101",
       "queryGroupId": "farmer",
-      "queryLocation": "spo.rq",
+      "queryLocation": "shipments.rq",
       "name": "Query shipments from: Farmer",
       "comunicaContext": {
         "sources": ["${OD_CSS0_BASE_URL}/farmer/shipments/vc/shipment1-vc.jsonld"],
