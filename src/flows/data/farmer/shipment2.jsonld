@@ -1,0 +1,15 @@
+{
+  "@context": {
+    "ex": "http://example.org/terms#",
+    "farmer": "http://localhost:3000/farmer/",
+    "packager": "http://localhost:3000/packager/",
+    "transporter": "http://localhost:3000/transporter/"
+  },
+  "@type": "ex:ShipmentRecord",
+  "ex:status": "shipped",
+  "ex:quantity": 30,
+  "ex:productID": "farmer:products/product-Y",
+  "ex:origin": "farmer:profile/card#me",
+  "ex:destination": "packager:profile/card#me",
+  "ex:transport": "transporter:profile/card#me"
+}

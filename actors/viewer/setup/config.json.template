@@ -24,7 +24,10 @@
       "queryLocation": "spo.rq",
       "name": "SPO",
       "comunicaContext": {
-        "sources": ["${OD_CSS0_BASE_URL}/farmer/shipments/vc/shipment1-vc.jsonld"],
+        "sources": [
+          "${OD_CSS0_BASE_URL}/farmer/shipments/vc/shipment1-vc.jsonld",
+          "${OD_CSS0_BASE_URL}/farmer/shipments/vc/shipment2-vc.jsonld"
+        ],
         "lenient": true
       }
     },
@@ -34,7 +37,10 @@
       "queryLocation": "shipments.rq",
       "name": "Query shipments from: Farmer",
       "comunicaContext": {
-        "sources": ["${OD_CSS0_BASE_URL}/farmer/shipments/vc/shipment1-vc.jsonld"],
+        "sources": [
+          "${OD_CSS0_BASE_URL}/farmer/shipments/vc/shipment1-vc.jsonld",
+          "${OD_CSS0_BASE_URL}/farmer/shipments/vc/shipment2-vc.jsonld"
+        ],
         "lenient": true
       }
     }
