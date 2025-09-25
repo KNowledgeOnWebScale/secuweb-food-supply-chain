@@ -1,0 +1,69 @@
+{
+  "title": "Query the SecuWeb Food Supply Chain",
+  "logoLocation": "images/IDLab-logo.png",
+  "logoRedirectURL": "https://idlab.technology/",
+  "mainAppColor": "lightgray",
+  "backgroundColor": "#fff",
+  "titleColor": "black",
+  "textColor": "#1976D2",
+  "queryFolder": "queries",
+  "showMilliseconds": false,
+  "defaultIDP": "${OD_CSS12_BASE_URL}/",
+  "footer": "<p><a href='https://idlab.technology/'>IDLab</a> - <a href='https://www.imec.be/nl'>imec</a> - <a href='https://www.ugent.be/'>UGent</a></p>",
+  "introductionText": "Please log in as the appropriate actor and select a query from the menu on the left.",
+  "queryGroups": [
+    {
+      "id": "gqx",
+      "name": "Generic query examples",
+      "icon": "InfoIcon"
+    },
+    {
+      "id": "constr",
+      "name": "Construction use case",
+      "icon": "ConstructionIcon"
+    },
+    {
+      "id": "txtl",
+      "name": "Textile use case",
+      "icon": "CheckroomIcon"
+    },
+    {
+      "id": "txtlext",
+      "name": "Extended textile use case",
+      "icon": "CheckroomIcon"
+    },
+    {
+      "id": "evaluation-construction",
+      "name": "Evaluation June 2024 - Construction",
+      "icon": "ConstructionIcon"
+    },
+    {
+      "id": "evaluation-electronics",
+      "name": "Evaluation June 2024 - Electronics",
+      "icon": "ElectricBoltIcon"
+    },
+    {
+      "id": "evaluation-textile",
+      "name": "Evaluation June 2024 - Textile",
+      "icon": "CheckroomIcon"
+    },
+    {
+      "id": "cross-domain-evaluation",
+      "name": "Cross-domain evaluation 2025",
+      "icon": "CheckroomIcon"
+    }
+  ],
+  "queries": [
+    {
+      "id": "101",
+      "queryGroupId": "constr",
+      "queryLocation": "spo.rq",
+      "name": "Query shipments from: Farmer",
+      "comunicaContext": {
+        "sources": ["${OD_CSS0_BASE_URL}/farmer/shipments/vc/shipment1-vc.jsonld"],
+        "lenient": true
+      }
+    }
+    
+  ]
+}

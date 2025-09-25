@@ -1,0 +1,10 @@
+server {
+    listen       ${OD_VIEWER_CONTAINER_PORT};
+
+    server_name  ${OD_VIEWER};
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+    }
+}
