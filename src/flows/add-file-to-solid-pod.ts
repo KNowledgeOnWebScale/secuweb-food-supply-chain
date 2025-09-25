@@ -3,6 +3,10 @@ import {wrapper_createAuthenticatedFetch} from "../css/client-credentials";
 import { Command } from "commander";
 import { createContainer, addFileToContainer } from "../css/helpers";
 
+
+import { universalAccess } from "@inrupt/solid-client";
+
+
 const urlServer = 'http://localhost:3000';
 
 /**
@@ -40,7 +44,19 @@ async function main() {
     const urlPod = `${urlServer}/${username}`
     const urlContainer = `${urlPod}/${container}/`    
     await createContainer(urlContainer, authFetch)
-    await addFileToContainer(urlContainer, inputFile, authFetch);
+    const result = await addFileToContainer(urlContainer, inputFile, authFetch);
+    const { sourceIri } = result.internal_resourceInfo
+    console.log(`✅ File added to Solid Pod: ${sourceIri}`);
+    
+
+    console.log(`🔐 Setting public read access to ${sourceIri}`);
+    const am = {
+      read: true,
+      append: false,
+      write: false,
+    }
+    const resultPublicAccess = await universalAccess.setPublicAccess(sourceIri, am, { fetch: authFetch });
+    console.log('✅ Public access set:', resultPublicAccess);
 
   } catch (error) {
     console.error('❌ Error during the process:', error);
