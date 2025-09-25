@@ -1,0 +1,52 @@
+# Source this file first of all.
+#
+# Inspired by https://www.baeldung.com/linux/nginx-config-environment-variables.
+
+# Due to the lack of conditions in Docker compose file, separate docker compose files are needed for separate environments.
+export COMPOSE_FILE=none
+
+# --- All variables below have OD_ prefixes, to avoid clashes with other environment variable names (OD stands for Onto-DESIDE).
+
+# In templates, use ${OD_DOLLAR} as a replacement for the normal $ sign where necessary
+# (as explained in https://www.baeldung.com/linux/nginx-config-environment-variables)
+export OD_DOLLAR="$"
+
+# Filename of last sourced environment variables file
+export OD_ENVVARS_FILE=env-localhost
+
+# --- for all services XXX below:
+# OD_XXX:                the short name (used in other variables)
+# OD_XXX_HOST_PORT:      the port used in the host network
+# OD_XXX_CONTAINER_PORT: the port used in the container
+# OD_XXX_BASE_URL:       the baseURL
+
+# --- for some services XXX below, additional variables
+# export OD_XXX_SSL:               "ssl" or not set (used in the nginx config file)
+# export OD_XXX_SSL_CERT_LINE:     "ssl_certificate /etc/ssl/cert/actor.crt;" or not set (used in the nginx config file)
+# export OD_XXX_SSL_CERT_KEY_LINE: "ssl_certificate_key /etc/ssl/cert/actor-private.key;" or not set (used in the nginx config file)
+# export OD_XXX_IMAGE:             Docker image file
+
+# The Solid Community Servers
+
+export OD_CSS0=css0
+export OD_CSS0_HOST_PORT=3000
+export OD_CSS0_CONTAINER_PORT=3000
+export OD_CSS0_BASE_URL=http://localhost:${OD_CSS0_HOST_PORT}
+
+# The Comunica Weblient
+
+export OD_WEBCLIENT=webclient
+export OD_WEBCLIENT_HOST_PORT=8080
+export OD_WEBCLIENT_CONTAINER_PORT=8080
+export OD_WEBCLIENT_BASE_URL=http://localhost:${OD_WEBCLIENT_HOST_PORT}
+# Each OD_WEBCLIENT_BASE_URL needs a specific OD_WEBCLIENT_IMAGE
+# see https://github.com/comunica/jQuery-Widget.js/issues/152 and https://github.com/mvanbrab/jQuery-Widget.js/
+export OD_WEBCLIENT_IMAGE=mvanbrab/jquery-widget.js:v0.0.2.http-localhost-8080
+
+# The Generic Data Viewer
+
+export OD_VIEWER=viewer
+export OD_VIEWER_HOST_PORT=5173
+export OD_VIEWER_CONTAINER_PORT=5173
+export OD_VIEWER_BASE_URL=http://localhost:${OD_VIEWER_HOST_PORT}
+
