@@ -37,7 +37,8 @@
       "name": "Products",
       "comunicaContext": {
         "sources": [
-          "${OD_CSS0_BASE_URL}/farmer/products/vc/product-x-vc.jsonld"
+          "${OD_CSS0_BASE_URL}/farmer/products/vc/product-x-vc.jsonld",
+          "${OD_CSS0_BASE_URL}/farmer/products/vc/product-y-vc.jsonld"
         ],
         "lenient": true
       }

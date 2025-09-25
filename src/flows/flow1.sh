@@ -35,8 +35,16 @@ _PASSWORD=farmer123
 # Products
 _CONTAINER='products'
 _CONTAINER_VC="${_CONTAINER}/vc"
+
+
+# Process product-x.jsonld
 _FPATH_DATA='./src/flows/data/farmer/product-x.jsonld'
 _FPATH_DATA_VC='./src/flows/output/product-x-vc.jsonld'
+addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
+
+# Process product-y.jsonld
+_FPATH_DATA='./src/flows/data/farmer/product-y.jsonld'
+_FPATH_DATA_VC='./src/flows/output/product-y-vc.jsonld'
 addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
 
 exit 0
