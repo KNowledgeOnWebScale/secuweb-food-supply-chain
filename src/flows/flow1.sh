@@ -12,7 +12,11 @@ npm run flows:add-file-to-solid-pod -- --name $_USERNAME --email $_EMAIL --passw
 
 
 # Create a verifiable credential from the data file
-npm run flows:create-vc -- --name $_USERNAME --email $_EMAIL --password $_PASSWORD --data $_FPATH_DATA --output $_FPATH_DATA_VC
+npm run flows:create-vc -- \
+  --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
+  --data $_FPATH_DATA --output $_FPATH_DATA_VC
 
 # Write the verifiable credential to the Solid Pod
-npm run flows:add-file-to-solid-pod -- --name $_USERNAME --email $_EMAIL --password $_PASSWORD --container $_CONTAINER_VC --inputFile $_FPATH_DATA_VC 
+npm run flows:add-file-to-solid-pod -- \
+  --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
+  --container $_CONTAINER_VC --inputFile $_FPATH_DATA_VC --outputBasename $(basename $_FPATH_DATA_VC)
