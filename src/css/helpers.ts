@@ -1,6 +1,6 @@
 import fs from "fs";
 import crypto from "crypto";
-import { createContainerAt, getSolidDataset, isContainer } from "@inrupt/solid-client";
+import { createContainerAt, getSolidDataset, isContainer, universalAccess } from "@inrupt/solid-client";
 import { saveFileInContainer } from "@inrupt/solid-client";
 import { lookup, extensions } from "mime-types";
 import { readFile } from "fs/promises";
@@ -68,19 +68,20 @@ export async function addFileToContainer(
   inputFile: string,
   authFetch: any
 ) {
-  const file = await readFile(inputFile)
-      // Create filename based on hash of file + date, with correct extension
-      const fileIdentifier = createFileHashIdentifier(inputFile)
-      const fileMimeType = getMimeTypeByExtension(inputFile)
-      const fileExt = getExtensionByMimeType(fileMimeType)
-      const fileName = `${fileIdentifier}${fileExt?'.'+fileExt:''}`
-      // Store file
-      const result = await saveFileInContainer(container, file,
-          {
-              slug: fileName,
-              contentType: fileMimeType,
-              fetch: authFetch
-          }
-      )
-      console.log(result)
+
+  // Create filename based on hash of file + date, with correct extension
+  const fileIdentifier = createFileHashIdentifier(inputFile)
+  const fileMimeType = getMimeTypeByExtension(inputFile)
+  const fileExt = getExtensionByMimeType(fileMimeType)
+  const fileName = `${fileIdentifier}${fileExt?'.'+fileExt:''}`
+  const file = new File([new Uint8Array(await readFile(inputFile))], fileName)
+  // Store file
+  const result = await saveFileInContainer(container, file,
+      {
+          slug: fileName,
+          contentType: fileMimeType,
+          fetch: authFetch
+      }
+  )
+  return result;
 }
