@@ -1,18 +1,66 @@
-# This script creates a verifiable credential from a data file and writes it to a Solid Pod.
+set -e
+set -u
+# This script automates the process of adding files to a Solid Pod and creating verifiable credentials (VCs) for those files.
+
+function addFileToSolidPod() { 
+  echo "Adding file $1 to Solid Pod and creating VC at $2"
+  echo "-----------------------------------------"
+  local _USERNAME=$1
+  local _EMAIL=$2
+  local _PASSWORD=$3
+  local _CONTAINER=$4
+  local _CONTAINER_VC="${_CONTAINER}/vc"
+  local _FPATH_DATA=$5
+  local _FPATH_DATA_VC=$6
+
+  echo "[???]_FPATH_DATA_VC: $_FPATH_DATA_VC"
+  
+  # Write the original data to the Solid Pod
+  npm run flows:add-file-to-solid-pod -- \
+    --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
+    --container $_CONTAINER --inputFile $_FPATH_DATA --outputBasename $(basename $_FPATH_DATA)
+
+  # Create a verifiable credential from the data file
+  npm run flows:create-vc -- \
+    --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
+    --data $_FPATH_DATA --output $_FPATH_DATA_VC
+
+  # Write the verifiable credential to the Solid Pod
+  npm run flows:add-file-to-solid-pod -- \
+    --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
+  --container $_CONTAINER_VC --inputFile $_FPATH_DATA_VC --outputBasename $(basename $_FPATH_DATA_VC)
+}
+
+########################################################################################
+# Actor: Farmer
+########################################################################################
 _USERNAME=farmer
 _EMAIL="info@farmer.com"
 _PASSWORD=farmer123
-_FPATH_DATA='./src/flows/data/farmer/shipment.json'
-_FPATH_DATA_VC='./src/flows/output/shipment1-vc.jsonld'
+
+# Products
+_CONTAINER='products'
+
+# Process product-x.jsonld
+_FPATH_DATA='./src/flows/data/farmer/product-x.jsonld'
+_FPATH_DATA_VC='./src/flows/output/product-x-vc.jsonld'
+addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
+
+# Process product-y.jsonld
+_FPATH_DATA='./src/flows/data/farmer/product-y.jsonld'
+_FPATH_DATA_VC='./src/flows/output/product-y-vc.jsonld'
+addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
+
+# Shipments
 _CONTAINER='shipments'
 _CONTAINER_VC="${_CONTAINER}/vc"
 
-# Write the original data to the Solid Pod
-npm run flows:add-file-to-solid-pod -- --name $_USERNAME --email $_EMAIL --password $_PASSWORD --container $_CONTAINER --inputFile $_FPATH_DATA 
+# Process shipment1.jsonld
+_FPATH_DATA='./src/flows/data/farmer/shipment1.jsonld'
+_FPATH_DATA_VC='./src/flows/output/shipment1-vc.jsonld'
+addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
 
-
-# Create a verifiable credential from the data file
-npm run flows:create-vc -- --name $_USERNAME --email $_EMAIL --password $_PASSWORD --data $_FPATH_DATA --output $_FPATH_DATA_VC
-
-# Write the verifiable credential to the Solid Pod
-npm run flows:add-file-to-solid-pod -- --name $_USERNAME --email $_EMAIL --password $_PASSWORD --container $_CONTAINER_VC --inputFile $_FPATH_DATA_VC 
+# Process shipment2.jsonld
+_FPATH_DATA='./src/flows/data/farmer/shipment2.jsonld'
+_FPATH_DATA_VC='./src/flows/output/shipment2-vc.jsonld'
+addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC

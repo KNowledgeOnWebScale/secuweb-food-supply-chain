@@ -5,3 +5,4 @@ css/root
 src/scratch.ts
 src/flows/output/** */
 .DS_Store
+actors/viewer/setup/config.json

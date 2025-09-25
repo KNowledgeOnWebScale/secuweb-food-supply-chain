@@ -10,6 +10,8 @@
 
 ## Install
 
+> Developed using Node: v20.19.5
+
 ```bash
 # Install this package
 npm i
@@ -23,11 +25,33 @@ npm i
 
 ### Setup
 
+Run setup.
+
 ```bash
+# CLI 1
+source env-localhost
+
+./scripts/setup/finalize-setup.sh
+```
+
+Start Solid Pod(s).
+
+```bash
+# CLI 2
 # Start from a clean CSS
 rm -rf css/root
 npm run pod
 ```
+
+Start Miravi.
+
+```bash
+# CLI 3
+cd ../poc-food-use-case-miravi/main
+npm run dev
+```
+
+
 
 ## Flows
 

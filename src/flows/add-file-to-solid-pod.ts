@@ -22,6 +22,7 @@ async function main() {
     .requiredOption("--password <string>", "User's password")
     .requiredOption("--container <string>", "Path to container, relative to the user's pod root")
     .requiredOption("--inputFile <string>", "Path to input file")
+    .requiredOption("--outputBasename <string>", "Basename of the output file")
     .parse(process.argv);
 
   const options = program.opts();
@@ -44,7 +45,7 @@ async function main() {
     const urlPod = `${urlServer}/${username}`
     const urlContainer = `${urlPod}/${container}/`    
     await createContainer(urlContainer, authFetch)
-    const result = await addFileToContainer(urlContainer, inputFile, authFetch);
+    const result = await addFileToContainer(urlContainer, inputFile, options.outputBasename, authFetch);
     const { sourceIri } = result.internal_resourceInfo
     console.log(`✅ File added to Solid Pod: ${sourceIri}`);
     
