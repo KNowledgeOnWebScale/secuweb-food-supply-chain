@@ -1,0 +1,26 @@
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "@id": "http://localhost:3000/farmer/products/product-X",
+  "@type": "schema:Product",
+  "schema:name": "Organic Cherry Tomatoes",
+  "schema:description": "Sweet, ripe organic cherry tomatoes grown without pesticides, perfect for salads, sauces, and fresh snacking.",
+  "schema:productID": "product-X",
+  "schema:category": "Vegetable",
+  "schema:brand": {
+    "@type": "schema:Brand",
+    "schema:name": "Farmer John’s Greenhouse"
+  },
+  "schema:weight": {
+    "@type": "schema:QuantitativeValue",
+    "schema:value": 0.5,
+    "schema:unitCode": "KGM"
+  },
+  "schema:offers": {
+    "@type": "schema:Offer",
+    "schema:price": "2.20",
+    "schema:priceCurrency": "EUR",
+    "schema:availability": "http://schema.org/InStock"
+  }
+}
