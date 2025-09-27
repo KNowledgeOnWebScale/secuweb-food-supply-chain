@@ -36,32 +36,39 @@ function processActor_Farmer() {
   _USERNAME=farmer
   _EMAIL="info@farmer.com"
   _PASSWORD=farmer123
+  _DIR_INPUT_DATA="./src/flows/data/$_USERNAME"
+  _DIR_OUTPUT_DATA="./src/flows/output/$_USERNAME"
   echo "Actor: $_USERNAME 🚜"
+
   # Products
   _CONTAINER='products'
-
-  # Process product-x.jsonld
-  _FPATH_DATA='./src/flows/data/farmer/product-x.jsonld'
-  _FPATH_DATA_VC='./src/flows/output/product-x-vc.jsonld'
+  
+  # Process products/product-x.jsonld
+  _FPATH_DATA="$_DIR_INPUT_DATA/$_CONTAINER/product-x.jsonld"
+  _BASENAME_DATA=$(basename $_FPATH_DATA)
+  _FPATH_DATA_VC="$_DIR_OUTPUT_DATA/$_CONTAINER/vc/$_BASENAME_DATA"
   addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
 
-  # Process product-y.jsonld
-  _FPATH_DATA='./src/flows/data/farmer/product-y.jsonld'
-  _FPATH_DATA_VC='./src/flows/output/product-y-vc.jsonld'
+  # Process products/product-x.jsonld
+  _FPATH_DATA="$_DIR_INPUT_DATA/$_CONTAINER/product-y.jsonld"
+  _BASENAME_DATA=$(basename $_FPATH_DATA)
+  _FPATH_DATA_VC="$_DIR_OUTPUT_DATA/$_CONTAINER/vc/$_BASENAME_DATA"
   addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
 
-  # Shipments
-  _CONTAINER='shipments'
-  _CONTAINER_VC="${_CONTAINER}/vc"
-
-  # Process shipment1.jsonld
-  _FPATH_DATA='./src/flows/data/farmer/shipment1.jsonld'
-  _FPATH_DATA_VC='./src/flows/output/shipment1-vc.jsonld'
+  # Shipments (OUTBOUND)  
+  _CONTAINER='shipments/out'
+  mkdir -p $_DIR_OUTPUT_DATA/$_CONTAINER/vc
+  
+  # Process shipments/out/shipment1.jsonld
+  _FPATH_DATA="$_DIR_INPUT_DATA/$_CONTAINER/shipment1.jsonld"
+  _BASENAME_DATA=$(basename $_FPATH_DATA)
+  _FPATH_DATA_VC="$_DIR_OUTPUT_DATA/$_CONTAINER/vc/$_BASENAME_DATA"
   addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
 
-  # Process shipment2.jsonld
-  _FPATH_DATA='./src/flows/data/farmer/shipment2.jsonld'
-  _FPATH_DATA_VC='./src/flows/output/shipment2-vc.jsonld'
+  # Process shipments/out/shipment2.jsonld  
+  _FPATH_DATA="$_DIR_INPUT_DATA/$_CONTAINER/shipment2.jsonld"
+  _BASENAME_DATA=$(basename $_FPATH_DATA)
+  _FPATH_DATA_VC="$_DIR_OUTPUT_DATA/$_CONTAINER/vc/$_BASENAME_DATA"
   addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
 }
 
