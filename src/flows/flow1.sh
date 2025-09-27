@@ -13,8 +13,6 @@ function addFileToSolidPod() {
   local _FPATH_DATA=$5
   local _FPATH_DATA_VC=$6
 
-  echo "[???]_FPATH_DATA_VC: $_FPATH_DATA_VC"
-  
   # Write the original data to the Solid Pod
   npm run flows:add-file-to-solid-pod -- \
     --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
@@ -31,36 +29,61 @@ function addFileToSolidPod() {
   --container $_CONTAINER_VC --inputFile $_FPATH_DATA_VC --outputBasename $(basename $_FPATH_DATA_VC)
 }
 
-########################################################################################
-# Actor: Farmer
-########################################################################################
-_USERNAME=farmer
-_EMAIL="info@farmer.com"
-_PASSWORD=farmer123
+function processActor_Farmer() {
+  ########################################################################################
+  # Actor: Farmer
+  ########################################################################################
+  _USERNAME=farmer
+  _EMAIL="info@farmer.com"
+  _PASSWORD=farmer123
+  echo "Actor: $_USERNAME 🚜"
+  # Products
+  _CONTAINER='products'
 
-# Products
-_CONTAINER='products'
+  # Process product-x.jsonld
+  _FPATH_DATA='./src/flows/data/farmer/product-x.jsonld'
+  _FPATH_DATA_VC='./src/flows/output/product-x-vc.jsonld'
+  addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
 
-# Process product-x.jsonld
-_FPATH_DATA='./src/flows/data/farmer/product-x.jsonld'
-_FPATH_DATA_VC='./src/flows/output/product-x-vc.jsonld'
-addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
+  # Process product-y.jsonld
+  _FPATH_DATA='./src/flows/data/farmer/product-y.jsonld'
+  _FPATH_DATA_VC='./src/flows/output/product-y-vc.jsonld'
+  addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
 
-# Process product-y.jsonld
-_FPATH_DATA='./src/flows/data/farmer/product-y.jsonld'
-_FPATH_DATA_VC='./src/flows/output/product-y-vc.jsonld'
-addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
+  # Shipments
+  _CONTAINER='shipments'
+  _CONTAINER_VC="${_CONTAINER}/vc"
 
-# Shipments
-_CONTAINER='shipments'
-_CONTAINER_VC="${_CONTAINER}/vc"
+  # Process shipment1.jsonld
+  _FPATH_DATA='./src/flows/data/farmer/shipment1.jsonld'
+  _FPATH_DATA_VC='./src/flows/output/shipment1-vc.jsonld'
+  addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
 
-# Process shipment1.jsonld
-_FPATH_DATA='./src/flows/data/farmer/shipment1.jsonld'
-_FPATH_DATA_VC='./src/flows/output/shipment1-vc.jsonld'
-addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
+  # Process shipment2.jsonld
+  _FPATH_DATA='./src/flows/data/farmer/shipment2.jsonld'
+  _FPATH_DATA_VC='./src/flows/output/shipment2-vc.jsonld'
+  addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
+}
 
-# Process shipment2.jsonld
-_FPATH_DATA='./src/flows/data/farmer/shipment2.jsonld'
-_FPATH_DATA_VC='./src/flows/output/shipment2-vc.jsonld'
-addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
+function processActor_Packager() {
+  ########################################################################################
+  # Actor: Packager
+  ########################################################################################
+  _USERNAME=packager
+  _EMAIL="info@packager.com"
+  _PASSWORD=packager123
+  echo "Actor: $_USERNAME 📦"
+
+  # Shipments (INBOUND)
+  _CONTAINER='shipments/in'
+  _FPATH_OUTPUT_DIR=./src/flows/output/packager/shipments/in
+  mkdir -p $_FPATH_OUTPUT_DIR
+
+  # Process receipt-shipment1.jsonld
+  _FPATH_DATA='./src/flows/data/packager/shipments/in/receipt-shipment1.jsonld'
+  _FPATH_DATA_VC="$_FPATH_OUTPUT_DIR/receipt-shipment1-vc.jsonld"
+  addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
+}
+
+processActor_Farmer;
+processActor_Packager
