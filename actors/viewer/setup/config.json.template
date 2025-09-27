@@ -25,8 +25,8 @@
       "name": "SPO",
       "comunicaContext": {
         "sources": [
-          "${OD_CSS0_BASE_URL}/farmer/shipments/vc/shipment1-vc.jsonld",
-          "${OD_CSS0_BASE_URL}/farmer/shipments/vc/shipment2-vc.jsonld"
+          "${OD_CSS0_BASE_URL}/farmer/shipments/out/vc/shipment1.jsonld",
+          "${OD_CSS0_BASE_URL}/farmer/shipments/out/vc/shipment2.jsonld"
         ],
         "lenient": true
       }
@@ -37,8 +37,8 @@
       "name": "Products",
       "comunicaContext": {
         "sources": [
-          "${OD_CSS0_BASE_URL}/farmer/products/vc/product-x-vc.jsonld",
-          "${OD_CSS0_BASE_URL}/farmer/products/vc/product-y-vc.jsonld"
+          "${OD_CSS0_BASE_URL}/farmer/products/vc/product-x.jsonld",
+          "${OD_CSS0_BASE_URL}/farmer/products/vc/product-y.jsonld"
         ],
         "lenient": true
       }
@@ -50,8 +50,8 @@
       "name": "Query shipments from: Farmer",
       "comunicaContext": {
         "sources": [
-          "${OD_CSS0_BASE_URL}/farmer/shipments/vc/shipment1-vc.jsonld",
-          "${OD_CSS0_BASE_URL}/farmer/shipments/vc/shipment2-vc.jsonld"
+          "${OD_CSS0_BASE_URL}/farmer/shipments/out/vc/shipment1.jsonld",
+          "${OD_CSS0_BASE_URL}/farmer/shipments/out/vc/shipment2.jsonld"
         ],
         "lenient": true
       }
