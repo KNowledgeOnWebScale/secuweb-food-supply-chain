@@ -1,0 +1,30 @@
+{
+  "@context": {
+    "ex": "http://example.org/terms#",
+    "schema": "https://schema.org/",
+    "prov": "http://www.w3.org/ns/prov#",
+    "epcis": "https://gs1.org/voc/",
+    "farmer": "http://localhost:3000/farmer/",
+    "packager": "http://localhost:3000/packager/",
+    "transporter": "http://localhost:3000/transporter/"
+  },
+  "@id": "packager:receipts/receipt-001",
+  "@type": [
+    "schema:ReceiveAction",
+    "prov:Activity",
+    "epcis:ObjectEvent",
+    "ex:ReceiptRecord"
+  ],
+  "schema:agent": "packager:profile/card#me",
+  "schema:object": "farmer:shipments/shipment-001",
+  "schema:startTime": "2025-09-27T10:00:00Z",
+  "prov:used": "farmer:shipments/shipment-001",
+  "prov:wasAssociatedWith": "packager:profile/card#me",
+  "prov:generated": "packager:receipts/receipt-001",
+  "epcis:bizStep": "receiving",
+  "epcis:disposition": "in_progress",
+  "ex:receivedQuantity": 10,
+  "ex:receivedProductID": "farmer:products/product-X",
+  "ex:from": "farmer:profile/card#me",
+  "ex:viaTransport": "transporter:profile/card#me"
+}
