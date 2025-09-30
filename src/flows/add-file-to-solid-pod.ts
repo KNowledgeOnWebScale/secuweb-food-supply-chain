@@ -49,16 +49,6 @@ async function main() {
     const { sourceIri } = result.internal_resourceInfo
     console.log(`✅ File added to Solid Pod: ${sourceIri}`);
     
-
-    console.log(`🔐 Setting public read access to ${sourceIri}`);
-    const am = {
-      read: true,
-      append: false,
-      write: false,
-    }
-    const resultPublicAccess = await universalAccess.setPublicAccess(sourceIri, am, { fetch: authFetch });
-    console.log('✅ Public access set:', resultPublicAccess);
-
   } catch (error) {
     console.error('❌ Error during the process:', error);
   }
