@@ -10,11 +10,8 @@ export async function getAuthorizationToken(
   // All these examples assume the server is running at `http://localhost:3000/`.
 
   // First we request the account API controls to find out where we can log in
-  console.log('url account:', urlAccount);
   const indexResponse = await fetch(urlAccount);
   const { controls } = await indexResponse.json();
-  console.log('Account API controls:', controls);
-
   // And then we log in to the account API
   const response = await fetch(controls.password.login, {
     method: 'POST',
@@ -56,7 +53,6 @@ export async function getClientCredentials(urlServer: string, urlAccount: string
 }
 
 export async function getAccessTokenAndDpopKey(urlServer: string, { id, secret }: ClientCredentials): Promise<any> {
-  console.log('step3 called with id:', id, 'and secret:', secret);
   // A key pair is needed for encryption.
   // This function from `solid-client-authn` generates such a pair for you.
   const dpopKey = await generateDpopKeyPair();
@@ -83,7 +79,6 @@ export async function getAccessTokenAndDpopKey(urlServer: string, { id, secret }
   // The JSON also contains an "expires_in" field in seconds,
   // which you can use to know when you need request a new Access token.
   const responseJSON = await response.json();
-  console.log('Response JSON:', responseJSON);
   const { access_token: accessToken } = responseJSON;
   return {accessToken, dpopKey};
 }
