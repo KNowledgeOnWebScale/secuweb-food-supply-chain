@@ -92,5 +92,67 @@ function processActor_Packager() {
   addFileToSolidPod $_USERNAME $_EMAIL $_PASSWORD $_CONTAINER $_FPATH_DATA $_FPATH_DATA_VC
 }
 
+function setACLs_Farmer() {
+  ########################################################################################
+  # Actor: Farmer
+  ########################################################################################
+  _USERNAME=farmer
+  _EMAIL="info@farmer.com"
+  _PASSWORD=farmer123
+
+  # vc/product-x
+  # READ access:
+  # - Packager
+  URI_RESOURCE="http://localhost:3000/farmer/products/vc/product-x.jsonld"
+
+  URI_AGENT="http://localhost:3000/packager/profile/card#me"
+  npm run flows:set-acl -- \
+    --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
+    --resourceUrl $URI_RESOURCE --webId $URI_AGENT
+
+  # vc/product-y
+  # READ access:
+  # - Packager
+  URI_RESOURCE="http://localhost:3000/farmer/products/vc/product-y.jsonld"
+
+  URI_AGENT="http://localhost:3000/packager/profile/card#me"
+  npm run flows:set-acl -- \
+    --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
+    --resourceUrl $URI_RESOURCE --webId $URI_AGENT
+
+  # vc/shipment1
+  # READ access:
+  # - Packager (destination)
+  # - Transporter (transport)
+  URI_RESOURCE="http://localhost:3000/farmer/shipments/out/vc/shipment1.jsonld"
+
+  URI_AGENT="http://localhost:3000/packager/profile/card#me"
+  npm run flows:set-acl -- \
+    --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
+    --resourceUrl $URI_RESOURCE --webId $URI_AGENT
+
+  URI_AGENT="http://localhost:3000/transporter/profile/card#me"
+    npm run flows:set-acl -- \
+      --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
+      --resourceUrl $URI_RESOURCE --webId $URI_AGENT
+
+  # vc/shipment2
+  # READ access:
+  # - Packager (destination)
+  # - Transporter (transport)
+  URI_RESOURCE="http://localhost:3000/farmer/shipments/out/vc/shipment2.jsonld"
+
+  URI_AGENT="http://localhost:3000/packager/profile/card#me"
+  npm run flows:set-acl -- \
+    --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
+    --resourceUrl $URI_RESOURCE --webId $URI_AGENT
+
+  URI_AGENT="http://localhost:3000/transporter/profile/card#me"
+  npm run flows:set-acl -- \
+    --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
+    --resourceUrl $URI_RESOURCE --webId $URI_AGENT
+}
+
 processActor_Farmer;
-processActor_Packager
+processActor_Packager;
+setACLs_Farmer;
