@@ -20,9 +20,8 @@ async function main() {
     .requiredOption("--name <string>", "User's name")
     .requiredOption("--email <string>", "User's email")
     .requiredOption("--password <string>", "User's password")
-    .requiredOption("--container <string>", "Path to container, relative to the user's pod root")
-    .requiredOption("--inputFile <string>", "Path to input file")
-    .requiredOption("--outputBasename <string>", "Basename of the output file")
+    .requiredOption("--resourceUrl <string>", "URL to resource")
+    .requiredOption("--webId <string>", "WebID that will be granted read access")
     .parse(process.argv);
 
   const options = program.opts();
@@ -39,16 +38,18 @@ async function main() {
   }
   
   try {
-    const {name: username, email, password, container, inputFile} = options;
+    const {name: username, email, password, resourceUrl, webId} = options;
     console.log('🔐 createAuthenticatedFetch')
     const authFetch = await wrapper_createAuthenticatedFetch(username, email, password, urlServer);
-    const urlPod = `${urlServer}/${username}`
-    const urlContainer = `${urlPod}/${container}/`    
-    await createContainer(urlContainer, authFetch)
-    const result = await addFileToContainer(urlContainer, inputFile, options.outputBasename, authFetch);
-    const { sourceIri } = result.internal_resourceInfo
-    console.log(`✅ File added to Solid Pod: ${sourceIri}`);
-    
+
+    const am = {
+      read: true,
+      append: false,
+      write: false,
+    }
+    console.log(`[!] Granting ${webId} read access to ${resourceUrl}`);
+    await universalAccess.setAgentAccess(resourceUrl, webId, am, {fetch: authFetch});
+
   } catch (error) {
     console.error('❌ Error during the process:', error);
   }
