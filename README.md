@@ -51,7 +51,11 @@ cd ../poc-food-use-case-miravi/main
 npm run dev
 ```
 
+Register add BC and update WebID Profile:
 
+```bash
+./register-css-user.sh
+```
 
 ## Flows
 
@@ -72,6 +76,10 @@ Steps:
 3. Store `VC_X` on Solid Pod, , under container `<c>/<vc>`
 
 These above steps are executed in [`src/flows/flow1.sh`](src/flows/flow1.sh).
+
+```bash
+./src/flows/flows1.sh
+```
 
 ## License (TODO)
 
