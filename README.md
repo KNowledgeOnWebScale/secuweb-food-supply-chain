@@ -51,7 +51,7 @@ cd ../poc-food-use-case-miravi/main
 npm run dev
 ```
 
-Register add BC and update WebID Profile:
+Register actors at BC and update WebID Profile:
 
 ```bash
 ./register-css-user.sh
