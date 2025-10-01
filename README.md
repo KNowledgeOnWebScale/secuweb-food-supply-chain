@@ -43,18 +43,18 @@ rm -rf css/root
 npm run pod
 ```
 
+Register actors at BC and update WebID Profile:
+
+```bash
+./register-css-user.sh
+```
+
 Start Miravi.
 
 ```bash
 # CLI 3
 cd ../poc-food-use-case-miravi/main
 npm run dev
-```
-
-Register actors at BC and update WebID Profile:
-
-```bash
-./register-css-user.sh
 ```
 
 ## Flows
