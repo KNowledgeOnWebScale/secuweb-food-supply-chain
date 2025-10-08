@@ -6,14 +6,20 @@ set -e
 set -u
 set -o pipefail
 
-DID=$1
-FPATH_OUTPUT=$2
+DID="$1"
+FPATH_OUTPUT="${2:-}"  # optional second argument
 
 HOST="http://localhost:10000"
-
-# Fetch identity for given DID
 API_URL="${HOST}/api/v1/network/diddocs/$DID"
 
-curl -s -X GET "$API_URL" \
-  -H "Content-Type: application/json" \
-  > $FPATH_OUTPUT
+# Fetch identity for given DID
+if [[ -n "$FPATH_OUTPUT" ]]; then
+  # If an output file is specified, write to it
+  curl -s -X GET "$API_URL" \
+    -H "Content-Type: application/json" \
+    > "$FPATH_OUTPUT"
+else
+  # Otherwise, print to console
+  curl -s -X GET "$API_URL" \
+    -H "Content-Type: application/json" | jq . 
+fi
