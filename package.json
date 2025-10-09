@@ -8,6 +8,8 @@
     "dev": "nodemon --config nodemon.json --exec npm run start",
     "ff": "npm run build && node build/bc/ff.js",
     "ff:dev": "nodemon --config nodemon.json --exec npm run ff",
+    "ff:register-identity": "npm run build && node build/bc/register-identity.js",
+    "ff:register-identity:dev": "nodemon --config nodemon.json --exec npm run ff:register-identity",
     "pod": "community-solid-server --rootFilePath ./css/root --config ./css/css.json --seedConfig ./css/css-users.json",
     "add-firefly-did-to-webid-profile": "npm run build && node build/css/add-firefly-did-to-webid-profile.js",
     "scratch": "npm run build && node build/scratch.js",
