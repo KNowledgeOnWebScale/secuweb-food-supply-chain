@@ -6,10 +6,8 @@ set -e
 set -o pipefail
 
 source .env
-
 DIR_FF_SCRIPTS=$FPATH_DIR_FIREFLY_SCRIPTS
-STACK="dev"
-echo "Currently, stack is fixed to: $STACK"
+echo "Firefly stack: $STACK"
 
 USERNAMES=$(jq '[ .[] |  .pods[0].name ]' "$FPATH_CSS_USERS")
 pods=($(jq -r '.[].pods[0].name' $FPATH_CSS_USERS))
