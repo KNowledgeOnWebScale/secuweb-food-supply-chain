@@ -1,5 +1,5 @@
 # !/bin/bash
-# create-register-key.sh
+# ./create-register-key.sh <stack> <keyname> <identities.json> <key.json> <registration-response.json>
 # This script creates a keypair and registers it at a Firefly instance.
 set -e
 function banner() {
@@ -41,4 +41,6 @@ PARENT_UUID=$(echo "$ORG_UUIDS" | jq -r '.[0].id')
 echo "Parent Organization UUID: $PARENT_UUID"
 
 banner "Registering keypair"
-./register-key.sh $KEYNAME $KEY_ADDRESS $PARENT_UUID $HOST $FPATH_RESPONSE
+WEBID="urn:webid-mocked:${key_name}/profile/card#me"
+./register-key.sh $KEYNAME $KEY_ADDRESS $PARENT_UUID $HOST $FPATH_RESPONSE $WEBID
+
