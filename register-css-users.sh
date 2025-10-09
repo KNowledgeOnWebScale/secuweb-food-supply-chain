@@ -10,8 +10,6 @@ source .env
 DIR_FF_SCRIPTS=$FPATH_DIR_FIREFLY_SCRIPTS
 STACK="dev"
 echo "Currently, stack is fixed to: $STACK"
-HOST=http://localhost:10000
-echo "Currently, host is fixed to: $HOST"
 
 USERNAMES=$(jq '[ .[] |  .pods[0].name ]' "$FPATH_CSS_USERS")
 pods=($(jq -r '.[].pods[0].name' $FPATH_CSS_USERS))
