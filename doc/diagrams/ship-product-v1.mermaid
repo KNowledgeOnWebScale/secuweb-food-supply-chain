@@ -26,19 +26,18 @@ sequenceDiagram
       bc ->> a: Response Object (/messages/broadcast) <br/> including batch id, data hash, message hash, txtype, state, …
   end
 
-  a ->> b: Send Message( URI VC(Shipment Record) + REF_VC_TRANSACTION_ON_BC )
+  a ->> b: Send Message( URI VC(Shipment Record) )
 
   critical Action: Verify VC
 
     critical Step1
-        b ->> p: GET( URI VC(Shipment Record) )
-        p ->> b: VC_SHIPMENT_RECORD = Response VC(Shipment Record)
+        b ->> p: Lookup VC_URI on BC
+        p ->> b: Response Object (data hash, message hash, txtype, state, canonHash)
     end
 
     critical Step2
-        b -> bc: GET( REF_VC_TRANSACTION_ON_BC )
-        bc ->> b: VC_TRANSACTION_HASH = Response ( { hash } )
-
+        b ->> p: GET( URI VC(Shipment Record) )
+        p ->> b: VC_SHIPMENT_RECORD = Response VC(Shipment Record)
     end
 
     critical Step3: Locally compute hash value from VC
