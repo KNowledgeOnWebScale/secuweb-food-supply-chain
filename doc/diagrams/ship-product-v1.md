@@ -1,4 +1,4 @@
-# Flow: Ship Product (V1a)
+# Flow: Ship Product (V1)
 <!-- Init: Mon Oct 13 02:46:18 CEST 2025 -->
 
 Source diagram: [`ship-product-v1.mermaid`](./ship-product-v1.mermaid)
