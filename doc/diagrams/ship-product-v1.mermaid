@@ -31,8 +31,8 @@ sequenceDiagram
   critical Action: Verify VC
 
     critical Step1
-        b ->> p: Lookup VC_URI on BC
-        p ->> b: Response Object (data hash, message hash, txtype, state, canonHash)
+        b ->> bc: Lookup VC_URI on BC
+        bc ->> b: Response Object (data hash, message hash, txtype, state, canonHash)
     end
 
     critical Step2
