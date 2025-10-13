@@ -29,10 +29,27 @@ sequenceDiagram
   a ->> b: Send Message( URI VC(Shipment Record) + REF_VC_TRANSACTION_ON_BC )
 
   critical Action: Verify VC
-    
-    b ->> p: GET(URI VC(Shipment Record))
-    p ->> b: Response VC(Shipment Record)
-    b ->> b: Verify VC(Shipment Record)
-  end
+
+    critical Step1
+        b ->> p: GET( URI VC(Shipment Record) )
+        p ->> b: VC_SHIPMENT_RECORD = Response VC(Shipment Record)
+    end
+
+    critical Step2
+        b -> bc: GET( REF_VC_TRANSACTION_ON_BC )
+        bc ->> b: VC_TRANSACTION_HASH = Response ( { hash } )
+
+    end
+
+    critical Step3: Locally compute hash value from VC
+        b -> b: LOCAL_HASH = Hash( Canon(VC_SHIPMENT_RECORD) )
+    end
+
+    critical Step4: Compare locally computed hash with the hash retrieved from the BC
+        b -> b: Compare (LOCAL_HASH === VC_TRANSACTION_HASH)
+        b -> b: Verify_VC(VC_SHIPMENT_RECORD)
+        b ->> b: Verify VC(Shipment Record)
+    end
+end
 
   
