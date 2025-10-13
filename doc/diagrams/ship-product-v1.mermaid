@@ -1,0 +1,38 @@
+sequenceDiagram
+  autonumber
+  participant a as Actor A
+  participant b as Actor B
+  participant p as A's Solid Pod
+  participant bc as Blockchain
+  %% participant vcApp as VC App
+
+  a ->> a: Create Shipment Record
+
+%%  critical Action Ship Product
+%%    Note left of a: Not sure whether it <br/> is needed to post the non-VC version <br/> of the shipment record.
+%%    a ->> p: POST (Shipment Record)
+%%    p ->> a: Response (200, URI Shipment Record)
+%%  end
+
+  
+  a ->> a: Create VC
+  
+  critical Action: Store VC
+    a ->> p: POST(VC(Shipment Record))
+    p ->> a: Response (200, URI VC(Shipment Record))
+  end
+  critical Action: Anchor VC on BC
+      a ->> bc: Broadcast Message as did:firefly:actorA <br/> (Message = {URI_VC: URI VC(Shipment Record), hash: Hash(Canon(VC))})
+      bc ->> a: Response Object (/messages/broadcast) <br/> including batch id, data hash, message hash, txtype, state, …
+  end
+
+  a ->> b: Send Message( URI VC(Shipment Record) + REF_VC_TRANSACTION_ON_BC )
+
+  critical Action: Verify VC
+    
+    b ->> p: GET(URI VC(Shipment Record))
+    p ->> b: Response VC(Shipment Record)
+    b ->> b: Verify VC(Shipment Record)
+  end
+
+  
