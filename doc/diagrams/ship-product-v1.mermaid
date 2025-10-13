@@ -47,7 +47,6 @@ sequenceDiagram
     critical Step4: Compare locally computed hash with the hash retrieved from the BC
         b -> b: Compare (LOCAL_HASH === VC_TRANSACTION_HASH)
         b -> b: Verify_VC(VC_SHIPMENT_RECORD)
-        b ->> b: Verify VC(Shipment Record)
     end
 end
 
