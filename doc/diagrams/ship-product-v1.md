@@ -5,31 +5,26 @@ Source diagram: [`ship-product-v1.mermaid`](./ship-product-v1.mermaid)
 
 
 In this interaction sequence, Actor A initiates a decentralized data exchange 
-process
-concerning a shipment record. The process involves four entities: Actor A,
+process concerning a shipment record. The process involves four entities: Actor A,
 Actor B, A’s Solid Pod, and the Blockchain.
 
 First, Actor A creates a shipment record locally. This record represents the 
 factual details of a shipment but initially exists only in A’s local context. 
-To ma
-ke this record verifiable, Actor A next creates a Verifiable Credential (VC) 
+To make this record verifiable, Actor A next creates a Verifiable Credential (VC) 
 encapsulating the shipment record’s claims, signed with A’s decentralized 
 identity.
 
 Once the VC is generated, A proceeds to store it within A’s Solid Pod—a personal
 online data store that A controls. The VC is uploaded via a POST request, and 
 the Pod returns a URI that uniquely identifies the stored credential. This URI 
-be
-comes a reference point for others to retrieve the VC in a verifiable manner.
+becomes a reference point for others to retrieve the VC in a verifiable manner.
 
 To ensure integrity and non-repudiation, A then anchors the VC on a blockchain.
 A broadcasts a message under their decentralized identifier (e.g., 
 did:firefly:actorA), containing the URI of the VC and a cryptographic hash of 
-its canonicaliz
-ed representation. The blockchain responds with metadata about the transaction 
+its canonicaliz ed representation. The blockchain responds with metadata about the transaction 
 (such as batch ID, message hash, and transaction state), thereby immutably 
-record
-ing a proof of the VC’s existence and integrity.
+recording a proof of the VC’s existence and integrity.
 
 After successful anchoring, A notifies Actor B by sending a message that 
 includes both the VC’s URI and the blockchain reference to the anchoring 
