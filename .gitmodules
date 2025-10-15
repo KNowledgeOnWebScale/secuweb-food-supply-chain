@@ -1,3 +1,6 @@
 [submodule "vc"]
 	path = vc
 	url = git@gitlab.ilabt.imec.be:KNoWS/verifiable-credentials/vc-prototyping-library.git
+[submodule "identus/components/identus-mediator"]
+	path = identus/components/identus-mediator
+	url = https://github.com/hyperledger/identus-mediator
