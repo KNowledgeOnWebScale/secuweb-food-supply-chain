@@ -13,20 +13,24 @@ function addFileToSolidPod() {
   local _FPATH_DATA=$5
   local _FPATH_DATA_VC=$6
 
-  # Write the original data to the Solid Pod
-  npm run flows:add-file-to-solid-pod -- \
-    --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
-    --container $_CONTAINER --inputFile $_FPATH_DATA --outputBasename $(basename $_FPATH_DATA)
+#
+#  # Write the original data to the Solid Pod
+#  npm run flows:add-file-to-solid-pod -- \
+#    --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
+#    --container $_CONTAINER --inputFile $_FPATH_DATA --outputBasename $(basename $_FPATH_DATA)
+#
 
-  # Create a verifiable credential from the data file
+  echo "Create a verifiable credential from the data file ($(basename $_FPATH_DATA))"
   npm run flows:create-vc -- \
     --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
     --data $_FPATH_DATA --output $_FPATH_DATA_VC
 
   # Write the verifiable credential to the Solid Pod
-  npm run flows:add-file-to-solid-pod -- \
-    --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
-  --container $_CONTAINER_VC --inputFile $_FPATH_DATA_VC --outputBasename $(basename $_FPATH_DATA_VC)
+  RESULT=$(npm run flows:add-file-to-solid-pod -- \
+               --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
+             --container $_CONTAINER_VC --inputFile $_FPATH_DATA_VC --outputBasename $(basename $_FPATH_DATA_VC))
+  echo "RESULT FROM ADDING VC TO SOLID POD: "
+  echo $RESULT
 }
 
 function processActor_Farmer() {
@@ -154,5 +158,5 @@ function setACLs_Farmer() {
 }
 
 processActor_Farmer;
-processActor_Packager;
-setACLs_Farmer;
+#processActor_Packager;
+#setACLs_Farmer;
