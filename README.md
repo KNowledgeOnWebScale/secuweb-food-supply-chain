@@ -84,7 +84,7 @@ These above steps are executed in [`src/flows/flow1.sh`](src/flows/flow1.sh).
 # At repository root
 rm -rf css/root
 npm run pod
-# [!] Wait for setup to compelte
+# [!] Wait for setup to complete
 ```
 
 ```bash
