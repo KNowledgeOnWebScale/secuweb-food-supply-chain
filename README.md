@@ -77,7 +77,19 @@ Steps:
 
 These above steps are executed in [`src/flows/flow1.sh`](src/flows/flow1.sh).
 
+#### Usage
+
 ```bash
+# TERMINAL A
+# At repository root
+rm -rf css/root
+npm run pod
+# [!] Wait for setup to compelte
+```
+
+```bash
+# TERMINAL B
+# At repository root
 ./src/flows/flows1.sh
 ```
 
