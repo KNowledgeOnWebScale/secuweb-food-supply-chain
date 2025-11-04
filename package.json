@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.app.json",
     "start": "npm run build && node build/index.js",
     "dev": "nodemon --config nodemon.json --exec npm run start",
     "ff": "npm run build && node build/bc/ff.js",

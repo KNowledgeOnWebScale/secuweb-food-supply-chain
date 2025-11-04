@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/flows/**/*.ts",
+    "src/adapters/**/*.ts"
+  ],
+  "exclude": [
+    "src/scripts/**/*"
+  ]
+}
