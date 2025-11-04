@@ -4,3 +4,6 @@
 [submodule "identus/components/identus-mediator"]
 	path = identus/components/identus-mediator
 	url = https://github.com/hyperledger/identus-mediator
+[submodule "secuweb-anchors"]
+	path = secuweb-anchors
+	url = git@gitlab.ilabt.imec.be:gddmulde/secuweb-did-vc-anchoring-demo.git
