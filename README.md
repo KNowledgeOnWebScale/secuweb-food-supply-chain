@@ -90,7 +90,7 @@ npm run pod
 ```bash
 # TERMINAL B
 # At repository root
-./src/flows/flows1.sh
+./src/flows/flow1.sh
 ```
 
 ## License (TODO)
