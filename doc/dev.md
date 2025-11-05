@@ -1,13 +1,23 @@
 # Development
 
-## BC
+## High-level components
 
-### Hyperledger Fabric
+![x](diagrams/high-level-component-diagram.png)
 
-Setup docs: <https://hyperledger-fabric.readthedocs.io/en/release-2.5/install.html>
+Orchestrator (`poc-food-supply-chain`)
+- flows runs end-to-end shell flows (e.g., flow1.sh, flow1+anchor*.sh)
+- adapters delegates to external tools (VC lib and hardhat scripts)
+- scripts tiny helpers (anchor-one, anchor-all, verify-one, verify-all)
+- data holds emitted VC files and flow outputs
 
-Setup steps:
+VC submodule
+- dist/cli.js handles setup, issuance, verification, and writes VC JSON-LD to Solid and disk
 
-1. Download fabric install script
-2. Execute install script as follows: `./install-fa./bric.sh docker samples`
+Anchoring submodule (`secuweb-anchors`)
+- Hardhat runtime and scripts
+- DIDRegistry smart contract storing VC hashes
 
+External
+- Solid Pod stores DID Doc, verificationMethod, and VCs
+- Hardhat node local blockchain
+- Verifier fetches VC from Solid and compares hash against on-chain anchor
