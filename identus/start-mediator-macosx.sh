@@ -1,2 +1,0 @@
-cd components/identus-mediator
-MEDIATOR_VERSION=1.1.0 SERVICE_ENDPOINTS="http://$(ipconfig getifaddr $(route get default | grep interface | awk '{print $2}')):8080;ws://$(ipconfig getifaddr $(route get default | grep interface | awk '{print $2}')):8080/ws" docker compose up -d
