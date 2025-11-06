@@ -19,7 +19,9 @@
     "flows:create-vc": "npm run build && node build/flows/create-vc.js",
     "flows:add-file-to-solid-pod": "npm run build && node build/flows/add-file-to-solid-pod.js",
     "flows:set-acl": "npm run build && node build/flows/set-acl.js",
-    "canon-hash": "npm run build && node build/bc/canon-hash.js"
+    "canon-hash": "npm run build && node build/bc/canon-hash.js",
+
+    "explore": "cd secuweb-anchors && npm run explore"
   },
   "config": {
     "community-solid-server": {
