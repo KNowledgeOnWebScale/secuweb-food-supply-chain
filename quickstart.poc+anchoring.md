@@ -31,7 +31,12 @@ Run flow.
 ```bash
 # Terminal D
 # At repository root
- ./src/flows/flow1+anchor-all.sh
+# Create each actor's VCs and store them on their pod
+./src/flows/flow1.sh
+# Anchor each actor's VC on the chain
+./dev.register-products-and-shipments.sh
+# Verify
+./dev.verify-vc.sh
 ```
 
 Explore chain transactions.
