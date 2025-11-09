@@ -2,7 +2,8 @@
   "@context": {
     "schema": "http://schema.org/"
   },
-  "@id": "http://localhost:3000/farmer/products/product-X",
+  "@id": "did:secuweb:farmer:product-x",
+  "schema:url": "http://localhost:3000/farmer/products/vc/product-x.jsonld",
   "@type": "schema:Product",
   "schema:name": "Organic Cherry Tomatoes",
   "schema:description": "Sweet, ripe organic cherry tomatoes grown without pesticides, perfect for salads, sauces, and fresh snacking.",
