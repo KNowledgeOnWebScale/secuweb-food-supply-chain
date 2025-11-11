@@ -13,4 +13,11 @@ cd "$(dirname "$0")/../.."
 ANCHOR_REPO="${ANCHOR_REPO:-$(pwd)/secuweb-anchors}"
 
 echo "Anchoring VC: $VC_PATH"
-VC="$VC_PATH" SUBJECT_DID="$SUBJECT_DID" ANCHOR_REPO="$ANCHOR_REPO"   ./src/scripts/anchor.external.sh
+# if METADATA_URI is set, pass it to the anchoring script
+if [ -n "${METADATA_URI:-}" ]; then
+    echo "Using METADATA_URI: $METADATA_URI"
+    VC="$VC_PATH" SUBJECT_DID="$SUBJECT_DID" METADATA_URI="$METADATA_URI" ANCHOR_REPO="$ANCHOR_REPO" ./src/scripts/anchor.external.sh
+else 
+    VC="$VC_PATH" SUBJECT_DID="$SUBJECT_DID" ANCHOR_REPO="$ANCHOR_REPO" ./src/scripts/anchor.external.sh
+fi
+
