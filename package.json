@@ -20,8 +20,9 @@
     "flows:add-file-to-solid-pod": "npm run build && node build/flows/add-file-to-solid-pod.js",
     "flows:set-acl": "npm run build && node build/flows/set-acl.js",
     "canon-hash": "npm run build && node build/bc/canon-hash.js",
-
-    "explore": "cd secuweb-anchors && npm run explore"
+    "explore": "cd secuweb-anchors && npm run explore",
+    "jsonld:expand": "npm run build && node build/jsonld.expand.js"
+    
   },
   "config": {
     "community-solid-server": {
