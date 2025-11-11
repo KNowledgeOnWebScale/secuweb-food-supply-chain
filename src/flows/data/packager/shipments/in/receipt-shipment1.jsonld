@@ -1,14 +1,15 @@
 {
   "@context": {
     "ex": "http://example.org/terms#",
-    "schema": "https://schema.org/",
+    "schema": "http://schema.org/",
     "prov": "http://www.w3.org/ns/prov#",
     "epcis": "https://gs1.org/voc/",
     "farmer": "http://localhost:3000/farmer/",
     "packager": "http://localhost:3000/packager/",
     "transporter": "http://localhost:3000/transporter/"
   },
-  "@id": "packager:receipts/receipt-001",
+  "@id": "did:secuweb:packager:receipt-001",
+  "schema:url": "http://localhost:3000/packager/shipments/in/vc/receipt-shipment1-vc.jsonld",
   "@type": [
     "schema:ReceiveAction",
     "prov:Activity",
