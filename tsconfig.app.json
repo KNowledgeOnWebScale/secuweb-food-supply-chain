@@ -2,7 +2,9 @@
   "extends": "./tsconfig.json",
   "include": [
     "src/flows/**/*.ts",
-    "src/adapters/**/*.ts"
+    "src/adapters/**/*.ts",
+    "src/scratch.ts",
+    "src/jsonld.expand.ts"
   ],
   "exclude": [
     "src/scripts/**/*"
