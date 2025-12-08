@@ -4,8 +4,6 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc -p tsconfig.app.json",
-    "start": "npm run build && node build/index.js",
-    "dev": "nodemon --config nodemon.json --exec npm run start",
     "pod": "community-solid-server --rootFilePath ./css/root --config ./css/css.json --seedConfig ./css/css-users.json",
     "add-firefly-did-to-webid-profile": "npm run build && node build/css/add-firefly-did-to-webid-profile.js",
     "scratch": "npm run build && node build/scratch.js",
@@ -29,12 +27,6 @@
   "dependencies": {
     "@digitalbazaar/data-integrity-context": "^2.0.1",
     "@digitalcredentials/rdf-canonize": "^1.0.0",
-    "@fastify/cors": "^11.1.0",
-    "@fastify/formbody": "^8.0.2",
-    "@fastify/helmet": "^13.0.1",
-    "@fastify/swagger": "^9.5.1",
-    "@fastify/swagger-ui": "^5.2.3",
-    "@fastify/type-provider-typebox": "^6.0.0",
     "@inrupt/solid-client": "^2.1.2",
     "@inrupt/solid-client-authn-core": "^3.1.0",
     "@inrupt/universal-fetch": "^1.0.3",
