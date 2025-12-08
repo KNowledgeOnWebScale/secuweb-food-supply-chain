@@ -65,9 +65,9 @@ Run flow.
 # Terminal F
 # At repository root
 # Create each actor's VCs and store them on their pod
-./src/flows/flow1.sh
+./src/flows/load-actor-data-into-solid-pods.sh
 # Anchor each actor's VC on the chain
-./dev.register-products-and-shipments.sh
+./src/flows/register-products-and-shipments.sh
 # Verify
 ./dev.verify-vc.sh
 ```
