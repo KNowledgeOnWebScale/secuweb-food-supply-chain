@@ -1,9 +1,20 @@
 # Quickstart: PoC + VC Anchoring
 
+Setup and start Miravi.
+
+```bash
+# CLI A
+source env-localhost
+
+./scripts/setup/finalize-setup.sh
+cd ../poc-food-use-case-miravi/main
+npm run dev
+```
+
 Spin up a clean CSS.
 
 ```bash
-# Terminal A
+# Terminal B
 # At repository root
 rm -rf css/root
 npm run pod
@@ -12,24 +23,26 @@ npm run pod
 Start the hardhat node.
 
 ```bash
-# Terminal B
+# Terminal C
 cd secuweb-anchors
 npx hardhat node
 ```
 
-Redeploy contract and produce at least one event (in this case: registering a DID).
+Redeploy contract and at least one event (in this case: registering a DID).
+Then, start the verifier service.
 
 ```bash
-# Terminal C
+# Terminal D
 cd secuweb-anchors
 npm run redeploy
 npm run register
+npm run server # start verifier service
 ```
 
 Run flow.
 
 ```bash
-# Terminal D
+# Terminal E
 # At repository root
 # Create each actor's VCs and store them on their pod
 ./src/flows/flow1.sh
@@ -42,7 +55,7 @@ Run flow.
 Explore chain transactions.
 
 ```bash
-# Terminal E
+# Terminal F
 cd secuweb-anchors
 npm run explore
 ```
