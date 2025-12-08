@@ -1,9 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Always run from repo root, regardless of where this script lives or is called from
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+REPO_ROOT="$(cd -- "$SCRIPT_DIR/../.." &> /dev/null && pwd)"
+
 ##################################################
 # Actor: Farmer
 ##################################################
 function __farmer() {
-    
-
     echo "product-x"
     export VC_PATH="src/flows/output/farmer/products/vc/product-x.jsonld"
     export SUBJECT_DID="did:secuweb:farmer:product-x"
@@ -77,5 +82,6 @@ function __packager() {
 ##################################################
 # Main
 ##################################################
+cd "$REPO_ROOT"
 __farmer
 __packager
