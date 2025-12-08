@@ -6,7 +6,7 @@ import { Command } from "commander";
 const urlServer = 'http://localhost:3000';
 const urlAccount = `${urlServer}/.account/`;
 
-async function addFireflyDIDToWebIDProfile(name: string, email: string, password: string, fireflyDid: string) {
+async function addDIDToWebIDProfile(name: string, email: string, password: string, did: string) {
   console.log('STEP 1: obtain authorization token');
   const authorizationToken = await getAuthorizationToken(urlAccount, email, password);
   
@@ -27,7 +27,7 @@ async function addFireflyDIDToWebIDProfile(name: string, email: string, password
 
   console.log('STEP 6: updating profile by adding reference to another ID');
   const urlProfile = `${urlServer}/${name}/profile/card`
-  const otherId = fireflyDid
+  const otherId = did
   await n3patch(
     authenticatedFetch,
     urlProfile,
@@ -50,7 +50,7 @@ async function main() {
     .requiredOption("--name <string>", "User's name")
     .requiredOption("--email <string>", "User's email")
     .requiredOption("--password <string>", "User's password")
-    .requiredOption("--firefly-did <string>", "Firefly DID to add to WebID profile")
+    .requiredOption("--did <string>", "DID to add to WebID profile")
     .parse(process.argv);
 
   const options = program.opts();
@@ -70,13 +70,13 @@ async function main() {
   console.log("Name: ", options.name);
   console.log("Email:", options.email);
   console.log("Password:", "*".repeat(options.password.length)); // Mask password
-  console.log("Firefly DID:", options.fireflyDid);
+  console.log("DID:", options.did);
   try {
-    await addFireflyDIDToWebIDProfile(
+    await addDIDToWebIDProfile(
       options.name,
       options.email,
       options.password,
-      options.fireflyDid);
+      options.did);
   } catch (error) {
     console.error('Error during the process:', error);
   }
