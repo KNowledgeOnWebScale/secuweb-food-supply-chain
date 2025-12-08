@@ -1,98 +1,86 @@
 <!-- omit in toc -->
-# Food Supply Chain - PoC
+# SecuWeb Demonstrator: Food Supply Chain
 
-- [Install](#install)
-- [Usage](#usage)
-  - [Setup](#setup)
-- [Flows](#flows)
-  - [Flow 1](#flow-1)
-- [License (TODO)](#license-todo)
+- [Introduction](#introduction)
+- [Instructions](#instructions)
+- [License](#license)
 
-## Install
+## Introduction
 
-> Developed using Node: v20.19.5
+- [ ] Introduce SecuWeb project
+- [ ] Explain demonstrator
+
+## Instructions
+
+Install.
 
 ```bash
-# Install this package
-npm i
-
-# Install VC package
-cd vc
+# CLI A
 npm i
 ```
 
-## Usage
-
-### Setup
-
-Run setup.
+Setup and start Miravi.
 
 ```bash
-# CLI 1
+# CLI B
+npm i
 source env-localhost
-
 ./scripts/setup/finalize-setup.sh
-```
-
-Start Solid Pod(s).
-
-```bash
-# CLI 2
-# Start from a clean CSS
-rm -rf css/root
-npm run pod
-```
-
-Register actors at BC and update WebID Profile:
-
-```bash
-./register-css-user.sh
-```
-
-Start Miravi.
-
-```bash
-# CLI 3
 cd ../poc-food-use-case-miravi/main
 npm run dev
 ```
 
-## Flows
-
-### Flow 1
-
-Prelims:
-
-- User A
-
-- Given a data file, `X`
-
-Steps:
-
-1. Store `X` on Solid Pod, under container `<c>`
-
-2. Create VC from `X`, resulting in `VC_X`
-
-3. Store `VC_X` on Solid Pod, , under container `<c>/<vc>`
-
-These above steps are executed in [`src/flows/flow1.sh`](src/flows/flow1.sh).
-
-#### Usage
+Spin up a clean CSS.
 
 ```bash
-# TERMINAL A
+# Terminal C
 # At repository root
 rm -rf css/root
 npm run pod
-# [!] Wait for setup to complete
 ```
+
+Start the hardhat node.
 
 ```bash
-# TERMINAL B
-# At repository root
-./src/flows/flow1.sh
+# Terminal D
+cd secuweb-anchors
+npm i
+npx hardhat node
 ```
 
-## License (TODO)
+Redeploy contract and at least one event (in this case: registering a DID).
+Then, start the verifier service.
 
-TODO
+```bash
+# Terminal E
+cd secuweb-anchors
+npm run redeploy
+npm run register
+npm run server # start verifier service
+```
+
+Run flow.
+
+```bash
+# Terminal F
+# At repository root
+# Create each actor's VCs and store them on their pod
+./src/flows/flow1.sh
+# Anchor each actor's VC on the chain
+./dev.register-products-and-shipments.sh
+# Verify
+./dev.verify-vc.sh
+```
+
+Explore chain transactions.
+
+```bash
+# Terminal G
+cd secuweb-anchors
+npm run explore
+```
+
+## License
+
+This code is copyrighted by [Ghent University – imec](http://idlab.ugent.be/)
+and released under the [MIT license](http://opensource.org/licenses/MIT).
