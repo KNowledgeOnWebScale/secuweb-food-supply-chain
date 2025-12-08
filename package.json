@@ -34,7 +34,6 @@
     "commander": "^14.0.1",
     "credentials-context": "^2.0.0",
     "did-context": "^3.1.1",
-    "fastify": "^5.6.1",
     "json-schema-to-ts": "^3.1.1",
     "jsonld": "^8.3.3",
     "jsonld-document-loader": "^2.3.0"
