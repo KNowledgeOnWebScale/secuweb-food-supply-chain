@@ -5,7 +5,6 @@
   "scripts": {
     "build": "tsc -p tsconfig.app.json",
     "pod": "community-solid-server --rootFilePath ./css/root --config ./css/css.json --seedConfig ./css/css-users.json",
-    "add-firefly-did-to-webid-profile": "npm run build && node build/css/add-firefly-did-to-webid-profile.js",
     "scratch": "npm run build && node build/scratch.js",
     "scratch:dev": "nodemon --config nodemon.json --exec npm run scratch",
     "flows:create-vc": "npm run build && node build/flows/create-vc.js",
