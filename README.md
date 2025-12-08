@@ -68,8 +68,6 @@ Run flow.
 ./src/flows/load-actor-data-into-solid-pods.sh
 # Anchor each actor's VC on the chain
 ./src/flows/register-products-and-shipments.sh
-# Verify
-./dev.verify-vc.sh
 ```
 
 Explore chain transactions.
@@ -79,6 +77,8 @@ Explore chain transactions.
 cd secuweb-anchors
 npm run explore
 ```
+
+Navigate to the data viewer (Miravi) using <http://localhost:5173>.
 
 ## License
 
