@@ -1,9 +1,0 @@
-{
-  "@type": "ex:ShipmentRecord",
-   "ex:status": "shipped",
-  "ex:quantity": 10,
-  "ex:productID": "http://c.be/products/product-X",
-  "ex:origin": "http://a.be/profile/card#me",
-  "ex:destination": "http://b.be/profile/card#me",
-  "ex:transport": "http://c.be/profile/card#me"
-}
