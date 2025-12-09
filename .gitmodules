@@ -3,4 +3,4 @@
 	url = git@gitlab.ilabt.imec.be:KNoWS/verifiable-credentials/vc-prototyping-library.git
 [submodule "secuweb-anchors"]
 	path = secuweb-anchors
-	url = git@gitlab.ilabt.imec.be:gddmulde/secuweb-did-vc-anchoring-demo.git
+	url = git@gitlab.ilabt.imec.be:KNoWS/projects/SecuWeb/demonstrator/anchoring.git
