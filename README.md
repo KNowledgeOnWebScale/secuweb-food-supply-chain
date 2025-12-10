@@ -62,6 +62,9 @@ cd ../poc-food-use-case-miravi/main
 npm run dev
 ```
 
+> [!NOTE]
+> Miravi's configuration can be found [here](./actors/viewer/setup/config.json.template).
+
 Spin up a clean CSS.
 
 ```bash
@@ -71,7 +74,7 @@ rm -rf css/root
 npm run pod
 ```
 
-Start the hardhat node.
+Start the Hardhat node.
 
 ```bash
 # Terminal D
