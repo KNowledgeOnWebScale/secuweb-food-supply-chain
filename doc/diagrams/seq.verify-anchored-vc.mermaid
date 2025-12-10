@@ -34,35 +34,32 @@ sequenceDiagram
   critical Action: Verify Anchored VC
 
     critical Step0: Actor B uses Miravi to explore FSC data
-        b ->> viewer: Select view
-        viewer ->>  p: Execute query
-        p ->> viewer: Response: Query result
-
-        viewer ->> bc: Lookup( VC_URI )
-        bc ->> viewer: Response( VC_TRANSACTION_HASH )
-        viewer ->> b: Response( VC_TRANSACTION_HASH )
+        b ->> viewer: Select data view (that includes data from Actor A)
+        viewer ->>  p: Query data
+        p ->> viewer: Response: Query results + data source metadata (VC_URI)
     end
-    critical Step1
+    critical Step1: Retrieve data source's anchored hash from blockchain (BC)
         viewer ->> bc: Lookup VC_URI on BC
-        bc ->> viewer: R_H = Response
+        bc ->> viewer: A successful response contains the VC's anchored hash. <br> R_H = Response
     end
 
-    critical Step2
+    critical Step2: Retrieve VC from Solid Pod and extract VC proof
         b ->> p: GET( URI_VC)
         p ->> b: R_VC = Response
+        b ->> b: Extract VC proof <br> R_PROOF = ExtractProof( R_VC )
     end
 
     
     critical Action: Verification
-      critical Action: On-chain Verification
+      critical Action: Verify Anchored Hash
         %% Locally compute hash value from VC
         b -> b: Locally compute hash value from VC <br> LOCAL_HASH = Hash( R_VC ) 
         %% Compare with hash value retrieved from BC
         b -> b: Compare with hash value retrieved from BC <br> VR_OC = Compare (LOCAL_HASH === R_H)
       end
-      critical Action: VC Proof Verification
+      critical Action: Verify VC Proof
         %% Verify VC Proof using Miravi
-        b -> b: VR_VC = Verify VC Proof
+        b -> b: VR_VC = VerifyVCProof( R_PROOF )
       end
       b -> b: Final Verification <br> VR_OC == true AND VR_VC == true
 
