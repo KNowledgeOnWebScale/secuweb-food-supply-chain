@@ -22,9 +22,8 @@ echo $PWD
 
 echo Cloning, selecting tag, installing...
 rm -rf ${VIEWER_CLONE}
-#git clone https://github.com/SolidLabResearch/${VIEWER_REPO}.git -b v2.1.0 ${VIEWER_CLONE}
-echo "⚠️ Using GitLab SecuWeb fork of the viewer for the FSC demo"
-git clone git@gitlab.ilabt.imec.be:KNoWS/projects/SecuWeb/miravi-a-linked-data-viewer.git -b secuweb/fsc-demo-20251114 ${VIEWER_CLONE}
+echo "⚠️ Using SecuWeb fork of the viewer for the FSC demo"
+git clone git@github.com:gertjandemulder/miravi-a-linked-data-viewer.git -b secuweb/fsc-demo-20251114 ${VIEWER_CLONE}
 cd ${VIEWER_CLONE}/main
 npm install
 
