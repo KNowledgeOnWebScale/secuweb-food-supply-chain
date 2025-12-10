@@ -33,17 +33,17 @@ sequenceDiagram
   
   critical Action: Verify Anchored VC
 
-    critical Step0: Actor B uses Miravi to explore FSC data
+    critical Action: Actor B uses Miravi to explore FSC data
         b ->> viewer: Select data view (that includes data from Actor A)
         viewer ->>  p: Query data
         p ->> viewer: Response: Query results + data source metadata (VC_URI)
     end
-    critical Step1: Retrieve data source's anchored hash from blockchain (BC)
+    critical Action: Retrieve data source's anchored hash from blockchain (BC)
         viewer ->> bc: Lookup VC_URI on BC
         bc ->> viewer: A successful response contains the VC's anchored hash. <br> R_H = Response
     end
 
-    critical Step2: Retrieve VC from Solid Pod and extract VC proof
+    critical Action: Retrieve VC from Solid Pod and extract VC proof
         b ->> p: GET( URI_VC)
         p ->> b: R_VC = Response
         b ->> b: Extract VC proof <br> R_PROOF = ExtractProof( R_VC )
