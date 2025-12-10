@@ -1,0 +1,72 @@
+sequenceDiagram
+  autonumber
+  participant a as Actor A
+  participant b as Actor B
+  participant p as A's Solid Pod
+  participant anch as AnchoringRepo
+  participant bc as Blockchain
+  participant viewer as Miravi
+
+
+  %% a ->> a: Create data record
+
+  %% a ->> a: Create VC from data record
+  
+  %% critical Action: Store VC
+  %%   a ->> p: POST(VC)
+  %%   p ->> a: Response (200, URI VC)
+  %% end
+  %% critical Action: Set ACL
+  %%   a ->> p: Request to set ACL for VC %% TODO: detail
+  %%   p ->> a: Response %% TODO: detail
+  %% end
+  %% critical Action: Anchor VC on BC
+  %%   a --> anch: Anchror(VC, VC_URI)
+  %%   anch --> anch: Compute H_VC = Hash(VC)
+  %%   anch --> bc: Anchor (H_VC, VC_URI, ContractAddress)
+  %%   bc ->> anch: Response
+  %%   anch ->> a: Response
+  %% end
+
+  %% a ->> b: Send Message( URI VC(Shipment Record) )
+
+  
+  critical Action: Verify Anchored VC
+
+    critical Step0: Actor B uses Miravi to query
+        b ->> viewer: Select view
+        viewer ->>  p: Execute Query
+        p ->> viewer: Response: Query result
+
+        viewer ->> bc: Lookup( VC_URI )
+        bc ->> viewer: Response( VC_TRANSACTION_HASH )
+        viewer ->> b: Response( VC_TRANSACTION_HASH )
+    end
+    critical Step1
+        miravi ->> bc: Lookup VC_URI on BC
+        bc ->> miravi: R_H = Response
+    end
+
+    critical Step2
+        b ->> p: GET( URI_VC)
+        p ->> b: R_VC = Response
+    end
+
+    
+    critical Verification
+      critical OnChainVerification
+        %% Locally compute hash value from VC
+        b -> b: LOCAL_HASH = Hash( R_VC ) 
+        %% Compare with hash value retrieved from BC
+        b -> b: Compare (LOCAL_HASH === R_H)
+      end
+      critical SourceVerification
+        %% Verify VC Proof using Miravi
+        b -> b: Verify VC Proof
+      end
+
+    end
+    
+end
+
+  
