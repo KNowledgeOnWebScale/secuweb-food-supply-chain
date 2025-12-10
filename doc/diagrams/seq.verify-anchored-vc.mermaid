@@ -33,9 +33,9 @@ sequenceDiagram
   
   critical Action: Verify Anchored VC
 
-    critical Step0: Actor B uses Miravi to query
+    critical Step0: Actor B uses Miravi to explore FSC data
         b ->> viewer: Select view
-        viewer ->>  p: Execute Query
+        viewer ->>  p: Execute query
         p ->> viewer: Response: Query result
 
         viewer ->> bc: Lookup( VC_URI )
@@ -43,8 +43,8 @@ sequenceDiagram
         viewer ->> b: Response( VC_TRANSACTION_HASH )
     end
     critical Step1
-        miravi ->> bc: Lookup VC_URI on BC
-        bc ->> miravi: R_H = Response
+        viewer ->> bc: Lookup VC_URI on BC
+        bc ->> viewer: R_H = Response
     end
 
     critical Step2
@@ -53,17 +53,18 @@ sequenceDiagram
     end
 
     
-    critical Verification
-      critical OnChainVerification
+    critical Action: Verification
+      critical Action: On-chain Verification
         %% Locally compute hash value from VC
-        b -> b: LOCAL_HASH = Hash( R_VC ) 
+        b -> b: Locally compute hash value from VC <br> LOCAL_HASH = Hash( R_VC ) 
         %% Compare with hash value retrieved from BC
-        b -> b: Compare (LOCAL_HASH === R_H)
+        b -> b: Compare with hash value retrieved from BC <br> VR_OC = Compare (LOCAL_HASH === R_H)
       end
-      critical SourceVerification
+      critical Action: VC Proof Verification
         %% Verify VC Proof using Miravi
-        b -> b: Verify VC Proof
+        b -> b: VR_VC = Verify VC Proof
       end
+      b -> b: Final Verification <br> VR_OC == true AND VR_VC == true
 
     end
     
