@@ -38,7 +38,7 @@ This repository glues to together five main components:
 
 1. Solid Pods (hosted on a [Community Solid Server (CSS)](https://github.com/CommunitySolidServer/CommunitySolidServer))
 2. A Blockchain development environment for anchoring Decentralized Identifiers (DIDs) and Verifiable Credentials (VCs) (submodule: [`secuweb-anchors`](./secuweb-anchors/))
-3. A Verifiable Credentials service (submodule: `vc`)
+3. A Verifiable Credentials service (submodule: `vc`) that handles setup, issuance, verification of VCs.
 4. Linked Data Viewer ([Miravi](https://github.com/SolidLabResearch/miravi-a-linked-data-viewer))
 5. The use case flows (see [`src/flows`](src/flows/))
 
