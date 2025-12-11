@@ -58,7 +58,7 @@ Setup and start Miravi.
 npm i
 source env-localhost
 ./scripts/setup/finalize-setup.sh
-cd ../poc-food-use-case-miravi/main
+cd ../food-use-case-miravi/main
 npm run dev
 ```
 

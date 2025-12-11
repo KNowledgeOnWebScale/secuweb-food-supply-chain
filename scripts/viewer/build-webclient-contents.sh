@@ -6,9 +6,9 @@
 
 set -euo pipefail
 
-OUR_CLONE=poc-food-supply-chain
+OUR_CLONE=food-supply-chain
 VIEWER_REPO=miravi-a-linked-data-viewer
-VIEWER_CLONE=poc-food-supply-chain-miravi
+VIEWER_CLONE=food-supply-chain-miravi
 
 # absolute dir
 OUR_ROOT_DIR=$(pwd)/../..

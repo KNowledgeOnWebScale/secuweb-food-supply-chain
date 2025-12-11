@@ -1,5 +1,5 @@
 {
-  "name": "poc-food-supply-chain",
+  "name": "food-supply-chain",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
   },
   "author": "Gertjan De Mulder (gertjan.demulder@ugent.be)",
   "license": "MIT",
-  "description": "",
+  "description": "SecuWeb Demonstrator: Food Supply Chain based on Solid and Blockchain",
   "dependencies": {
     "@digitalbazaar/data-integrity-context": "^2.0.1",
     "@digitalcredentials/rdf-canonize": "^1.0.0",
