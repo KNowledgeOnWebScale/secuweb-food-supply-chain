@@ -110,6 +110,11 @@ Run flow.
 ```bash
 # Terminal E
 # At repository root
+# Install vc submodule
+cd vc
+npm i
+npm run build
+cd ..
 # Create each actor's VCs and store them on their pod
 ./src/flows/load-actor-data-into-solid-pods.sh
 # Anchor each actor's VC on the chain
@@ -120,7 +125,6 @@ Explore chain transactions.
 
 ```bash
 # Terminal F
-cd secuweb-anchors
 npm run explore
 ```
 
