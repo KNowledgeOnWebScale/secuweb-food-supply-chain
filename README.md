@@ -7,6 +7,7 @@
 Table of Contents
 - [Introduction](#introduction)
 - [Technical Overview](#technical-overview)
+- [Prerequisites](#prerequisites)
 - [Instructions](#instructions)
 - [License](#license)
 
@@ -42,23 +43,33 @@ This repository glues to together five main components:
 4. Linked Data Viewer ([Miravi](https://github.com/SolidLabResearch/miravi-a-linked-data-viewer))
 5. The use case flows (see [`src/flows`](src/flows/))
 
+## Prerequisites
+
+- nvm
+- npx
+
 ## Instructions
+
+Pull submodules.
+
+```bash
+ git submodule update --init --recursive --remote
+```
 
 Install.
 
 ```bash
-# CLI A
 npm i
 ```
 
 Setup and start Miravi.
 
 ```bash
-# CLI B
-npm i
+# CLI A
 source env-localhost
 ./scripts/setup/finalize-setup.sh
-cd ../food-use-case-miravi/main
+cd ../food-supply-chain-miravi/main
+npm i
 npm run dev
 ```
 
@@ -68,7 +79,7 @@ npm run dev
 Spin up a clean CSS.
 
 ```bash
-# Terminal C
+# Terminal B
 # At repository root
 rm -rf css/root
 npm run pod
@@ -77,8 +88,9 @@ npm run pod
 Start the Hardhat node.
 
 ```bash
-# Terminal D
+# Terminal C
 cd secuweb-anchors
+nvm use
 npm i
 npx hardhat node
 ```
@@ -87,17 +99,16 @@ Redeploy contract and at least one event (in this case: registering a DID).
 Then, start the verifier service.
 
 ```bash
-# Terminal E
+# Terminal D
 cd secuweb-anchors
-npm run redeploy
-npm run register
+npm run setup
 npm run server # start verifier service
 ```
 
 Run flow.
 
 ```bash
-# Terminal F
+# Terminal E
 # At repository root
 # Create each actor's VCs and store them on their pod
 ./src/flows/load-actor-data-into-solid-pods.sh
@@ -108,7 +119,7 @@ Run flow.
 Explore chain transactions.
 
 ```bash
-# Terminal G
+# Terminal F
 cd secuweb-anchors
 npm run explore
 ```
