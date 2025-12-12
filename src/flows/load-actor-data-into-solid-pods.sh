@@ -159,4 +159,4 @@ function setACLs_Farmer() {
 
 processActor_Farmer;
 processActor_Packager;
-# setACLs_Farmer;
+setACLs_Farmer;
