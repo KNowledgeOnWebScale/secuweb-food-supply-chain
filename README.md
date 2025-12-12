@@ -9,8 +9,11 @@ Table of Contents
 - [Technical Overview](#technical-overview)
 - [Prerequisites](#prerequisites)
 - [Instructions](#instructions)
-- [Using Miravi](#using-miravi)
-  - [Authenticated as Farmer](#authenticated-as-farmer)
+- [Use Case: Product Shipment](#use-case-product-shipment)
+  - [Walkthrough](#walkthrough)
+    - [Authenticated as Farmer](#authenticated-as-farmer)
+    - [Authenticated as Transporter](#authenticated-as-transporter)
+    - [Authenticated as Packager](#authenticated-as-packager)
 - [License](#license)
 
 ## Introduction
@@ -130,11 +133,29 @@ Explore chain transactions.
 npm run explore
 ```
 
-## Using Miravi
+## Use Case: Product Shipment
 
-Navigate to the data viewer (Miravi) using <http://localhost:5173>.
+Actors store various data on their Solid Pod, for example:
 
-### Authenticated as Farmer
+- A Farmer stores product details about its produces, shipment details, etc.
+- A Transporter stores event data, e.g., inbound/outbound shipments.
+- A Packager stores packaging details of received goods.
+
+Specific to the use case of product shipment, we highlight the following aspects:
+
+- A Farmer ships a product to a Packager using a Transporter. 
+- The Farmer shares the product details with the Packager, but not with the Transporter. 
+- The Transporter creates shipment records that are only readable by the actors involved (i.e., Farmer and Packager). 
+- The Packager can read and verify the authenticity and data integrity of the received products.
+
+### Walkthrough
+
+This walkthrough guides through the different data views that can be obtained from the perspective of different actors.
+
+To start,
+navigate to the data viewer (Miravi) using <http://localhost:5173>.
+
+#### Farmer's Perspective
 
 Click on the profile button, then "Login". 
 
@@ -173,6 +194,32 @@ Moreover, the source information panel shows the following properties for each q
     ![Product details (Farmer) / Source Information / Data Source Verification](./doc/img/miravi-farmer-product-details-verified.png)
 - *Chain Verified*: Indicates whether the data source's anchored hash (i.e., the hash on the blockchain) matches the locally computed hash. Clicking the question mark initiates this data integrity check, showing whether or not it was successful. In case of succes, the data source's on-chain hash is shown.
     ![Product details (Farmer) / Source Information / On-chain Verification](./doc/img/miravi-farmer-product-details-chain-verified.png)
+
+#### Transporter's Perspective
+
+> [!NOTE]
+> The following assumes the user is authenticated as Transporter
+
+Selecting the Products-view shows no results (as precluded by the use case).
+
+![Product details (Transporter): No Results](./doc/img/miravi-transporter-product-details-no-results.png)
+
+However, the Transporter _does_ have access to the shipments in which it was involved.
+For example, the shipments requested by the Farmer.
+
+![Shipments (Transporter)](./doc/img/miravi-transporter-shipments.png)
+
+#### Authenticated as Packager
+
+> [!NOTE]
+> The following assumes the user is authenticated as Packager
+
+The Packager needs to know the details of the products it has to process (e.g., for product labeling).
+
+In contrast to the Transporter,
+the Packager **does** have access to the product details.
+
+![Product details (Packager)](./doc/img/miravi-packager-product-details.png)
 
 ## License
 
