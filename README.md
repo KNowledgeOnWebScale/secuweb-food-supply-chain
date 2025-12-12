@@ -158,7 +158,7 @@ You will arrive at the following landing page:
 
 The **Products**-view (in left panel) shows product details.
 
-![Product details (Farmer)](./doc/img/miravi-farmer-product-details.png)]
+![Product details (Farmer)](./doc/img/miravi-farmer-product-details.png)
 
 Source information can be viewed by clicking on the information-icon on top of the table with product detials.
 
