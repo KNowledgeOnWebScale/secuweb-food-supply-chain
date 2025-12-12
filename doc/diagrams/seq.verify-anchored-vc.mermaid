@@ -1,0 +1,70 @@
+sequenceDiagram
+  autonumber
+  participant a as Actor A
+  participant b as Actor B
+  participant p as A's Solid Pod
+  participant anch as AnchoringRepo
+  participant bc as Blockchain
+  participant viewer as Miravi
+
+
+  %% a ->> a: Create data record
+
+  %% a ->> a: Create VC from data record
+  
+  %% critical Action: Store VC
+  %%   a ->> p: POST(VC)
+  %%   p ->> a: Response (200, URI VC)
+  %% end
+  %% critical Action: Set ACL
+  %%   a ->> p: Request to set ACL for VC %% TODO: detail
+  %%   p ->> a: Response %% TODO: detail
+  %% end
+  %% critical Action: Anchor VC on BC
+  %%   a --> anch: Anchror(VC, VC_URI)
+  %%   anch --> anch: Compute H_VC = Hash(VC)
+  %%   anch --> bc: Anchor (H_VC, VC_URI, ContractAddress)
+  %%   bc ->> anch: Response
+  %%   anch ->> a: Response
+  %% end
+
+  %% a ->> b: Send Message( URI VC(Shipment Record) )
+
+  
+  critical Action: Verify Anchored VC
+
+    critical Action: Actor B uses Miravi to explore FSC data
+        b ->> viewer: Select data view (that includes data from Actor A)
+        viewer ->>  p: Query data
+        p ->> viewer: Response: Query results + data source metadata (VC_URI)
+    end
+    critical Action: Retrieve data source's anchored hash from blockchain (BC)
+        viewer ->> bc: Lookup VC_URI on BC
+        bc ->> viewer: A successful response contains the VC's anchored hash. <br> R_H = Response
+    end
+
+    critical Action: Retrieve VC from Solid Pod and extract VC proof
+        b ->> p: GET( URI_VC)
+        p ->> b: R_VC = Response
+        b ->> b: Extract VC proof <br> R_PROOF = ExtractProof( R_VC )
+    end
+
+    
+    critical Action: Verification
+      critical Action: Verify Anchored Hash
+        %% Locally compute hash value from VC
+        b -> b: Locally compute hash value from VC <br> LOCAL_HASH = Hash( R_VC ) 
+        %% Compare with hash value retrieved from BC
+        b -> b: Compare with hash value retrieved from BC <br> VR_OC = Compare (LOCAL_HASH === R_H)
+      end
+      critical Action: Verify VC Proof
+        %% Verify VC Proof using Miravi
+        b -> b: VR_VC = VerifyVCProof( R_PROOF )
+      end
+      b -> b: Final Verification <br> VR_OC == true AND VR_VC == true
+
+    end
+    
+end
+
+  

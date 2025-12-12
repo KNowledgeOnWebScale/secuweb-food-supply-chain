@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/flows/**/*.ts",
+    "src/adapters/**/*.ts",
+    "src/scratch.ts",
+    "src/util/**/*.ts",
+    "src/jsonld.expand.ts"
+  ],
+  "exclude": [
+    "src/scripts/**/*"
+  ]
+}

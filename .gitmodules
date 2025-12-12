@@ -1,3 +1,6 @@
 [submodule "vc"]
 	path = vc
 	url = git@gitlab.ilabt.imec.be:KNoWS/verifiable-credentials/vc-prototyping-library.git
+[submodule "secuweb-anchors"]
+	path = secuweb-anchors
+	url = git@gitlab.ilabt.imec.be:KNoWS/projects/SecuWeb/demonstrator/anchoring.git

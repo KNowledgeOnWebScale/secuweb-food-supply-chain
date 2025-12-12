@@ -6,9 +6,9 @@
 
 set -euo pipefail
 
-OUR_CLONE=poc-food-supply-chain
+OUR_CLONE=food-supply-chain
 VIEWER_REPO=miravi-a-linked-data-viewer
-VIEWER_CLONE=poc-food-supply-chain-miravi
+VIEWER_CLONE=food-supply-chain-miravi
 
 # absolute dir
 OUR_ROOT_DIR=$(pwd)/../..
@@ -22,7 +22,8 @@ echo $PWD
 
 echo Cloning, selecting tag, installing...
 rm -rf ${VIEWER_CLONE}
-git clone https://github.com/SolidLabResearch/${VIEWER_REPO}.git -b v2.1.0 ${VIEWER_CLONE}
+echo "⚠️ Using SecuWeb fork of the viewer for the FSC demo"
+git clone git@github.com:gertjandemulder/miravi-a-linked-data-viewer.git -b secuweb/fsc-demo-20251114 ${VIEWER_CLONE}
 cd ${VIEWER_CLONE}/main
 npm install
 

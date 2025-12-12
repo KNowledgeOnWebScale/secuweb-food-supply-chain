@@ -1,20 +1,18 @@
 {
-  "name": "poc-food-supply-chain",
+  "name": "food-supply-chain",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "start": "npm run build && node build/index.js",
-    "dev": "nodemon --config nodemon.json --exec npm run start",
-    "ff": "npm run build && node build/bc/ff.js",
-    "ff:dev": "nodemon --config nodemon.json --exec npm run ff",
+    "build": "tsc -p tsconfig.app.json",
     "pod": "community-solid-server --rootFilePath ./css/root --config ./css/css.json --seedConfig ./css/css-users.json",
-    "add-firefly-did-to-webid-profile": "npm run build && node build/css/add-firefly-did-to-webid-profile.js",
     "scratch": "npm run build && node build/scratch.js",
     "scratch:dev": "nodemon --config nodemon.json --exec npm run scratch",
     "flows:create-vc": "npm run build && node build/flows/create-vc.js",
     "flows:add-file-to-solid-pod": "npm run build && node build/flows/add-file-to-solid-pod.js",
-    "flows:set-acl": "npm run build && node build/flows/set-acl.js"
+    "flows:set-acl": "npm run build && node build/flows/set-acl.js",
+    "canon-hash": "npm run build && node build/bc/canon-hash.js",
+    "explore": "cd secuweb-anchors && npm run explore",
+    "jsonld:expand": "npm run build && node build/jsonld.expand.js"
   },
   "config": {
     "community-solid-server": {
@@ -24,25 +22,24 @@
   },
   "author": "Gertjan De Mulder (gertjan.demulder@ugent.be)",
   "license": "MIT",
-  "description": "",
+  "description": "SecuWeb Demonstrator: Food Supply Chain based on Solid and Blockchain",
   "dependencies": {
-    "@fastify/cors": "^11.1.0",
-    "@fastify/formbody": "^8.0.2",
-    "@fastify/helmet": "^13.0.1",
-    "@fastify/swagger": "^9.5.1",
-    "@fastify/swagger-ui": "^5.2.3",
-    "@fastify/type-provider-typebox": "^6.0.0",
-    "@hyperledger/firefly-sdk": "^1.3.3",
+    "@digitalbazaar/data-integrity-context": "^2.0.1",
+    "@digitalcredentials/rdf-canonize": "^1.0.0",
     "@inrupt/solid-client": "^2.1.2",
     "@inrupt/solid-client-authn-core": "^3.1.0",
     "@inrupt/universal-fetch": "^1.0.3",
     "@sinclair/typebox": "^0.34.41",
     "commander": "^14.0.1",
-    "fastify": "^5.6.1",
-    "json-schema-to-ts": "^3.1.1"
+    "credentials-context": "^2.0.0",
+    "did-context": "^3.1.1",
+    "json-schema-to-ts": "^3.1.1",
+    "jsonld": "^8.3.3",
+    "jsonld-document-loader": "^2.3.0"
   },
   "devDependencies": {
     "@solid/community-server": "^7.1.7",
+    "@types/jsonld": "^1.5.15",
     "@types/node": "^24.5.2",
     "nodemon": "^3.1.10",
     "typescript": "^5.9.2"

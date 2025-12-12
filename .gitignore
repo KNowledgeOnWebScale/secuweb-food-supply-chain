@@ -6,3 +6,5 @@ src/scratch.ts
 src/flows/output/** */
 .DS_Store
 actors/viewer/setup/config.json
+
+src/flows/output/

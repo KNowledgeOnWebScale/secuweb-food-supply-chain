@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Always run from repo root, regardless of where this script lives or is called from
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+REPO_ROOT="$(cd -- "$SCRIPT_DIR/../.." &> /dev/null && pwd)"
+
+##################################################
+# Actor: Farmer
+##################################################
+function __farmer() {
+    echo "product-x"
+    export VC_PATH="src/flows/output/farmer/products/vc/product-x.jsonld"
+    export SUBJECT_DID="did:secuweb:farmer:product-x"
+    # METADATA_URI extraction from VC
+    mktemp=$(mktemp)
+    npm run jsonld:expand -- $VC_PATH $mktemp
+    export METADATA_URI=$(jq -r .podRef $mktemp)
+    rm $mktemp
+    
+    echo "METADATA_URI: $METADATA_URI"
+    ./src/flows/anchor.sh
+    unset METADATA_URI
+
+    echo "product-y"
+    export VC_PATH="src/flows/output/farmer/products/vc/product-y.jsonld"
+    export SUBJECT_DID="did:secuweb:farmer:product-y"
+    # METADATA_URI extraction from VC
+    mktemp=$(mktemp)
+    npm run jsonld:expand -- $VC_PATH $mktemp
+    export METADATA_URI=$(jq -r .podRef $mktemp)
+    rm $mktemp
+    echo "METADATA_URI: $METADATA_URI"
+    ./src/flows/anchor.sh
+    unset METADATA_URI
+
+    echo "shipment1"
+    export VC_PATH="src/flows/output/farmer/shipments/out/vc/shipment1.jsonld"
+    export SUBJECT_DID="did:secuweb:farmer:shipment1"
+    # METADATA_URI extraction from VC
+    mktemp=$(mktemp)
+    npm run jsonld:expand -- $VC_PATH $mktemp
+    export METADATA_URI=$(jq -r .podRef $mktemp)
+    rm $mktemp
+    echo "METADATA_URI: $METADATA_URI"
+    ./src/flows/anchor.sh
+    unset METADATA_URI
+
+    echo "shipment2"
+    export VC_PATH="src/flows/output/farmer/shipments/out/vc/shipment2.jsonld"
+    export SUBJECT_DID="did:secuweb:farmer:shipment2"
+    # METADATA_URI extraction from VC
+    mktemp=$(mktemp)
+    npm run jsonld:expand -- $VC_PATH $mktemp
+    export METADATA_URI=$(jq -r .podRef $mktemp)
+    rm $mktemp
+    echo "METADATA_URI: $METADATA_URI"
+    ./src/flows/anchor.sh
+    unset METADATA_URI
+}
+
+##################################################
+# Actor: Packager
+##################################################
+function __packager() {
+    echo "receipt-shipment1"
+    export VC_PATH="src/flows/output/packager/shipments/in/receipt-shipment1-vc.jsonld"
+    export SUBJECT_DID="did:secuweb:packager:shipment1"
+    
+
+    # METADATA_URI extraction from VC
+    mktemp=$(mktemp)
+    npm run jsonld:expand -- $VC_PATH $mktemp
+    export METADATA_URI=$(jq -r .podRef $mktemp)
+    rm $mktemp
+    
+    echo "METADATA_URI: $METADATA_URI"
+    ./src/flows/anchor.sh
+    unset METADATA_URI
+}
+
+##################################################
+# Main
+##################################################
+cd "$REPO_ROOT"
+__farmer
+__packager

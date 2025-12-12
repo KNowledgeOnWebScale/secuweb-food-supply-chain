@@ -47,7 +47,7 @@ async function main() {
     await createContainer(urlContainer, authFetch)
     const result = await addFileToContainer(urlContainer, inputFile, options.outputBasename, authFetch);
     const { sourceIri } = result.internal_resourceInfo
-    console.log(`✅ File added to Solid Pod: ${sourceIri}`);
+    console.log(`✅ File added to Solid Pod:\n${sourceIri}`);
     
   } catch (error) {
     console.error('❌ Error during the process:', error);
