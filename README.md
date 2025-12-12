@@ -9,6 +9,8 @@ Table of Contents
 - [Technical Overview](#technical-overview)
 - [Prerequisites](#prerequisites)
 - [Instructions](#instructions)
+- [Using Miravi](#using-miravi)
+  - [Authenticated as Farmer](#authenticated-as-farmer)
 - [License](#license)
 
 ## Introduction
@@ -128,7 +130,49 @@ Explore chain transactions.
 npm run explore
 ```
 
+## Using Miravi
+
 Navigate to the data viewer (Miravi) using <http://localhost:5173>.
+
+### Authenticated as Farmer
+
+Click on the profile button, then "Login". 
+
+![Profile Button](./doc/img/miravi-login.png)
+
+Enter the URL of the Solid Server: <http://localhost:3000> and click on "Login".
+
+![Enter URL of the Solid Server](./doc/img/miravi-enter-url-solid-server.png)
+
+Enter the Farmer's credentials (`info@farmer.com`, `farmer123`) and click "Log in".
+
+![Enter credentials of the Farmer](./doc/img/miravi-enter-credentials-farmer.png)
+
+Click "Authorize" so that Miravi can access data on the Farmer's Solid Pod.
+
+![Auhtorize Miravi app](./doc/img/miravi-authorize-app.png)
+
+You will arrive at the following landing page:
+
+![Landing Page (Farmer)](./doc/img/miravi-farmer-landing-page.png)
+
+The **Products**-view (in left panel) shows product details.
+
+![Product details (Farmer)](./doc/img/miravi-farmer-product-details.png)]
+
+Source information can be viewed by clicking on the information-icon on top of the table with product detials.
+
+![Product details  (Farmer) / Source information](./doc/img/miravi-farmer-product-details-source-information.png)
+
+The source information shows the data sources that were queried in the selected view.<br>
+Moreover, the source information panel shows the following properties for each queried data source:
+
+- *Authentication needed*: Whether the data source is public, or authentication was needed.
+- *Fetch status*: Indicates whether data retrieval was successful or not.
+- *Verified*: Indicates whether the data source's digital signature is valid. Clicking the question mark initiates this data integrity check, showing whether or not it was successful.
+    ![Product details (Farmer) / Source Information / Data Source Verification](./doc/img/miravi-farmer-product-details-verified.png)
+- *Chain Verified*: Indicates whether the data source's anchored hash (i.e., the hash on the blockchain) matches the locally computed hash. Clicking the question mark initiates this data integrity check, showing whether or not it was successful. In case of succes, the data source's on-chain hash is shown.
+    ![Product details (Farmer) / Source Information / On-chain Verification](./doc/img/miravi-farmer-product-details-chain-verified.png)
 
 ## License
 
