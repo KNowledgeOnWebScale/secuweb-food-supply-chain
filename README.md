@@ -11,8 +11,8 @@ Table of Contents
 - [Instructions](#instructions)
 - [Use Case: Product Shipment](#use-case-product-shipment)
   - [Walkthrough](#walkthrough)
-    - [Authenticated as Farmer](#authenticated-as-farmer)
-    - [Authenticated as Transporter](#authenticated-as-transporter)
+    - [Farmer's Perspective](#farmers-perspective)
+    - [Transporter's Perspective](#transporters-perspective)
     - [Authenticated as Packager](#authenticated-as-packager)
 - [License](#license)
 
@@ -74,7 +74,9 @@ Setup and start Miravi.
 source env-localhost
 ./scripts/setup/finalize-setup.sh
 cd ../food-supply-chain-miravi/main
+../../food-supply-chain/scripts/templates/apply-templates.sh
 npm i
+node scripts/select-config.cjs secuweb
 npm run dev
 ```
 
