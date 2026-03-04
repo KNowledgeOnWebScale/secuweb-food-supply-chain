@@ -1,0 +1,32 @@
+{
+  "@context": {
+    "ex": "http://example.org/terms#",
+    "schema": "http://schema.org/",
+    "prov": "http://www.w3.org/ns/prov#",
+    "epcis": "https://gs1.org/voc/",
+    "packager": "http://localhost:3000/packager/",
+    "retailer": "http://localhost:3000/retailer/",
+    "transporter": "http://localhost:3000/transporter/",
+    "farmer": "http://localhost:3000/farmer/"
+  },
+  "@id": "did:secuweb:retailer:receipt-003",
+  "schema:url": "http://localhost:3000/retailer/shipments/in/vc/receipt-shipment3-vc.jsonld",
+  "@type": [
+    "schema:ReceiveAction",
+    "prov:Activity",
+    "epcis:ObjectEvent",
+    "ex:ReceiptRecord"
+  ],
+  "schema:agent": "retailer:profile/card#me",
+  "schema:object": "did:secuweb:packager:shipment3",
+  "schema:startTime": "2025-09-27T13:25:00Z",
+  "prov:used": "did:secuweb:packager:shipment3",
+  "prov:wasAssociatedWith": "retailer:profile/card#me",
+  "epcis:bizStep": "receiving",
+  "epcis:disposition": "in_progress",
+  "ex:receivedQuantity": 10,
+  "ex:receivedProductID": "did:secuweb:packager:batch-001",
+  "ex:from": "packager:profile/card#me",
+  "ex:viaTransport": "transporter:profile/card#me",
+  "prov:wasDerivedFrom": "did:secuweb:farmer:shipment1"
+}

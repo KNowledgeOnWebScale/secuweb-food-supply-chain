@@ -1,0 +1,28 @@
+{
+  "@context": {
+    "ex": "http://example.org/terms#",
+    "schema": "http://schema.org/",
+    "prov": "http://www.w3.org/ns/prov#",
+    "epcis": "https://gs1.org/voc/",
+    "farmer": "http://localhost:3000/farmer/",
+    "packager": "http://localhost:3000/packager/",
+    "transporter": "http://localhost:3000/transporter/",
+    "retailer": "http://localhost:3000/retailer/"
+  },
+  "@id": "did:secuweb:packager:batch-001",
+  "schema:url": "http://localhost:3000/packager/products/vc/packaged-batch-001.jsonld",
+  "@type": [
+    "schema:Product",
+    "prov:Entity",
+    "epcis:ObjectEvent",
+    "ex:PackagingRecord"
+  ],
+  "schema:name": "Packaged batch 001",
+  "schema:manufacturer": "packager:profile/card#me",
+  "schema:productionDate": "2025-09-27",
+  "ex:packagedQuantity": 10,
+  "ex:derivedFromProductID": "did:secuweb:farmer:product-x",
+  "prov:wasDerivedFrom": "did:secuweb:farmer:shipment1",
+  "epcis:bizStep": "commissioning",
+  "epcis:disposition": "active"
+}

@@ -1,0 +1,20 @@
+{
+  "@context": {
+    "ex": "http://example.org/terms#",
+    "schema": "http://schema.org/",
+    "prov": "http://www.w3.org/ns/prov#",
+    "packager": "http://localhost:3000/packager/",
+    "retailer": "http://localhost:3000/retailer/",
+    "transporter": "http://localhost:3000/transporter/"
+  },
+  "@id": "did:secuweb:transporter:pickup-shipment3",
+  "schema:url": "http://localhost:3000/transporter/transport-events/vc/pickup-shipment3.jsonld",
+  "@type": ["schema:MoveAction", "prov:Activity", "ex:TransportEvent"],
+  "schema:agent": "transporter:profile/card#me",
+  "ex:shipmentID": "did:secuweb:packager:shipment3",
+  "ex:status": "picked_up",
+  "schema:startTime": "2025-09-27T12:00:00Z",
+  "ex:from": "packager:profile/card#me",
+  "ex:to": "retailer:profile/card#me",
+  "ex:temperatureC": 6.0
+}

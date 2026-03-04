@@ -77,6 +77,66 @@ function __packager() {
     echo "METADATA_URI: $METADATA_URI"
     ./src/flows/anchor.sh
     unset METADATA_URI
+
+    echo "packaged-batch-001"
+    export VC_PATH="src/flows/output/packager/products/vc/packaged-batch-001.jsonld"
+    export SUBJECT_DID="did:secuweb:packager:batch-001"
+    mktemp=$(mktemp)
+    npm run jsonld:expand -- $VC_PATH $mktemp
+    export METADATA_URI=$(jq -r .podRef $mktemp)
+    rm $mktemp
+    echo "METADATA_URI: $METADATA_URI"
+    ./src/flows/anchor.sh
+    unset METADATA_URI
+
+    echo "shipment3"
+    export VC_PATH="src/flows/output/packager/shipments/out/vc/shipment3.jsonld"
+    export SUBJECT_DID="did:secuweb:packager:shipment3"
+    mktemp=$(mktemp)
+    npm run jsonld:expand -- $VC_PATH $mktemp
+    export METADATA_URI=$(jq -r .podRef $mktemp)
+    rm $mktemp
+    echo "METADATA_URI: $METADATA_URI"
+    ./src/flows/anchor.sh
+    unset METADATA_URI
+}
+
+##################################################
+# Actor: Transporter
+##################################################
+function __transporter() {
+    for ITEM in pickup-shipment1 delivery-shipment1 pickup-shipment3 delivery-shipment3; do
+        echo "$ITEM"
+        export VC_PATH="src/flows/output/transporter/transport-events/vc/${ITEM}.jsonld"
+        export SUBJECT_DID="did:secuweb:transporter:${ITEM}"
+
+        mktemp=$(mktemp)
+        npm run jsonld:expand -- $VC_PATH $mktemp
+        export METADATA_URI=$(jq -r .podRef $mktemp)
+        rm $mktemp
+
+        echo "METADATA_URI: $METADATA_URI"
+        ./src/flows/anchor.sh
+        unset METADATA_URI
+    done
+}
+
+##################################################
+# Actor: Retailer
+##################################################
+function __retailer() {
+    echo "receipt-shipment3"
+    export VC_PATH="src/flows/output/retailer/shipments/in/receipt-shipment3-vc.jsonld"
+    export SUBJECT_DID="did:secuweb:retailer:shipment3"
+
+    mktemp=$(mktemp)
+    npm run jsonld:expand -- $VC_PATH $mktemp
+    export METADATA_URI=$(jq -r .podRef $mktemp)
+    rm $mktemp
+
+    echo "METADATA_URI: $METADATA_URI"
+    ./src/flows/anchor.sh
+    unset METADATA_URI
 }
 
 ##################################################
@@ -85,3 +145,5 @@ function __packager() {
 cd "$REPO_ROOT"
 __farmer
 __packager
+__transporter
+__retailer

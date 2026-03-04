@@ -1,0 +1,18 @@
+{
+  "@context": {
+    "ex": "http://example.org/terms#",
+    "packager": "http://localhost:3000/packager/",
+    "retailer": "http://localhost:3000/retailer/",
+    "transporter": "http://localhost:3000/transporter/",
+    "schema": "http://schema.org/"
+  },
+  "@id": "did:secuweb:packager:shipment3",
+  "schema:url": "http://localhost:3000/packager/shipments/out/vc/shipment3.jsonld",
+  "@type": "ex:ShipmentRecord",
+  "ex:status": "shipped",
+  "ex:quantity": 10,
+  "ex:productID": "did:secuweb:packager:batch-001",
+  "ex:origin": "packager:profile/card#me",
+  "ex:destination": "retailer:profile/card#me",
+  "ex:transport": "transporter:profile/card#me"
+}

@@ -1,0 +1,21 @@
+{
+  "@context": {
+    "ex": "http://example.org/terms#",
+    "schema": "http://schema.org/",
+    "prov": "http://www.w3.org/ns/prov#",
+    "packager": "http://localhost:3000/packager/",
+    "retailer": "http://localhost:3000/retailer/",
+    "transporter": "http://localhost:3000/transporter/"
+  },
+  "@id": "did:secuweb:transporter:delivery-shipment3",
+  "schema:url": "http://localhost:3000/transporter/transport-events/vc/delivery-shipment3.jsonld",
+  "@type": ["schema:ArriveAction", "prov:Activity", "ex:TransportEvent"],
+  "schema:agent": "transporter:profile/card#me",
+  "ex:shipmentID": "did:secuweb:packager:shipment3",
+  "ex:status": "delivered",
+  "schema:startTime": "2025-09-27T13:00:00Z",
+  "schema:endTime": "2025-09-27T13:20:00Z",
+  "ex:from": "packager:profile/card#me",
+  "ex:to": "retailer:profile/card#me",
+  "ex:temperatureC": 6.2
+}
