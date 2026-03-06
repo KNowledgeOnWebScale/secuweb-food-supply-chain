@@ -39,6 +39,8 @@ if [ -d "$VIEWER_CLONE" ]; then
         rm -rf $VIEWER_CLONE
         clone;
     fi
+else
+    clone;
 fi
 
 echo "Installing ${VIEWER_CLONE}/main"
