@@ -12,7 +12,7 @@ VIEWER_CLONE_URI="git@gitlab.ilabt.imec.be:KNoWS/projects/SecuWeb/demonstrator/m
 VIEWER_CLONE_BRANCH="secuweb/fsc-demo-20251114"
 
 # FLAGS
-SAFEGUARD_VIEWER_CLONE=false
+SAFEGUARD_VIEWER_CLONE=true
 
 # absolute dir
 OUR_ROOT_DIR=$(pwd)/../..
@@ -49,8 +49,8 @@ cd ${VIEWER_CLONE}/main
 npm install
 
 echo Selecting our configuration...
-echo "pwd: $PWD"
-node scripts/select-config.cjs ../../../${OUR_CLONE}/actors/viewer/setup
+echo "OUR_CLONE: $OUR_CLONE"
+node scripts/select-config.cjs secuweb
 
 echo Rebuilding static content...
 rm -rf dist

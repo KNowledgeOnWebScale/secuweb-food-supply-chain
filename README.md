@@ -74,9 +74,6 @@ Setup and start Miravi.
 source env-localhost
 ./scripts/setup/finalize-setup.sh
 cd ../food-supply-chain-miravi/main
-../../food-supply-chain/scripts/templates/apply-templates.sh
-npm i
-node scripts/select-config.cjs secuweb
 npm run dev
 ```
 
