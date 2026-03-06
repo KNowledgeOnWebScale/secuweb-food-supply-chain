@@ -3,4 +3,4 @@
 	url = git@github.com:KNowledgeOnWebScale/vc-prototyping-library.git
 [submodule "secuweb-anchors"]
 	path = secuweb-anchors
-	url = git@gitlab.ilabt.imec.be:KNoWS/projects/SecuWeb/demonstrator/anchoring.git
+	url = git@github.com:gertjandemulder/anchoring.git
