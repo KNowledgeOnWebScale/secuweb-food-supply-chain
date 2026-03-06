@@ -5,11 +5,12 @@
 #   - our repo is cloned in a directory $OUR_CLONE
 set -euo pipefail
 
-OUR_CLONE=food-supply-chain
+OUR_CLONE=$(basename $(pwd))
 VIEWER_REPO=miravi-a-linked-data-viewer
 VIEWER_CLONE=food-supply-chain-miravi
 VIEWER_CLONE_URI="git@gitlab.ilabt.imec.be:KNoWS/projects/SecuWeb/demonstrator/miravi-a-linked-data-viewer.git"
 VIEWER_CLONE_BRANCH="secuweb/fsc-demo-20251114"
+
 # FLAGS
 SAFEGUARD_VIEWER_CLONE=false
 
