@@ -7,7 +7,6 @@ WORK_DIR="$REPO_ROOT/local-run/readme-smoke"
 LOG_DIR="$WORK_DIR/logs"
 
 WITH_VIEWER=false
-SKIP_SUBMODULES=false
 SKIP_INSTALL=false
 WAIT_TIMEOUT_SEC=120
 
@@ -37,7 +36,6 @@ Usage:
 
 Options:
   --with-viewer      Also run finalize-setup and start Miravi (port 5173).
-  --skip-submodules  Skip "git submodule update --init --recursive".
   --skip-install     Skip all npm install steps.
   --timeout SEC      Timeout per service readiness check (default: 120).
   -h, --help         Show this help.
@@ -162,10 +160,6 @@ while (( "$#" )); do
       WITH_VIEWER=true
       shift
       ;;
-    --skip-submodules)
-      SKIP_SUBMODULES=true
-      shift
-      ;;
     --skip-install)
       SKIP_INSTALL=true
       shift
@@ -211,9 +205,7 @@ if type nvm >/dev/null 2>&1; then
   ) >/dev/null
 fi
 
-if ! $SKIP_SUBMODULES; then
-  run_step_in submodules "$REPO_ROOT" git submodule update --init --recursive
-fi
+log "Skipping submodule update by design."
 
 if ! $SKIP_INSTALL; then
   run_step_in install-root "$REPO_ROOT" npm i
