@@ -1,0 +1,30 @@
+image: node:20-bookworm
+
+stages:
+  - test
+
+variables:
+  GIT_SUBMODULE_STRATEGY: "none"
+  NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.npm"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - .npm/
+
+smoke-test-readme-setup:
+  stage: test
+  before_script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends git jq curl ca-certificates
+    - rm -rf /var/lib/apt/lists/*
+    - git config --global url."https://github.com/".insteadOf "git@github.com:"
+    - git submodule sync --recursive
+    - git submodule update --init --recursive
+  script:
+    - npm run test:readme-setup -- --timeout 240
+  artifacts:
+    when: always
+    paths:
+      - local-run/readme-smoke/logs/
+    expire_in: 1 week
