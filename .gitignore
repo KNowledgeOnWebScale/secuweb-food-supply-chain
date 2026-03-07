@@ -8,3 +8,4 @@ src/flows/output/** */
 actors/viewer/setup/config.json
 
 src/flows/output/
+local-run

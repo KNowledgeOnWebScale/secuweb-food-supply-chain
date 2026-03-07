@@ -12,7 +12,9 @@
     "flows:set-acl": "npm run build && node build/flows/set-acl.js",
     "canon-hash": "npm run build && node build/bc/canon-hash.js",
     "explore": "cd secuweb-anchors && npm run explore",
-    "jsonld:expand": "npm run build && node build/jsonld.expand.js"
+    "jsonld:expand": "npm run build && node build/jsonld.expand.js",
+    "test:readme-setup": "./scripts/test-readme-setup.sh",
+    "test:readme-setup:viewer": "./scripts/test-readme-setup.sh --with-viewer"
   },
   "config": {
     "community-solid-server": {

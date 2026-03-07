@@ -132,6 +132,26 @@ Explore chain transactions.
 npm run explore
 ```
 
+### Automated Smoke Test
+
+The setup steps above can be validated automatically with:
+
+```bash
+npm run test:readme-setup
+```
+
+This runs a smoke test for the multi-terminal flow (CSS + Hardhat + verifier + flow scripts),
+and stops all background services automatically at the end.
+
+To also include the Miravi setup/startup checks:
+
+```bash
+npm run test:readme-setup:viewer
+```
+
+> [!NOTE]
+> Logs are written to `local-run/readme-smoke/logs`.
+
 ## Use Case: Product Shipment
 
 Actors store various data on their Solid Pod, for example:
