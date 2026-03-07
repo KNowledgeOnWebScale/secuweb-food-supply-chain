@@ -163,13 +163,31 @@ Actors store various data on their Solid Pod, for example:
 - A Farmer stores product details about its produces, shipment details, etc.
 - A Transporter stores event data, e.g., inbound/outbound shipments.
 - A Packager stores packaging details of received goods.
+- A Retailer stores inbound receipt data and verifies incoming packaged goods.
 
 Specific to the use case of product shipment, we highlight the following aspects:
 
-- A Farmer ships a product to a Packager using a Transporter. 
-- The Farmer shares the product details with the Packager, but not with the Transporter. 
-- The Transporter creates shipment records that are only readable by the actors involved (i.e., Farmer and Packager). 
-- The Packager can read and verify the authenticity and data integrity of the received products.
+- A Farmer ships a product to a Packager using a Transporter.
+- The Packager ships the packaged batch to a Retailer using a Transporter.
+- The Farmer shares product details with the Packager, but not with the Transporter or Retailer.
+- Shipment and transport-event records are readable only by actors involved in that shipment leg.
+- The Retailer can verify provenance and delivery using packaged-batch, shipment, and receipt data.
+
+The table below summarizes read access per VC resource (`owner` means the actor that stores the resource on its own Pod):
+
+| VC Resource | Farmer | Transporter | Packager | Retailer |
+| --- | --- | --- | --- | --- |
+| `farmer/products/vc/product-x.jsonld` | owner | - | read | - |
+| `farmer/products/vc/product-y.jsonld` | owner | - | read | - |
+| `farmer/shipments/out/vc/shipment1.jsonld` | owner | read | read | - |
+| `farmer/shipments/out/vc/shipment2.jsonld` | owner | read | read | - |
+| `transporter/transport-events/vc/pickup-shipment1.jsonld` | read | owner | read | - |
+| `transporter/transport-events/vc/delivery-shipment1.jsonld` | read | owner | read | - |
+| `packager/products/vc/packaged-batch-001.jsonld` | - | - | owner | read |
+| `packager/shipments/out/vc/shipment3.jsonld` | - | read | owner | read |
+| `transporter/transport-events/vc/pickup-shipment3.jsonld` | - | owner | read | read |
+| `transporter/transport-events/vc/delivery-shipment3.jsonld` | - | owner | read | read |
+| `retailer/shipments/in/vc/receipt-shipment3-vc.jsonld` | read | - | read | owner |
 
 ### Walkthrough
 
