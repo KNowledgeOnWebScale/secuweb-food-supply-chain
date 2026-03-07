@@ -9,6 +9,7 @@ Table of Contents
 - [Technical Overview](#technical-overview)
 - [Prerequisites](#prerequisites)
 - [Instructions](#instructions)
+  - [Automated Smoke Test](#automated-smoke-test)
 - [Use Case: Product Shipment](#use-case-product-shipment)
   - [Walkthrough](#walkthrough)
     - [Farmer's Perspective](#farmers-perspective)
@@ -58,7 +59,7 @@ This repository glues to together five main components:
 Pull submodules.
 
 ```bash
- git submodule update --init --recursive --remote
+ git submodule update --init --recursive
 ```
 
 Install.
