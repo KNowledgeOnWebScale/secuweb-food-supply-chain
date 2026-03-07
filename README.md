@@ -15,6 +15,9 @@ Table of Contents
     - [Farmer's Perspective](#farmers-perspective)
     - [Transporter's Perspective](#transporters-perspective)
     - [Authenticated as Packager](#authenticated-as-packager)
+- [Development](#development)
+  - [Testing](#testing)
+    - [End-to-end smoke test](#end-to-end-smoke-test)
 - [License](#license)
 
 ## Introduction
@@ -240,6 +243,22 @@ In contrast to the Transporter,
 the Packager **does** have access to the product details.
 
 ![Product details (Packager)](./doc/img/miravi-packager-product-details.png)
+
+## Development
+
+### Testing
+
+#### End-to-end smoke test
+
+The following command runs a smoke test that executes this README's instructions (CSS + Hardhat + verifier + flow scripts), and stops all background services automatically at the end:
+
+```bash
+git submodule update --init --recursive
+./scripts/test-readme-setup.sh
+```
+
+To facilitate debugging,
+the smoke test logs are written to `local-run/readme-smoke/logs`.
 
 ## License
 
