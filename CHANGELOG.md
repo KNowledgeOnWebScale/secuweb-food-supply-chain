@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-03-17
+
+### Fixed
+
+- Updated the `vc` and `secuweb-anchors` submodule URLs from SSH to HTTPS so
+  the FSC repository and its submodules can be cloned recursively on a more restrictive lab infrastructure without SSH access errors.
+
 ## [1.0.0] - 2026-03-16
 
 Initial stable release of the SecuWeb food supply chain demonstrator.
