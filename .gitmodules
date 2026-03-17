@@ -1,6 +1,6 @@
 [submodule "vc"]
 	path = vc
-	url = git@github.com:KNowledgeOnWebScale/vc-prototyping-library.git
+	url = https://github.com/KNowledgeOnWebScale/vc-prototyping-library.git
 [submodule "secuweb-anchors"]
 	path = secuweb-anchors
-	url = git@github.com:gertjandemulder/anchoring.git
+	url = https://github.com/gertjandemulder/anchoring.git
