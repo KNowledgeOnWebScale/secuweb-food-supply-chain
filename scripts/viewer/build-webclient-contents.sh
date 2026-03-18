@@ -8,11 +8,11 @@ set -euo pipefail
 OUR_CLONE=$(basename $(pwd))
 VIEWER_REPO=miravi-a-linked-data-viewer
 VIEWER_CLONE=food-supply-chain-miravi
-VIEWER_CLONE_URI="git@gitlab.ilabt.imec.be:KNoWS/projects/SecuWeb/demonstrator/miravi-a-linked-data-viewer.git"
-VIEWER_CLONE_BRANCH="secuweb/fsc-demo-20251114"
+VIEWER_CLONE_URI="https://github.com/SolidLabResearch/miravi-a-linked-data-viewer.git"
+VIEWER_CLONE_BRANCH="secuweb/demonstrator"
 
 # FLAGS
-SAFEGUARD_VIEWER_CLONE=true
+SAFEGUARD_VIEWER_CLONE=false
 
 # absolute dir
 OUR_ROOT_DIR=$(pwd)/../..
