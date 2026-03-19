@@ -2,6 +2,23 @@ set -e
 set -u
 # This script automates the process of adding files to a Solid Pod and creating verifiable credentials (VCs) for those files.
 
+# Override this to target a different Solid server, for example:
+# SOLID_BASE_URL="https://solid.example.com" ./src/flows/load-actor-data-into-solid-pods.sh
+SOLID_BASE_URL="${SOLID_BASE_URL:-http://localhost:3000}"
+SOLID_BASE_URL="${SOLID_BASE_URL%/}"
+readonly SOLID_BASE_URL
+
+function solidResourceUrl() {
+  local _ACTOR=$1
+  local _RESOURCE_PATH=$2
+  printf '%s\n' "${SOLID_BASE_URL}/${_ACTOR}/${_RESOURCE_PATH}"
+}
+
+function solidWebId() {
+  local _ACTOR=$1
+  printf '%s\n' "${SOLID_BASE_URL}/${_ACTOR}/profile/card#me"
+}
+
 function addFileToSolidPod() { 
   echo "Adding file $1 to Solid Pod and creating VC at $2"
   echo "-----------------------------------------"
@@ -12,13 +29,6 @@ function addFileToSolidPod() {
   local _CONTAINER_VC="${_CONTAINER}/vc"
   local _FPATH_DATA=$5
   local _FPATH_DATA_VC=$6
-
-  #
-  #  # Write the original data to the Solid Pod
-  #  npm run flows:add-file-to-solid-pod -- \
-  #    --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
-  #    --container $_CONTAINER --inputFile $_FPATH_DATA --outputBasename $(basename $_FPATH_DATA)
-  #
 
   echo "Create a verifiable credential from the data file ($(basename $_FPATH_DATA))"
   npm run flows:create-vc -- \
@@ -189,9 +199,9 @@ function setACLs_Farmer() {
   # vc/product-x
   # READ access:
   # - Packager
-  URI_RESOURCE="http://localhost:3000/farmer/products/vc/product-x.jsonld"
+  URI_RESOURCE=$(solidResourceUrl farmer "products/vc/product-x.jsonld")
 
-  URI_AGENT="http://localhost:3000/packager/profile/card#me"
+  URI_AGENT=$(solidWebId packager)
   npm run flows:set-acl -- \
     --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
     --resourceUrl $URI_RESOURCE --webId $URI_AGENT
@@ -199,9 +209,9 @@ function setACLs_Farmer() {
   # vc/product-y
   # READ access:
   # - Packager
-  URI_RESOURCE="http://localhost:3000/farmer/products/vc/product-y.jsonld"
+  URI_RESOURCE=$(solidResourceUrl farmer "products/vc/product-y.jsonld")
 
-  URI_AGENT="http://localhost:3000/packager/profile/card#me"
+  URI_AGENT=$(solidWebId packager)
   npm run flows:set-acl -- \
     --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
     --resourceUrl $URI_RESOURCE --webId $URI_AGENT
@@ -210,14 +220,14 @@ function setACLs_Farmer() {
   # READ access:
   # - Packager (destination)
   # - Transporter (transport)
-  URI_RESOURCE="http://localhost:3000/farmer/shipments/out/vc/shipment1.jsonld"
+  URI_RESOURCE=$(solidResourceUrl farmer "shipments/out/vc/shipment1.jsonld")
 
-  URI_AGENT="http://localhost:3000/packager/profile/card#me"
+  URI_AGENT=$(solidWebId packager)
   npm run flows:set-acl -- \
     --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
     --resourceUrl $URI_RESOURCE --webId $URI_AGENT
 
-  URI_AGENT="http://localhost:3000/transporter/profile/card#me"
+  URI_AGENT=$(solidWebId transporter)
     npm run flows:set-acl -- \
       --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
       --resourceUrl $URI_RESOURCE --webId $URI_AGENT
@@ -226,14 +236,14 @@ function setACLs_Farmer() {
   # READ access:
   # - Packager (destination)
   # - Transporter (transport)
-  URI_RESOURCE="http://localhost:3000/farmer/shipments/out/vc/shipment2.jsonld"
+  URI_RESOURCE=$(solidResourceUrl farmer "shipments/out/vc/shipment2.jsonld")
 
-  URI_AGENT="http://localhost:3000/packager/profile/card#me"
+  URI_AGENT=$(solidWebId packager)
   npm run flows:set-acl -- \
     --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
     --resourceUrl $URI_RESOURCE --webId $URI_AGENT
 
-  URI_AGENT="http://localhost:3000/transporter/profile/card#me"
+  URI_AGENT=$(solidWebId transporter)
   npm run flows:set-acl -- \
     --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
     --resourceUrl $URI_RESOURCE --webId $URI_AGENT
@@ -250,8 +260,8 @@ function setACLs_Packager() {
   # vc/packaged-batch-001
   # READ access:
   # - Retailer
-  URI_RESOURCE="http://localhost:3000/packager/products/vc/packaged-batch-001.jsonld"
-  URI_AGENT="http://localhost:3000/retailer/profile/card#me"
+  URI_RESOURCE=$(solidResourceUrl packager "products/vc/packaged-batch-001.jsonld")
+  URI_AGENT=$(solidWebId retailer)
   npm run flows:set-acl -- \
     --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
     --resourceUrl $URI_RESOURCE --webId $URI_AGENT
@@ -260,14 +270,14 @@ function setACLs_Packager() {
   # READ access:
   # - Retailer (destination)
   # - Transporter (transport)
-  URI_RESOURCE="http://localhost:3000/packager/shipments/out/vc/shipment3.jsonld"
+  URI_RESOURCE=$(solidResourceUrl packager "shipments/out/vc/shipment3.jsonld")
 
-  URI_AGENT="http://localhost:3000/retailer/profile/card#me"
+  URI_AGENT=$(solidWebId retailer)
   npm run flows:set-acl -- \
     --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
     --resourceUrl $URI_RESOURCE --webId $URI_AGENT
 
-  URI_AGENT="http://localhost:3000/transporter/profile/card#me"
+  URI_AGENT=$(solidWebId transporter)
   npm run flows:set-acl -- \
     --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
     --resourceUrl $URI_RESOURCE --webId $URI_AGENT
@@ -283,17 +293,17 @@ function setACLs_Transporter() {
 
   # Transport events for shipment1 (Farmer -> Packager)
   for _EVENT in pickup-shipment1 delivery-shipment1; do
-    URI_RESOURCE="http://localhost:3000/transporter/transport-events/vc/${_EVENT}.jsonld"
+    URI_RESOURCE=$(solidResourceUrl transporter "transport-events/vc/${_EVENT}.jsonld")
 
     # READ access:
     # - Farmer
-    URI_AGENT="http://localhost:3000/farmer/profile/card#me"
+    URI_AGENT=$(solidWebId farmer)
     npm run flows:set-acl -- \
       --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
       --resourceUrl $URI_RESOURCE --webId $URI_AGENT
 
     # - Packager
-    URI_AGENT="http://localhost:3000/packager/profile/card#me"
+    URI_AGENT=$(solidWebId packager)
     npm run flows:set-acl -- \
       --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
       --resourceUrl $URI_RESOURCE --webId $URI_AGENT
@@ -301,17 +311,17 @@ function setACLs_Transporter() {
 
   # Transport events for shipment3 (Packager -> Retailer)
   for _EVENT in pickup-shipment3 delivery-shipment3; do
-    URI_RESOURCE="http://localhost:3000/transporter/transport-events/vc/${_EVENT}.jsonld"
+    URI_RESOURCE=$(solidResourceUrl transporter "transport-events/vc/${_EVENT}.jsonld")
 
     # READ access:
     # - Packager
-    URI_AGENT="http://localhost:3000/packager/profile/card#me"
+    URI_AGENT=$(solidWebId packager)
     npm run flows:set-acl -- \
       --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
       --resourceUrl $URI_RESOURCE --webId $URI_AGENT
 
     # - Retailer
-    URI_AGENT="http://localhost:3000/retailer/profile/card#me"
+    URI_AGENT=$(solidWebId retailer)
     npm run flows:set-acl -- \
       --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
       --resourceUrl $URI_RESOURCE --webId $URI_AGENT
@@ -330,14 +340,14 @@ function setACLs_Retailer() {
   # READ access:
   # - Packager
   # - Farmer (upstream visibility)
-  URI_RESOURCE="http://localhost:3000/retailer/shipments/in/vc/receipt-shipment3-vc.jsonld"
+  URI_RESOURCE=$(solidResourceUrl retailer "shipments/in/vc/receipt-shipment3-vc.jsonld")
 
-  URI_AGENT="http://localhost:3000/packager/profile/card#me"
+  URI_AGENT=$(solidWebId packager)
   npm run flows:set-acl -- \
     --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
     --resourceUrl $URI_RESOURCE --webId $URI_AGENT
 
-  URI_AGENT="http://localhost:3000/farmer/profile/card#me"
+  URI_AGENT=$(solidWebId farmer)
   npm run flows:set-acl -- \
     --name $_USERNAME --email $_EMAIL --password $_PASSWORD \
     --resourceUrl $URI_RESOURCE --webId $URI_AGENT
