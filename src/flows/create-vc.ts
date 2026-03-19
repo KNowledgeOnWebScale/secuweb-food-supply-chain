@@ -1,11 +1,7 @@
 import {Command} from "commander";
-// import {writeDataToSolidPod} from "../css/api";
 import {urlServer} from "./config";
 import {writeFileSync} from "node:fs";
-
-
 import { spawn } from "node:child_process";
-
 
 interface UserParams {
     name: string
@@ -13,9 +9,7 @@ interface UserParams {
     password: string
 }
 
-
 function runCommand(cmd: string, args: string[] = []) {
-    
   return new Promise<number>((resolve, reject) => {
     const child = spawn(cmd, args, {
       stdio: "inherit",  // pipes output directly to console
@@ -26,7 +20,6 @@ function runCommand(cmd: string, args: string[] = []) {
     child.on("close", (code) => resolve(code ?? 0));
   });
 }
-
 
 class VCProxy {
     private userParams: UserParams;
@@ -54,8 +47,8 @@ class VCProxy {
             '-c', this.fpathVcSetup
         ])
     }
-    async issue(fpathData: string, fpathOutput: string): Promise<any> {
 
+    async issue(fpathData: string, fpathOutput: string): Promise<any> {
         return await runCommand('node', [
             './vc/dist/cli.js',
             'issue',
@@ -64,10 +57,7 @@ class VCProxy {
             '-i', fpathData,
             '-o', fpathOutput
         ])
-
-
     }
-
 }
 async function main() {
     const program = new Command();
@@ -100,40 +90,9 @@ async function main() {
     console.log("Path data:", options.data);
     console.log("Path output:", options.output);
 
-
     const vcProxy = new VCProxy({name: options.name, email: options.email, password: options.password,});
     await vcProxy.setup();
     await vcProxy.issue(options.data, options.output)
-
-
-
-    //const vcData = fs.readFileSync(options.output, "utf8")
-
-    // const buffer = await readFile(options.output);
-    // const blob = new Blob([buffer as BlobPart], );
-    // const writeResult = await writeDataToSolidPod(
-    //     options.name,
-    //     options.email,
-    //     options.password,
-    //     urlServer,
-    //     blob
-    // )
-    // console.log({writeResult})
-
-
-
-
-    try {
-        /*await writeDataToSolidPod(
-            options.name,
-            options.email,
-            options.password,
-            urlServer,
-            data
-        );*/
-    } catch (error) {
-        console.error('Error during the process:', error);
-    }
 }
 
 main().catch(console.error);

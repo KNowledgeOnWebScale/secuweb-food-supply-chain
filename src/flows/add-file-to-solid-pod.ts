@@ -2,12 +2,7 @@
 import {wrapper_createAuthenticatedFetch} from "../css/client-credentials";
 import { Command } from "commander";
 import { createContainer, addFileToContainer } from "../css/helpers";
-
-
-import { universalAccess } from "@inrupt/solid-client";
-
-
-const urlServer = 'http://localhost:3000';
+import { urlServer } from "./config";
 
 /**
  * Add a file to a Solid Pod container, creating the container if it does not exist.
