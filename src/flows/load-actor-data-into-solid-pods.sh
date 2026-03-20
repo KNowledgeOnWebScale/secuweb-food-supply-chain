@@ -3,20 +3,20 @@ set -u
 # This script automates the process of adding files to a Solid Pod and creating verifiable credentials (VCs) for those files.
 
 # Override this to target a different Solid server, for example:
-# SOLID_BASE_URL="https://solid.example.com" ./src/flows/load-actor-data-into-solid-pods.sh
-SOLID_BASE_URL="${SOLID_BASE_URL:-http://localhost:3000}"
-SOLID_BASE_URL="${SOLID_BASE_URL%/}"
-readonly SOLID_BASE_URL
+# CSS_BASE_URL="https://solid.example.com" ./src/flows/load-actor-data-into-solid-pods.sh
+CSS_BASE_URL="${CSS_BASE_URL:-http://localhost:3000}"
+CSS_BASE_URL="${CSS_BASE_URL%/}"
+readonly CSS_BASE_URL
 
 function solidResourceUrl() {
   local _ACTOR=$1
   local _RESOURCE_PATH=$2
-  printf '%s\n' "${SOLID_BASE_URL}/${_ACTOR}/${_RESOURCE_PATH}"
+  printf '%s\n' "${CSS_BASE_URL}/${_ACTOR}/${_RESOURCE_PATH}"
 }
 
 function solidWebId() {
   local _ACTOR=$1
-  printf '%s\n' "${SOLID_BASE_URL}/${_ACTOR}/profile/card#me"
+  printf '%s\n' "${CSS_BASE_URL}/${_ACTOR}/profile/card#me"
 }
 
 function addFileToSolidPod() { 
