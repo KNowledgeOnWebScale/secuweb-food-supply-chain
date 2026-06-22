@@ -5,6 +5,7 @@ import path from "node:path";
 import { expandJsonLd } from "../util/jsonld.js";
 import { loadManifest } from "../fixtures/load-manifest.js";
 import type { ManifestResource } from "../fixtures/manifest-types.js";
+import { loadActors, actorDid, requireActor } from "../fixtures/actors.js";
 
 const MANIFEST_PATH = path.resolve(process.cwd(), "dev/fixtures/product-shipment/manifest.json");
 
@@ -35,7 +36,13 @@ async function extractPodRef(vcPath: string): Promise<string> {
   return podRef;
 }
 
-function runAnchor(vcPath: string, subjectDid: string, metadataUri: string): Promise<number> {
+function runAnchor(
+  vcPath: string,
+  subjectDid: string,
+  metadataUri: string,
+  actor: string,
+  issuerDid: string,
+): Promise<number> {
   return new Promise((resolve, reject) => {
     const child = spawn("/bin/bash", ["./src/flows/anchor.sh"], {
       stdio: "inherit",
@@ -44,6 +51,8 @@ function runAnchor(vcPath: string, subjectDid: string, metadataUri: string): Pro
         VC_PATH: vcPath,
         SUBJECT_DID: subjectDid,
         METADATA_URI: metadataUri,
+        ACTOR: actor,
+        ISSUER_DID: issuerDid,
       },
     });
     child.on("error", reject);
@@ -53,6 +62,7 @@ function runAnchor(vcPath: string, subjectDid: string, metadataUri: string): Pro
 
 async function main(): Promise<void> {
   const manifest = await loadManifest(MANIFEST_PATH);
+  const actors = await loadActors();
   const anchorResources = manifest.resources.filter((r) => r.anchor);
 
   console.log(`Anchoring ${anchorResources.length} resources from manifest "${manifest.id}"...`);
@@ -73,12 +83,19 @@ async function main(): Promise<void> {
       throw new Error(`Resource ${resource.id} has anchor: true but no subjectDid`);
     }
 
+    // The resource owner is the issuing actor: it signs the anchor (ACTOR) and
+    // its DID is recorded on-chain as the credential issuer (ISSUER_DID).
+    const owner = resource.owner;
+    const issuerDid = actorDid(requireActor(actors, owner));
+
     console.log(`[anchor] ${resource.id}`);
     const metadataUri = await extractPodRef(vcPath);
-    console.log(`        metadataUri: ${metadataUri}`);
+    console.log(`        owner/actor: ${owner}`);
+    console.log(`        issuerDid:   ${issuerDid}`);
     console.log(`        subjectDid:  ${resource.subjectDid}`);
+    console.log(`        metadataUri: ${metadataUri}`);
 
-    const exitCode = await runAnchor(vcPath, resource.subjectDid, metadataUri);
+    const exitCode = await runAnchor(vcPath, resource.subjectDid, metadataUri, owner, issuerDid);
     if (exitCode !== 0) {
       throw new Error(`anchor.sh failed for ${resource.id} (exit code ${exitCode})`);
     }

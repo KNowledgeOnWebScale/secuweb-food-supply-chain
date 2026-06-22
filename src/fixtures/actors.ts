@@ -7,6 +7,7 @@ export type ActorFixture = {
   displayName?: string;
   role?: string;
   did?: string;
+  address?: string;
   email: string;
   password: string;
 };
@@ -48,6 +49,13 @@ export function requireActor(actors: ActorsMap, actorName: string): ActorFixture
 
 export function actorDid(actor: ActorFixture): string {
   return actor.did || `did:secuweb:${actor.name}`;
+}
+
+export function actorAddress(actor: ActorFixture): string {
+  if (!actor.address) {
+    throw new Error(`Actor "${actor.name}" has no on-chain address in the fixtures`);
+  }
+  return actor.address;
 }
 
 export function actorDisplayName(actor: ActorFixture): string {

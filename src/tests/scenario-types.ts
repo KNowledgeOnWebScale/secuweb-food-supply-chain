@@ -11,8 +11,26 @@ export type CheckResult = {
 
 export type VerificationResponse = {
   verified?: boolean;
-  anchor?: { vcHash?: string } | null;
+  anchor?: {
+    vcHash?: string;
+    subjectDid?: string;
+    issuerDid?: string;
+    issuer?: string;
+    metadataURI?: string;
+    timestamp?: number;
+  } | null;
   error?: unknown;
+};
+
+export type ExplorerDidRow = {
+  did: string;
+  controller: string;
+  docHash?: string;
+  active: boolean;
+};
+
+export type ExplorerData = {
+  dids?: ExplorerDidRow[];
 };
 
 export type CredentialFixture = {
@@ -32,6 +50,7 @@ export type ScenarioContext = {
   fetchCredential: (authFetch: AuthenticatedFetch, url: string) => Promise<CredentialFixture>;
   fetchJsonResource: (authFetch: AuthenticatedFetch, url: string, label: string) => Promise<Record<string, any>>;
   verifyOnChain: (credential: Record<string, any>) => Promise<VerificationResponse>;
+  getExplorerData: () => Promise<ExplorerData>;
   runVcCli: (inputFile: string, configFile: string) => Promise<{ exitCode: number; output: string }>;
 };
 
