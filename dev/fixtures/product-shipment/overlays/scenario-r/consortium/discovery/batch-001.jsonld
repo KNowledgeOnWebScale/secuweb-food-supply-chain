@@ -1,0 +1,32 @@
+{
+  "@context": {
+    "ex": "http://example.org/terms#",
+    "schema": "http://schema.org/"
+  },
+  "@id": "http://localhost:3000/consortium/discovery/batch-001.jsonld",
+  "@type": "ex:DiscoveryEntryPoint",
+  "schema:identifier": "did:secuweb:packager:batch-001",
+  "schema:name": "Transportation provenance discovery entry for batch 001",
+  "ex:discoveryScope": {
+    "@id": "http://example.org/terms#TransportationProvenance"
+  },
+  "ex:intendedAgent": {
+    "@id": "http://localhost:3000/retailer/profile/card#me"
+  },
+  "ex:expectedManifestCount": 4,
+  "ex:expectedResourceCount": 8,
+  "ex:manifest": [
+    {
+      "@id": "http://localhost:3000/farmer/discovery/batch-001.jsonld"
+    },
+    {
+      "@id": "http://localhost:3000/packager/discovery/batch-001.jsonld"
+    },
+    {
+      "@id": "http://localhost:3000/transporter/discovery/batch-001.jsonld"
+    },
+    {
+      "@id": "http://localhost:3000/retailer/discovery/batch-001.jsonld"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "@context": {
+    "ex": "http://example.org/terms#",
+    "prov": "http://www.w3.org/ns/prov#",
+    "schema": "http://schema.org/"
+  },
+  "@id": "did:secuweb:retailer:receipt-pr-001",
+  "@type": [
+    "schema:ReceiveAction",
+    "prov:Activity",
+    "ex:ReceiptRecord"
+  ],
+  "schema:url": {
+    "@id": "http://localhost:3000/retailer/receipts/receipt-pr-001.jsonld"
+  },
+  "schema:agent": {
+    "@id": "http://localhost:3000/retailer/profile/card#me"
+  },
+  "schema:object": {
+    "@id": "did:secuweb:packager:shipment-pr-001"
+  },
+  "schema:startTime": "2025-09-27T13:25:00Z",
+  "prov:used": {
+    "@id": "did:secuweb:packager:shipment-pr-001"
+  },
+  "ex:status": "received",
+  "ex:receivedQuantity": 10,
+  "ex:receivedProductID": {
+    "@id": "did:secuweb:packager:batch-001"
+  }
+}

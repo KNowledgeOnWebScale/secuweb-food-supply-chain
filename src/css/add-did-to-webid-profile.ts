@@ -2,31 +2,31 @@
 import { getAuthorizationToken, getClientCredentials, getAccessTokenAndDpopKey, createAuthenticatedFetch } from './client-credentials';
 import { n3patch } from './n3';
 import { Command } from "commander";
+import { cssBaseUrl, resourceUrl } from '../config/runtime';
 
-const urlServer = 'http://localhost:3000';
-const urlAccount = `${urlServer}/.account/`;
+const urlAccount = `${cssBaseUrl}/.account/`;
 
 async function addDIDToWebIDProfile(name: string, email: string, password: string, did: string) {
   console.log('STEP 1: obtain authorization token');
   const authorizationToken = await getAuthorizationToken(urlAccount, email, password);
   
   console.log('STEP 2: obtain client credentials');
-  const clientCredentials = await getClientCredentials(urlServer, urlAccount, authorizationToken, name );
+  const clientCredentials = await getClientCredentials(cssBaseUrl, urlAccount, authorizationToken, name );
 
   console.log('STEP 3: obtain access token and DPoP key');
-  const step3Output =  await getAccessTokenAndDpopKey(urlServer, clientCredentials);
+  const step3Output =  await getAccessTokenAndDpopKey(cssBaseUrl, clientCredentials);
   console.log(step3Output)
 
   console.log('STEP 4: obtain authenticated fetch');
   const authenticatedFetch = await createAuthenticatedFetch(step3Output.accessToken, step3Output.dpopKey);
 
   console.log('STEP 5: using authenticated fetch to get profile');
-  const profileResponse = await authenticatedFetch(`${urlServer}/${name}/profile/card`);
+  const profileResponse = await authenticatedFetch(resourceUrl(name, "profile/card"));
   const profile = await profileResponse.text();
   console.log('Profile:', profile);
 
   console.log('STEP 6: updating profile by adding reference to another ID');
-  const urlProfile = `${urlServer}/${name}/profile/card`
+  const urlProfile = resourceUrl(name, "profile/card")
   const otherId = did
   await n3patch(
     authenticatedFetch,

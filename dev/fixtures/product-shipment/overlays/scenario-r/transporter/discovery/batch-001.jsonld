@@ -1,0 +1,58 @@
+{
+  "@context": {
+    "ex": "http://example.org/terms#",
+    "schema": "http://schema.org/"
+  },
+  "@id": "http://localhost:3000/transporter/discovery/batch-001.jsonld",
+  "@type": "ex:ResourceManifest",
+  "schema:identifier": "did:secuweb:packager:batch-001",
+  "ex:dataController": {
+    "@id": "http://localhost:3000/transporter/profile/card#me"
+  },
+  "ex:resourceEntry": [
+    {
+      "ex:resource": {
+        "@id": "http://localhost:3000/transporter/events/pickup-fp-001.jsonld"
+      },
+      "ex:resourceIdentifier": {
+        "@id": "did:secuweb:transporter:pickup-fp-001"
+      },
+      "ex:resourceType": {
+        "@id": "http://example.org/terms#PickupEvent"
+      }
+    },
+    {
+      "ex:resource": {
+        "@id": "http://localhost:3000/transporter/events/delivery-fp-001.jsonld"
+      },
+      "ex:resourceIdentifier": {
+        "@id": "did:secuweb:transporter:delivery-fp-001"
+      },
+      "ex:resourceType": {
+        "@id": "http://example.org/terms#DeliveryEvent"
+      }
+    },
+    {
+      "ex:resource": {
+        "@id": "http://localhost:3000/transporter/events/pickup-pr-001.jsonld"
+      },
+      "ex:resourceIdentifier": {
+        "@id": "did:secuweb:transporter:pickup-pr-001"
+      },
+      "ex:resourceType": {
+        "@id": "http://example.org/terms#PickupEvent"
+      }
+    },
+    {
+      "ex:resource": {
+        "@id": "http://localhost:3000/transporter/events/delivery-pr-001.jsonld"
+      },
+      "ex:resourceIdentifier": {
+        "@id": "did:secuweb:transporter:delivery-pr-001"
+      },
+      "ex:resourceType": {
+        "@id": "http://example.org/terms#DeliveryEvent"
+      }
+    }
+  ]
+}

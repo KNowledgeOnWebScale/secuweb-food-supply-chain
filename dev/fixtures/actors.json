@@ -1,0 +1,7 @@
+{
+  "farmer":      { "name": "farmer",      "displayName": "Farmer",      "role": "Farmer",      "did": "did:secuweb:farmer",      "email": "info@farmer.com",      "password": "farmer123"      },
+  "packager":    { "name": "packager",    "displayName": "Packager",    "role": "Packager",    "did": "did:secuweb:packager",    "email": "info@packager.com",    "password": "packager123"    },
+  "transporter": { "name": "transporter", "displayName": "Transporter", "role": "Transporter", "did": "did:secuweb:transporter", "email": "info@transporter.com", "password": "transporter123" },
+  "retailer":    { "name": "retailer",    "displayName": "Retailer",    "role": "Retailer",    "did": "did:secuweb:retailer",    "email": "info@retailer.com",    "password": "retailer123"    },
+  "consortium":  { "name": "consortium",  "displayName": "Consortium",  "role": "Consortium",  "did": "did:secuweb:consortium",  "email": "consortium@fsc.com",   "password": "consortium123"  }
+}

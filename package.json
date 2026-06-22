@@ -10,11 +10,21 @@
     "flows:create-vc": "npm run build && node build/flows/create-vc.js",
     "flows:add-file-to-solid-pod": "npm run build && node build/flows/add-file-to-solid-pod.js",
     "flows:set-acl": "npm run build && node build/flows/set-acl.js",
+    "setup:actor-identities": "npm run build && node build/identity/bind-actor-identities.js",
+    "setup:catalog": "npm run build && node build/catalog/publish-catalog.js",
+    "setup:discoverability": "npm run build && node build/flows/publish-discoverability-fixtures.js",
     "canon-hash": "npm run build && node build/bc/canon-hash.js",
     "explore": "cd secuweb-anchors && npm run explore",
     "jsonld:expand": "npm run build && node build/jsonld.expand.js",
     "test:readme-setup": "./scripts/test-readme-setup.sh",
-    "test:readme-setup:viewer": "./scripts/test-readme-setup.sh --with-viewer"
+    "test:readme-setup:viewer": "./scripts/test-readme-setup.sh --with-viewer",
+    "start:viewer": "./scripts/start-viewer.sh",
+    "test:scenarios": "npm run build && node build/tests/scenario-tests.js",
+    "scenario:ui": "npm run build && node build/tests/scenario-results-server.js",
+    "fixtures:validate": "npm run build && node build/fixtures/validate-manifest.js dev/fixtures/product-shipment/manifest.json",
+    "fixtures:validate-overlays": "npm run build && node build/fixtures/validate-overlays.js dev/fixtures/product-shipment",
+    "setup:fixtures": "npm run build && node build/fixtures/publish-product-shipment-fixtures.js",
+    "flows:anchor-fixtures": "npm run build && node build/flows/anchor-fixtures.js"
   },
   "config": {
     "community-solid-server": {
@@ -40,6 +50,7 @@
     "jsonld-document-loader": "^2.3.0"
   },
   "devDependencies": {
+    "@comunica/query-sparql": "2.10.2",
     "@solid/community-server": "^7.1.7",
     "@types/jsonld": "^1.5.15",
     "@types/node": "^24.5.2",

@@ -1,0 +1,42 @@
+{
+  "head": {
+    "vars": [
+      "resource",
+      "resourceType",
+      "controller",
+      "responsibleProvider",
+      "intendedRole",
+      "accessPolicy"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "resource": {
+          "type": "uri",
+          "value": "http://localhost:3000/farmer/shipments/out/shipment-fp-001.jsonld"
+        },
+        "resourceType": {
+          "type": "uri",
+          "value": "http://example.org/terms#ShipmentRecord"
+        },
+        "controller": {
+          "type": "uri",
+          "value": "http://localhost:3000/farmer/profile/card#me"
+        },
+        "responsibleProvider": {
+          "type": "uri",
+          "value": "http://localhost:3000/farmer/profile/card#me"
+        },
+        "intendedRole": {
+          "type": "uri",
+          "value": "http://example.org/terms#ShipmentDestination"
+        },
+        "accessPolicy": {
+          "type": "uri",
+          "value": "http://localhost:3000/farmer/shipments/out/shipment-fp-001.jsonld.acl"
+        }
+      }
+    ]
+  }
+}

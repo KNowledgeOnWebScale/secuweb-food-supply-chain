@@ -1,0 +1,25 @@
+{
+  "@context": {
+    "ex": "http://example.org/terms#",
+    "prov": "http://www.w3.org/ns/prov#",
+    "schema": "http://schema.org/"
+  },
+  "@id": "did:secuweb:packager:batch-001",
+  "@type": [
+    "schema:Product",
+    "prov:Entity",
+    "ex:PackagingRecord"
+  ],
+  "schema:url": {
+    "@id": "http://localhost:3000/packager/products/batch-001.jsonld"
+  },
+  "schema:name": "Packaged batch 001",
+  "schema:manufacturer": {
+    "@id": "http://localhost:3000/packager/profile/card#me"
+  },
+  "schema:productionDate": "2025-09-27",
+  "ex:packagedQuantity": 10,
+  "prov:wasDerivedFrom": {
+    "@id": "did:secuweb:farmer:shipment-fp-001"
+  }
+}

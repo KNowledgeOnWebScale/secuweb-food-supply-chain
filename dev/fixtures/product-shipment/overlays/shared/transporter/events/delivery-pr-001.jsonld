@@ -1,0 +1,32 @@
+{
+  "@context": {
+    "ex": "http://example.org/terms#",
+    "prov": "http://www.w3.org/ns/prov#",
+    "schema": "http://schema.org/"
+  },
+  "@id": "did:secuweb:transporter:delivery-pr-001",
+  "@type": [
+    "schema:ArriveAction",
+    "prov:Activity",
+    "ex:DeliveryEvent"
+  ],
+  "schema:url": {
+    "@id": "http://localhost:3000/transporter/events/delivery-pr-001.jsonld"
+  },
+  "schema:agent": {
+    "@id": "http://localhost:3000/transporter/profile/card#me"
+  },
+  "ex:shipmentID": {
+    "@id": "did:secuweb:packager:shipment-pr-001"
+  },
+  "ex:status": "delivered",
+  "schema:startTime": "2025-09-27T13:00:00Z",
+  "schema:endTime": "2025-09-27T13:20:00Z",
+  "ex:from": {
+    "@id": "http://localhost:3000/packager/profile/card#me"
+  },
+  "ex:to": {
+    "@id": "http://localhost:3000/retailer/profile/card#me"
+  },
+  "ex:temperatureC": 6.2
+}

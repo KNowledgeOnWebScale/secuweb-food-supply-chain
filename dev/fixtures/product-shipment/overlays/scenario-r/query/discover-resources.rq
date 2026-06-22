@@ -1,0 +1,22 @@
+PREFIX ex: <http://example.org/terms#>
+PREFIX schema: <http://schema.org/>
+
+SELECT DISTINCT
+  ?manifest
+  ?controller
+  ?resource
+  ?resourceIdentifier
+  ?resourceType
+WHERE {
+  ?manifest
+    a ex:ResourceManifest;
+    schema:identifier "did:secuweb:packager:batch-001";
+    ex:dataController ?controller;
+    ex:resourceEntry ?entry.
+
+  ?entry
+    ex:resource ?resource;
+    ex:resourceIdentifier ?resourceIdentifier;
+    ex:resourceType ?resourceType.
+}
+ORDER BY ?resource

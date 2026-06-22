@@ -1,0 +1,68 @@
+PREFIX ex: <http://example.org/terms#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX schema: <http://schema.org/>
+
+SELECT
+  ?batch
+  ?upstreamShipment
+  ?upstreamShipmentStatus
+  ?outboundShipment
+  ?outboundShipmentStatus
+  ?upstreamPickupStatus
+  ?upstreamPickupTime
+  ?upstreamDeliveryStatus
+  ?upstreamDeliveryTime
+  ?outboundPickupStatus
+  ?outboundPickupTime
+  ?outboundDeliveryStatus
+  ?outboundDeliveryTime
+  ?receiptStatus
+  ?receiptTime
+WHERE {
+  VALUES ?batch {
+    <did:secuweb:packager:batch-001>
+  }
+
+  ?batch
+    a ex:PackagingRecord;
+    prov:wasDerivedFrom ?upstreamShipment.
+
+  ?upstreamShipment
+    a ex:ShipmentRecord;
+    ex:status ?upstreamShipmentStatus.
+
+  ?outboundShipment
+    a ex:ShipmentRecord;
+    ex:productID ?batch;
+    ex:status ?outboundShipmentStatus.
+
+  ?upstreamPickup
+    a ex:PickupEvent;
+    ex:shipmentID ?upstreamShipment;
+    ex:status ?upstreamPickupStatus;
+    schema:startTime ?upstreamPickupTime.
+
+  ?upstreamDelivery
+    a ex:DeliveryEvent;
+    ex:shipmentID ?upstreamShipment;
+    ex:status ?upstreamDeliveryStatus;
+    schema:endTime ?upstreamDeliveryTime.
+
+  ?outboundPickup
+    a ex:PickupEvent;
+    ex:shipmentID ?outboundShipment;
+    ex:status ?outboundPickupStatus;
+    schema:startTime ?outboundPickupTime.
+
+  ?outboundDelivery
+    a ex:DeliveryEvent;
+    ex:shipmentID ?outboundShipment;
+    ex:status ?outboundDeliveryStatus;
+    schema:endTime ?outboundDeliveryTime.
+
+  ?receipt
+    a ex:ReceiptRecord;
+    prov:used ?outboundShipment;
+    ex:status ?receiptStatus;
+    schema:startTime ?receiptTime.
+}

@@ -1,0 +1,87 @@
+{
+  "head": {
+    "vars": [
+      "batch",
+      "upstreamShipment",
+      "upstreamShipmentStatus",
+      "outboundShipment",
+      "outboundShipmentStatus",
+      "upstreamPickupStatus",
+      "upstreamPickupTime",
+      "upstreamDeliveryStatus",
+      "upstreamDeliveryTime",
+      "outboundPickupStatus",
+      "outboundPickupTime",
+      "outboundDeliveryStatus",
+      "outboundDeliveryTime",
+      "receiptStatus",
+      "receiptTime"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "batch": {
+          "type": "uri",
+          "value": "did:secuweb:packager:batch-001"
+        },
+        "upstreamShipment": {
+          "type": "uri",
+          "value": "did:secuweb:farmer:shipment-fp-001"
+        },
+        "upstreamShipmentStatus": {
+          "type": "literal",
+          "value": "shipped"
+        },
+        "outboundShipment": {
+          "type": "uri",
+          "value": "did:secuweb:packager:shipment-pr-001"
+        },
+        "outboundShipmentStatus": {
+          "type": "literal",
+          "value": "shipped"
+        },
+        "upstreamPickupStatus": {
+          "type": "literal",
+          "value": "picked_up"
+        },
+        "upstreamPickupTime": {
+          "type": "literal",
+          "value": "2025-09-27T08:30:00Z"
+        },
+        "upstreamDeliveryStatus": {
+          "type": "literal",
+          "value": "delivered"
+        },
+        "upstreamDeliveryTime": {
+          "type": "literal",
+          "value": "2025-09-27T10:00:00Z"
+        },
+        "outboundPickupStatus": {
+          "type": "literal",
+          "value": "picked_up"
+        },
+        "outboundPickupTime": {
+          "type": "literal",
+          "value": "2025-09-27T12:00:00Z"
+        },
+        "outboundDeliveryStatus": {
+          "type": "literal",
+          "value": "delivered"
+        },
+        "outboundDeliveryTime": {
+          "type": "literal",
+          "value": "2025-09-27T13:20:00Z"
+        },
+        "receiptStatus": {
+          "type": "literal",
+          "value": "received"
+        },
+        "receiptTime": {
+          "type": "literal",
+          "value": "2025-09-27T13:25:00Z"
+        }
+      }
+    ]
+  }
+}

@@ -3,6 +3,12 @@
   "include": [
     "src/flows/**/*.ts",
     "src/adapters/**/*.ts",
+    "src/catalog/**/*.ts",
+    "src/config/**/*.ts",
+    "src/fixtures/**/*.ts",
+    "src/identity/**/*.ts",
+    "src/query/**/*.ts",
+    "src/tests/**/*.ts",
     "src/scratch.ts",
     "src/util/**/*.ts",
     "src/jsonld.expand.ts"

@@ -1,0 +1,36 @@
+{
+  "@context": {
+    "ex": "http://example.org/terms#",
+    "schema": "http://schema.org/"
+  },
+  "@id": "http://localhost:3000/packager/discovery/batch-001.jsonld",
+  "@type": "ex:ResourceManifest",
+  "schema:identifier": "did:secuweb:packager:batch-001",
+  "ex:dataController": {
+    "@id": "http://localhost:3000/packager/profile/card#me"
+  },
+  "ex:resourceEntry": [
+    {
+      "ex:resource": {
+        "@id": "http://localhost:3000/packager/products/batch-001.jsonld"
+      },
+      "ex:resourceIdentifier": {
+        "@id": "did:secuweb:packager:batch-001"
+      },
+      "ex:resourceType": {
+        "@id": "http://example.org/terms#PackagingRecord"
+      }
+    },
+    {
+      "ex:resource": {
+        "@id": "http://localhost:3000/packager/shipments/out/shipment-pr-001.jsonld"
+      },
+      "ex:resourceIdentifier": {
+        "@id": "did:secuweb:packager:shipment-pr-001"
+      },
+      "ex:resourceType": {
+        "@id": "http://example.org/terms#ShipmentRecord"
+      }
+    }
+  ]
+}

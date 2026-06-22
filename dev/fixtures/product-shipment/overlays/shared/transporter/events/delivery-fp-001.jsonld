@@ -1,0 +1,32 @@
+{
+  "@context": {
+    "ex": "http://example.org/terms#",
+    "prov": "http://www.w3.org/ns/prov#",
+    "schema": "http://schema.org/"
+  },
+  "@id": "did:secuweb:transporter:delivery-fp-001",
+  "@type": [
+    "schema:ArriveAction",
+    "prov:Activity",
+    "ex:DeliveryEvent"
+  ],
+  "schema:url": {
+    "@id": "http://localhost:3000/transporter/events/delivery-fp-001.jsonld"
+  },
+  "schema:agent": {
+    "@id": "http://localhost:3000/transporter/profile/card#me"
+  },
+  "ex:shipmentID": {
+    "@id": "did:secuweb:farmer:shipment-fp-001"
+  },
+  "ex:status": "delivered",
+  "schema:startTime": "2025-09-27T09:45:00Z",
+  "schema:endTime": "2025-09-27T10:00:00Z",
+  "ex:from": {
+    "@id": "http://localhost:3000/farmer/profile/card#me"
+  },
+  "ex:to": {
+    "@id": "http://localhost:3000/packager/profile/card#me"
+  },
+  "ex:temperatureC": 4.5
+}

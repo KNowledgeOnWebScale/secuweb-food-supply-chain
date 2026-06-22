@@ -1,7 +1,8 @@
 import {Command} from "commander";
-import {urlServer} from "./config";
-import {writeFileSync} from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
+import path from "node:path";
 import { spawn } from "node:child_process";
+import { cssBaseUrl, webId, withTrailingSlash } from "../config/runtime";
 
 interface UserParams {
     name: string
@@ -21,26 +22,27 @@ function runCommand(cmd: string, args: string[] = []) {
   });
 }
 
-class VCProxy {
+export class VCProxy {
     private userParams: UserParams;
     private vcSetupConfig: any;
     private fpathVcSetup: string
 
     constructor(p: UserParams) {
         this.userParams = p;
-        this.fpathVcSetup =`./src/flows/output/vc.setup.${this.userParams.name}.json`
+        this.fpathVcSetup = path.resolve(process.cwd(), `local-run/generated/vc-setup/vc.setup.${this.userParams.name}.json`)
         this.vcSetupConfig = {
             ...p,
-            css: `${urlServer}/`,
-            webId: `${urlServer}/${p.name}/profile/card#me`
+            css: withTrailingSlash(cssBaseUrl),
+            webId: webId(p.name)
         }
     }
 
-    async setup(){
+    async setup(): Promise<number> {
+        mkdirSync(path.dirname(this.fpathVcSetup), { recursive: true })
         writeFileSync(this.fpathVcSetup,
             JSON.stringify(this.vcSetupConfig, null, 2))
 
-        await runCommand('node', [
+        return await runCommand('node', [
             './vc/dist/cli.js',
             'setup',
             '-m', 'solid',
@@ -48,7 +50,7 @@ class VCProxy {
         ])
     }
 
-    async issue(fpathData: string, fpathOutput: string): Promise<any> {
+    async issue(fpathData: string, fpathOutput: string): Promise<number> {
         return await runCommand('node', [
             './vc/dist/cli.js',
             'issue',
@@ -95,4 +97,6 @@ async function main() {
     await vcProxy.issue(options.data, options.output)
 }
 
-main().catch(console.error);
+if (require.main === module) {
+    main().catch(console.error);
+}

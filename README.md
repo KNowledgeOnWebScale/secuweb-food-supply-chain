@@ -52,6 +52,9 @@ This repository glues to together five main components:
 4. Linked Data Viewer ([Miravi](https://github.com/SolidLabResearch/miravi-a-linked-data-viewer))
 5. The use case flows (see [`src/flows`](src/flows/))
 
+See the [design document](./doc/design.md) for module boundaries, runtime
+components, core workflows, and trust assumptions.
+
 ## Prerequisites
 
 - nvm
@@ -123,10 +126,16 @@ cd vc
 npm i
 npm run build
 cd ..
-# Create each actor's VCs and store them on their pod
-./src/flows/load-actor-data-into-solid-pods.sh
-# Anchor each actor's VC on the chain
-./src/flows/register-products-and-shipments.sh
+# Validate and publish the Product Shipment fixture manifest
+npm run fixtures:validate
+npm run fixtures:validate-overlays
+npm run setup:fixtures
+# Bind actor WebIDs to their DIDs and publish discoverability/catalog resources
+npm run setup:actor-identities
+npm run setup:catalog
+npm run setup:discoverability
+# Anchor the manifest resources on the chain
+npm run flows:anchor-fixtures
 ```
 
 Explore chain transactions.
@@ -153,8 +162,39 @@ To also include the Miravi setup/startup checks:
 npm run test:readme-setup:viewer
 ```
 
+To execute the same setup and keep all services running for interactive use:
+
+```bash
+npm run start:viewer
+```
+
+The viewer is available at <http://127.0.0.1:5173>. Keep the command running
+and press `Ctrl+C` when you want to stop all services.
+
 > [!NOTE]
 > Logs are written to `local-run/readme-smoke/logs`.
+
+The smoke test also executes the scenario acceptance tests for every scenario
+defined in catalogue version `202606111428`. It runs them with
+`SCENARIO_TEST_STRICT=false`, so scenario-level failures are recorded in the
+evidence report without failing the setup pipeline. Unsupported capabilities
+are reported as skipped or failed checks rather than omitted. See
+[Scenario Tests](./doc/scenario-testing.md) for the scenario mapping and
+generated evidence. Run `npm run scenario:ui` after the tests to inspect the
+latest results at <http://127.0.0.1:4173>.
+
+Direct scenario test runs are strict by default:
+
+```bash
+npm run test:scenarios
+```
+
+To collect a full evidence report without a non-zero exit code for failed
+scenario checks:
+
+```bash
+SCENARIO_TEST_STRICT=false npm run test:scenarios
+```
 
 ## Use Case: Product Shipment
 
@@ -179,10 +219,10 @@ The table below summarizes read access per VC resource (`owner` means the actor 
 | --- | --- | --- | --- | --- |
 | `farmer/products/vc/product-x.jsonld` | owner | - | read | - |
 | `farmer/products/vc/product-y.jsonld` | owner | - | read | - |
-| `farmer/shipments/out/vc/shipment1.jsonld` | owner | read | read | - |
+| `farmer/shipments/out/vc/shipment1.jsonld` | owner | read | read | read |
 | `farmer/shipments/out/vc/shipment2.jsonld` | owner | read | read | - |
-| `transporter/transport-events/vc/pickup-shipment1.jsonld` | read | owner | read | - |
-| `transporter/transport-events/vc/delivery-shipment1.jsonld` | read | owner | read | - |
+| `transporter/transport-events/vc/pickup-shipment1.jsonld` | read | owner | read | read |
+| `transporter/transport-events/vc/delivery-shipment1.jsonld` | read | owner | read | read |
 | `packager/products/vc/packaged-batch-001.jsonld` | - | - | owner | read |
 | `packager/shipments/out/vc/shipment3.jsonld` | - | read | owner | read |
 | `transporter/transport-events/vc/pickup-shipment3.jsonld` | - | owner | read | read |

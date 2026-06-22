@@ -1,0 +1,25 @@
+{
+  "@context": {
+    "ex": "http://example.org/terms#",
+    "schema": "http://schema.org/"
+  },
+  "@id": "did:secuweb:farmer:shipment-fp-001",
+  "@type": "ex:ShipmentRecord",
+  "schema:url": {
+    "@id": "http://localhost:3000/farmer/shipments/out/shipment-fp-001.jsonld"
+  },
+  "ex:status": "shipped",
+  "ex:quantity": 10,
+  "ex:productID": {
+    "@id": "did:secuweb:farmer:product-x"
+  },
+  "ex:origin": {
+    "@id": "http://localhost:3000/farmer/profile/card#me"
+  },
+  "ex:destination": {
+    "@id": "http://localhost:3000/packager/profile/card#me"
+  },
+  "ex:transport": {
+    "@id": "http://localhost:3000/transporter/profile/card#me"
+  }
+}
