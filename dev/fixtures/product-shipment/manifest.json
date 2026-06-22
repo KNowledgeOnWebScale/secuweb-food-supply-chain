@@ -5,7 +5,25 @@
     {
       "id": "farmer-product-x",
       "owner": "farmer",
-      "source": "resources/farmer/products/product-x.jsonld",
+      "source": "resources/farmer/products/product-x-packager-view.jsonld",
+      "minimizedFrom": "resources/farmer/products/product-x.jsonld",
+      "retainedFields": [
+        "@context",
+        "@id",
+        "schema:url",
+        "@type",
+        "schema:name",
+        "schema:description",
+        "schema:productID",
+        "schema:category",
+        "schema:brand",
+        "schema:weight",
+        "schema:offers"
+      ],
+      "omittedFields": [
+        "schema:location",
+        "ex:farmLot"
+      ],
       "podPath": "products/vc/product-x.jsonld",
       "publication": "verifiableCredential",
       "subjectDid": "did:secuweb:farmer:product-x",
