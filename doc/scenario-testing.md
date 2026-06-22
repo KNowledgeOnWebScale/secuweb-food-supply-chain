@@ -34,7 +34,7 @@ Coverage and successful implementation are separate concerns:
 | `M-1` | M | An auditor can verify the policy basis of an access decision. | Expected failure: no decision evidence |
 | `N-1` | N | Anonymous and unrelated actors cannot read confidential data. | May pass |
 | `N-2` | N | The shared credential states its permitted processing purpose. | Expected failure: no `termsOfUse` purpose |
-| `N-3` | N | The Packager view contains required weight but no farm-lot location. | May pass |
+| `N-3` | N | The Packager view retains source product weight while removing source-only location and farm-lot fields. | May pass after fixture setup publishes the minimized product view |
 | `O-1` | O | A query selects only five permitted fields for matching events from one Transporter Pod. | May pass |
 | `P-1` | P | One query joins shipment, event, and receipt facts across four actor Pods. | May pass |
 | `Q-1` | Q | A governed registration resolves one shipment identifier to its authoritative resource. | May pass after `setup:discoverability` |

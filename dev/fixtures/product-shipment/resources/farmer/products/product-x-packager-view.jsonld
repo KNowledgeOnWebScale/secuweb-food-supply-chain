@@ -14,16 +14,6 @@
     "@type": "schema:Brand",
     "schema:name": "Farmer John’s Greenhouse"
   },
-  "schema:location": {
-    "@type": "schema:Place",
-    "schema:name": "Farmer John's Greenhouse - Lot X",
-    "schema:address": {
-      "@type": "schema:PostalAddress",
-      "schema:addressLocality": "Sint-Katelijne-Waver",
-      "schema:addressCountry": "BE"
-    }
-  },
-  "ex:farmLot": "greenhouse-lot-x-2026-06-09",
   "schema:weight": {
     "@type": "schema:QuantitativeValue",
     "schema:value": 0.5,

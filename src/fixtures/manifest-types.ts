@@ -9,6 +9,9 @@ export type ManifestResource = {
   id: string;
   owner: string;
   source: string;
+  minimizedFrom?: string;
+  retainedFields?: string[];
+  omittedFields?: string[];
   podPath: string;
   publication: PublicationType;
   subjectDid?: string;
