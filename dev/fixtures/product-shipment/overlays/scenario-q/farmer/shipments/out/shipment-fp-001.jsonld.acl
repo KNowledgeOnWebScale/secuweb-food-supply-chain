@@ -1,0 +1,13 @@
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+
+<#owner>
+    a acl:Authorization;
+    acl:accessTo <http://localhost:3000/farmer/shipments/out/shipment-fp-001.jsonld>;
+    acl:agent <http://localhost:3000/farmer/profile/card#me>;
+    acl:mode acl:Read, acl:Write, acl:Control.
+
+<#packager-read>
+    a acl:Authorization;
+    acl:accessTo <http://localhost:3000/farmer/shipments/out/shipment-fp-001.jsonld>;
+    acl:agent <http://localhost:3000/packager/profile/card#me>;
+    acl:mode acl:Read.

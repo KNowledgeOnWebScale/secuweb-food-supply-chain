@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Superseded by the manifest-driven TypeScript anchoring driver: npm run flows:anchor-fixtures
 set -euo pipefail
 
 # Always run from repo root, regardless of where this script lives or is called from

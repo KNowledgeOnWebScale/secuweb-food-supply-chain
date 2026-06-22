@@ -1,0 +1,15 @@
+PREFIX ex: <http://example.org/terms#>
+PREFIX schema: <http://schema.org/>
+
+SELECT DISTINCT ?manifest
+WHERE {
+  ?entryPoint
+    a ex:DiscoveryEntryPoint;
+    schema:identifier "did:secuweb:packager:batch-001";
+    ex:discoveryScope ex:TransportationProvenance;
+    ex:intendedAgent <http://localhost:3000/retailer/profile/card#me>;
+    ex:expectedManifestCount 4;
+    ex:expectedResourceCount 8;
+    ex:manifest ?manifest.
+}
+ORDER BY ?manifest

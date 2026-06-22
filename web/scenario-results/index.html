@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="SecuWeb demonstrator scenario acceptance-test results"
+    />
+    <title>SecuWeb Scenario Results</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="/" aria-label="SecuWeb scenario results home">
+          <span class="brand-mark" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+          <span>
+            <strong>SecuWeb</strong>
+            <small>Demonstrator verification</small>
+          </span>
+        </a>
+        <div class="environment-pill">
+          <span class="live-dot" aria-hidden="true"></span>
+          Local evidence
+        </div>
+      </header>
+
+      <main>
+        <section class="hero" aria-labelledby="page-title">
+          <div class="hero-copy">
+            <p class="eyebrow">Acceptance test console</p>
+            <h1 id="page-title">Scenario assurance dashboard</h1>
+            <p class="hero-intro">
+              Coverage and evidence from the latest run across every defined
+              SecuWeb scenario, including explicit failures for capabilities
+              that are not implemented yet.
+            </p>
+          </div>
+          <div class="run-state" id="run-state" aria-live="polite">
+            <span class="run-state-icon" aria-hidden="true"></span>
+            <span>
+              <small>Latest run</small>
+              <strong id="run-state-label">Loading evidence</strong>
+            </span>
+          </div>
+        </section>
+
+        <section class="summary-grid" aria-label="Test run summary">
+          <article class="summary-card summary-card-primary">
+            <span class="summary-label">Passed checks</span>
+            <strong class="summary-value" id="passed-count">--</strong>
+            <span class="summary-note" id="passed-note">Loading report</span>
+          </article>
+          <article class="summary-card">
+            <span class="summary-label">Failed checks</span>
+            <strong class="summary-value" id="failed-count">--</strong>
+            <span class="summary-note">Requires attention</span>
+          </article>
+          <article class="summary-card">
+            <span class="summary-label">Skipped checks</span>
+            <strong class="summary-value" id="skipped-count">--</strong>
+            <span class="summary-note">Not yet implemented</span>
+          </article>
+          <article class="summary-card">
+            <span class="summary-label">Scenarios covered</span>
+            <strong class="summary-value" id="scenario-count">--</strong>
+            <span class="summary-note" id="scenario-list">Across the catalogue</span>
+          </article>
+          <article class="summary-card">
+            <span class="summary-label">Evidence generated</span>
+            <strong class="summary-value summary-time" id="generated-time">--</strong>
+            <span class="summary-note" id="generated-date">Waiting for evidence</span>
+          </article>
+        </section>
+
+        <section class="coverage-panel" aria-labelledby="coverage-title">
+          <div class="coverage-copy">
+            <p class="section-kicker">Run completion</p>
+            <h2 id="coverage-title">Acceptance coverage</h2>
+          </div>
+          <div class="coverage-meter">
+            <div
+              class="coverage-track"
+              id="coverage-track"
+              role="progressbar"
+              aria-label="Acceptance checks passed"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+            >
+              <div class="coverage-fill" id="coverage-fill"></div>
+            </div>
+            <strong id="coverage-percent">0%</strong>
+          </div>
+        </section>
+
+        <section class="matrix-section" aria-labelledby="matrix-title">
+          <div class="matrix-heading">
+            <div>
+              <p class="section-kicker">Scenario catalogue matrix</p>
+              <h2 id="matrix-title">Technical aspect by design goal</h2>
+            </div>
+            <div class="matrix-actions">
+              <p class="matrix-note">
+                Cell format: passed / failed / total. Total includes skipped
+                checks. Only scenarios listed in the catalogue matrix are
+                counted here.
+              </p>
+              <label class="matrix-toggle">
+                <input
+                  id="matrix-aggregates-toggle"
+                  type="checkbox"
+                  checked
+                />
+                <span>Show aggregate rows and columns</span>
+              </label>
+              <div class="matrix-copy-buttons">
+                <button
+                  class="copy-matrix-button"
+                  id="copy-matrix-button"
+                  type="button"
+                  disabled
+                >
+                  Copy LaTeX table
+                </button>
+                <button
+                  class="copy-matrix-button"
+                  id="copy-markdown-matrix-button"
+                  type="button"
+                  disabled
+                >
+                  Copy Markdown table
+                </button>
+                <button
+                  class="copy-matrix-button"
+                  id="copy-html-matrix-button"
+                  type="button"
+                  disabled
+                >
+                  Copy HTML table
+                </button>
+              </div>
+              <span
+                class="copy-status"
+                id="copy-matrix-status"
+                aria-live="polite"
+              ></span>
+            </div>
+          </div>
+          <div class="matrix-scroll">
+            <table class="assurance-matrix">
+              <thead id="matrix-head"></thead>
+              <tbody id="matrix-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="results-section" aria-labelledby="results-title">
+          <div class="results-heading">
+            <div>
+              <p class="section-kicker">Detailed evidence</p>
+              <h2 id="results-title">Scenario checks</h2>
+            </div>
+            <button class="refresh-button" id="refresh-button" type="button">
+              <span aria-hidden="true">↻</span>
+              Refresh evidence
+            </button>
+          </div>
+
+          <div class="toolbar">
+            <div class="filter-group" role="group" aria-label="Filter checks">
+              <button
+                class="filter-button is-active"
+                data-filter="all"
+                type="button"
+                aria-pressed="true"
+              >
+                All <span id="all-filter-count">0</span>
+              </button>
+              <button
+                class="filter-button"
+                data-filter="passed"
+                type="button"
+                aria-pressed="false"
+              >
+                Passed <span id="passed-filter-count">0</span>
+              </button>
+              <button
+                class="filter-button"
+                data-filter="failed"
+                type="button"
+                aria-pressed="false"
+              >
+                Failed <span id="failed-filter-count">0</span>
+              </button>
+              <button
+                class="filter-button"
+                data-filter="skipped"
+                type="button"
+                aria-pressed="false"
+              >
+                Skipped <span id="skipped-filter-count">0</span>
+              </button>
+            </div>
+            <label class="search-field">
+              <span class="visually-hidden">Search scenario checks</span>
+              <span class="search-icon" aria-hidden="true"></span>
+              <input
+                id="search-input"
+                type="search"
+                placeholder="Search checks or scenarios"
+                autocomplete="off"
+              />
+            </label>
+          </div>
+
+          <div class="loading-panel" id="loading-panel">
+            <span class="loading-spinner" aria-hidden="true"></span>
+            <p>Loading the latest scenario evidence...</p>
+          </div>
+
+          <div class="error-panel" id="error-panel" hidden>
+            <strong>Evidence is not available</strong>
+            <p id="error-message"></p>
+            <code>npm run test:scenarios</code>
+          </div>
+
+          <div class="result-list" id="result-list" hidden></div>
+          <p class="empty-state" id="empty-state" hidden>
+            No checks match the current filters.
+          </p>
+        </section>
+      </main>
+
+      <footer>
+        <span>SecuWeb food-supply-chain demonstrator</span>
+        <span id="service-endpoints">Waiting for service metadata</span>
+      </footer>
+    </div>
+  </body>
+</html>

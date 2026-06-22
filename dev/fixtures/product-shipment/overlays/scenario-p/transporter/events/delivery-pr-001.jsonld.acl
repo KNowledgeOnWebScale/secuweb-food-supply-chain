@@ -1,0 +1,13 @@
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+
+<#owner>
+    a acl:Authorization;
+    acl:accessTo <http://localhost:3000/transporter/events/delivery-pr-001.jsonld>;
+    acl:agent <http://localhost:3000/transporter/profile/card#me>;
+    acl:mode acl:Read, acl:Write, acl:Control.
+
+<#retailer-read>
+    a acl:Authorization;
+    acl:accessTo <http://localhost:3000/transporter/events/delivery-pr-001.jsonld>;
+    acl:agent <http://localhost:3000/retailer/profile/card#me>;
+    acl:mode acl:Read.

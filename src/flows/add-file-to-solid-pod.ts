@@ -2,7 +2,7 @@
 import {wrapper_createAuthenticatedFetch} from "../css/client-credentials";
 import { Command } from "commander";
 import { createContainer, addFileToContainer } from "../css/helpers";
-import { urlServer } from "./config";
+import { actorContainerUrl, cssBaseUrl } from "../config/runtime";
 
 /**
  * Add a file to a Solid Pod container, creating the container if it does not exist.
@@ -36,9 +36,8 @@ async function main() {
   try {
     const {name: username, email, password, container, inputFile} = options;
     console.log('🔐 createAuthenticatedFetch')
-    const authFetch = await wrapper_createAuthenticatedFetch(username, email, password, urlServer);
-    const urlPod = `${urlServer}/${username}`
-    const urlContainer = `${urlPod}/${container}/`    
+    const authFetch = await wrapper_createAuthenticatedFetch(username, email, password, cssBaseUrl);
+    const urlContainer = actorContainerUrl(username, container)
     await createContainer(urlContainer, authFetch)
     const result = await addFileToContainer(urlContainer, inputFile, options.outputBasename, authFetch);
     const { sourceIri } = result.internal_resourceInfo

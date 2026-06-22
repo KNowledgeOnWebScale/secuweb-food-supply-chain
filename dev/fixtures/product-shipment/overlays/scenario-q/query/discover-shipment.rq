@@ -1,0 +1,23 @@
+PREFIX ex: <http://example.org/terms#>
+PREFIX schema: <http://schema.org/>
+
+SELECT
+  ?resource
+  ?resourceType
+  ?controller
+  ?responsibleProvider
+  ?intendedRole
+  ?accessPolicy
+WHERE {
+  ?registration
+    a ex:GovernedResourceRegistration;
+    schema:identifier "did:secuweb:farmer:shipment-fp-001";
+    ex:registeredResource ?resource;
+    ex:resourceType ?resourceType;
+    ex:dataController ?controller;
+    ex:responsibleProvider ?responsibleProvider;
+    ex:intendedAgent <http://localhost:3000/packager/profile/card#me>;
+    ex:intendedRole ?intendedRole;
+    ex:accessPolicy ?accessPolicy;
+    ex:governanceStatus "active".
+}

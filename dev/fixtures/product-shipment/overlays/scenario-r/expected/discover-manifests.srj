@@ -1,0 +1,35 @@
+{
+  "head": {
+    "vars": [
+      "manifest"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "manifest": {
+          "type": "uri",
+          "value": "http://localhost:3000/farmer/discovery/batch-001.jsonld"
+        }
+      },
+      {
+        "manifest": {
+          "type": "uri",
+          "value": "http://localhost:3000/packager/discovery/batch-001.jsonld"
+        }
+      },
+      {
+        "manifest": {
+          "type": "uri",
+          "value": "http://localhost:3000/retailer/discovery/batch-001.jsonld"
+        }
+      },
+      {
+        "manifest": {
+          "type": "uri",
+          "value": "http://localhost:3000/transporter/discovery/batch-001.jsonld"
+        }
+      }
+    ]
+  }
+}

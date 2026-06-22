@@ -1,0 +1,191 @@
+{
+  "head": {
+    "vars": [
+      "manifest",
+      "controller",
+      "resource",
+      "resourceIdentifier",
+      "resourceType"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "manifest": {
+          "type": "uri",
+          "value": "http://localhost:3000/farmer/discovery/batch-001.jsonld"
+        },
+        "controller": {
+          "type": "uri",
+          "value": "http://localhost:3000/farmer/profile/card#me"
+        },
+        "resource": {
+          "type": "uri",
+          "value": "http://localhost:3000/farmer/shipments/out/shipment-fp-001.jsonld"
+        },
+        "resourceIdentifier": {
+          "type": "uri",
+          "value": "did:secuweb:farmer:shipment-fp-001"
+        },
+        "resourceType": {
+          "type": "uri",
+          "value": "http://example.org/terms#ShipmentRecord"
+        }
+      },
+      {
+        "manifest": {
+          "type": "uri",
+          "value": "http://localhost:3000/packager/discovery/batch-001.jsonld"
+        },
+        "controller": {
+          "type": "uri",
+          "value": "http://localhost:3000/packager/profile/card#me"
+        },
+        "resource": {
+          "type": "uri",
+          "value": "http://localhost:3000/packager/products/batch-001.jsonld"
+        },
+        "resourceIdentifier": {
+          "type": "uri",
+          "value": "did:secuweb:packager:batch-001"
+        },
+        "resourceType": {
+          "type": "uri",
+          "value": "http://example.org/terms#PackagingRecord"
+        }
+      },
+      {
+        "manifest": {
+          "type": "uri",
+          "value": "http://localhost:3000/packager/discovery/batch-001.jsonld"
+        },
+        "controller": {
+          "type": "uri",
+          "value": "http://localhost:3000/packager/profile/card#me"
+        },
+        "resource": {
+          "type": "uri",
+          "value": "http://localhost:3000/packager/shipments/out/shipment-pr-001.jsonld"
+        },
+        "resourceIdentifier": {
+          "type": "uri",
+          "value": "did:secuweb:packager:shipment-pr-001"
+        },
+        "resourceType": {
+          "type": "uri",
+          "value": "http://example.org/terms#ShipmentRecord"
+        }
+      },
+      {
+        "manifest": {
+          "type": "uri",
+          "value": "http://localhost:3000/retailer/discovery/batch-001.jsonld"
+        },
+        "controller": {
+          "type": "uri",
+          "value": "http://localhost:3000/retailer/profile/card#me"
+        },
+        "resource": {
+          "type": "uri",
+          "value": "http://localhost:3000/retailer/receipts/receipt-pr-001.jsonld"
+        },
+        "resourceIdentifier": {
+          "type": "uri",
+          "value": "did:secuweb:retailer:receipt-pr-001"
+        },
+        "resourceType": {
+          "type": "uri",
+          "value": "http://example.org/terms#ReceiptRecord"
+        }
+      },
+      {
+        "manifest": {
+          "type": "uri",
+          "value": "http://localhost:3000/transporter/discovery/batch-001.jsonld"
+        },
+        "controller": {
+          "type": "uri",
+          "value": "http://localhost:3000/transporter/profile/card#me"
+        },
+        "resource": {
+          "type": "uri",
+          "value": "http://localhost:3000/transporter/events/delivery-fp-001.jsonld"
+        },
+        "resourceIdentifier": {
+          "type": "uri",
+          "value": "did:secuweb:transporter:delivery-fp-001"
+        },
+        "resourceType": {
+          "type": "uri",
+          "value": "http://example.org/terms#DeliveryEvent"
+        }
+      },
+      {
+        "manifest": {
+          "type": "uri",
+          "value": "http://localhost:3000/transporter/discovery/batch-001.jsonld"
+        },
+        "controller": {
+          "type": "uri",
+          "value": "http://localhost:3000/transporter/profile/card#me"
+        },
+        "resource": {
+          "type": "uri",
+          "value": "http://localhost:3000/transporter/events/delivery-pr-001.jsonld"
+        },
+        "resourceIdentifier": {
+          "type": "uri",
+          "value": "did:secuweb:transporter:delivery-pr-001"
+        },
+        "resourceType": {
+          "type": "uri",
+          "value": "http://example.org/terms#DeliveryEvent"
+        }
+      },
+      {
+        "manifest": {
+          "type": "uri",
+          "value": "http://localhost:3000/transporter/discovery/batch-001.jsonld"
+        },
+        "controller": {
+          "type": "uri",
+          "value": "http://localhost:3000/transporter/profile/card#me"
+        },
+        "resource": {
+          "type": "uri",
+          "value": "http://localhost:3000/transporter/events/pickup-fp-001.jsonld"
+        },
+        "resourceIdentifier": {
+          "type": "uri",
+          "value": "did:secuweb:transporter:pickup-fp-001"
+        },
+        "resourceType": {
+          "type": "uri",
+          "value": "http://example.org/terms#PickupEvent"
+        }
+      },
+      {
+        "manifest": {
+          "type": "uri",
+          "value": "http://localhost:3000/transporter/discovery/batch-001.jsonld"
+        },
+        "controller": {
+          "type": "uri",
+          "value": "http://localhost:3000/transporter/profile/card#me"
+        },
+        "resource": {
+          "type": "uri",
+          "value": "http://localhost:3000/transporter/events/pickup-pr-001.jsonld"
+        },
+        "resourceIdentifier": {
+          "type": "uri",
+          "value": "did:secuweb:transporter:pickup-pr-001"
+        },
+        "resourceType": {
+          "type": "uri",
+          "value": "http://example.org/terms#PickupEvent"
+        }
+      }
+    ]
+  }
+}

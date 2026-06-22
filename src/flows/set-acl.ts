@@ -2,7 +2,7 @@
 import {wrapper_createAuthenticatedFetch} from "../css/client-credentials";
 import { Command } from "commander";
 import { universalAccess } from "@inrupt/solid-client";
-import { urlServer } from "./config";
+import { cssBaseUrl } from "../config/runtime";
 
 /**
  * Add a file to a Solid Pod container, creating the container if it does not exist.
@@ -35,7 +35,7 @@ async function main() {
   try {
     const {name: username, email, password, resourceUrl, webId} = options;
     console.log('🔐 createAuthenticatedFetch')
-    const authFetch = await wrapper_createAuthenticatedFetch(username, email, password, urlServer);
+    const authFetch = await wrapper_createAuthenticatedFetch(username, email, password, cssBaseUrl);
 
     const am = {
       read: true,

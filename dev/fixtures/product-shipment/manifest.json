@@ -1,0 +1,171 @@
+{
+  "id": "product-shipment",
+  "actors": ["farmer", "packager", "transporter", "retailer"],
+  "resources": [
+    {
+      "id": "farmer-product-x",
+      "owner": "farmer",
+      "source": "resources/farmer/products/product-x.jsonld",
+      "podPath": "products/vc/product-x.jsonld",
+      "publication": "verifiableCredential",
+      "subjectDid": "did:secuweb:farmer:product-x",
+      "catalog": true,
+      "anchor": true,
+      "grants": [
+        { "agent": "packager", "read": true }
+      ]
+    },
+    {
+      "id": "farmer-product-y",
+      "owner": "farmer",
+      "source": "resources/farmer/products/product-y.jsonld",
+      "podPath": "products/vc/product-y.jsonld",
+      "publication": "verifiableCredential",
+      "subjectDid": "did:secuweb:farmer:product-y",
+      "catalog": true,
+      "anchor": true,
+      "grants": [
+        { "agent": "packager", "read": true }
+      ]
+    },
+    {
+      "id": "farmer-shipment-1",
+      "owner": "farmer",
+      "source": "resources/farmer/shipments/out/shipment1.jsonld",
+      "podPath": "shipments/out/vc/shipment1.jsonld",
+      "publication": "verifiableCredential",
+      "subjectDid": "did:secuweb:farmer:shipment1",
+      "catalog": true,
+      "anchor": true,
+      "grants": [
+        { "agent": "packager", "read": true },
+        { "agent": "transporter", "read": true },
+        { "agent": "retailer", "read": true }
+      ]
+    },
+    {
+      "id": "farmer-shipment-2",
+      "owner": "farmer",
+      "source": "resources/farmer/shipments/out/shipment2.jsonld",
+      "podPath": "shipments/out/vc/shipment2.jsonld",
+      "publication": "verifiableCredential",
+      "subjectDid": "did:secuweb:farmer:shipment2",
+      "catalog": true,
+      "anchor": true,
+      "grants": [
+        { "agent": "packager", "read": true },
+        { "agent": "transporter", "read": true }
+      ]
+    },
+    {
+      "id": "packager-receipt-shipment-1",
+      "owner": "packager",
+      "source": "resources/packager/shipments/in/receipt-shipment1.jsonld",
+      "podPath": "shipments/in/vc/receipt-shipment1-vc.jsonld",
+      "publication": "verifiableCredential",
+      "subjectDid": "did:secuweb:packager:shipment1",
+      "catalog": false,
+      "anchor": true,
+      "grants": []
+    },
+    {
+      "id": "packager-batch-001",
+      "owner": "packager",
+      "source": "resources/packager/products/packaged-batch-001.jsonld",
+      "podPath": "products/vc/packaged-batch-001.jsonld",
+      "publication": "verifiableCredential",
+      "subjectDid": "did:secuweb:packager:batch-001",
+      "catalog": true,
+      "anchor": true,
+      "grants": [
+        { "agent": "retailer", "read": true }
+      ]
+    },
+    {
+      "id": "packager-shipment-3",
+      "owner": "packager",
+      "source": "resources/packager/shipments/out/shipment3.jsonld",
+      "podPath": "shipments/out/vc/shipment3.jsonld",
+      "publication": "verifiableCredential",
+      "subjectDid": "did:secuweb:packager:shipment3",
+      "catalog": true,
+      "anchor": true,
+      "grants": [
+        { "agent": "retailer", "read": true },
+        { "agent": "transporter", "read": true }
+      ]
+    },
+    {
+      "id": "transporter-pickup-shipment-1",
+      "owner": "transporter",
+      "source": "resources/transporter/transport-events/pickup-shipment1.jsonld",
+      "podPath": "transport-events/vc/pickup-shipment1.jsonld",
+      "publication": "verifiableCredential",
+      "subjectDid": "did:secuweb:transporter:pickup-shipment1",
+      "catalog": true,
+      "anchor": true,
+      "grants": [
+        { "agent": "farmer", "read": true },
+        { "agent": "packager", "read": true },
+        { "agent": "retailer", "read": true }
+      ]
+    },
+    {
+      "id": "transporter-delivery-shipment-1",
+      "owner": "transporter",
+      "source": "resources/transporter/transport-events/delivery-shipment1.jsonld",
+      "podPath": "transport-events/vc/delivery-shipment1.jsonld",
+      "publication": "verifiableCredential",
+      "subjectDid": "did:secuweb:transporter:delivery-shipment1",
+      "catalog": true,
+      "anchor": true,
+      "grants": [
+        { "agent": "farmer", "read": true },
+        { "agent": "packager", "read": true },
+        { "agent": "retailer", "read": true }
+      ]
+    },
+    {
+      "id": "transporter-pickup-shipment-3",
+      "owner": "transporter",
+      "source": "resources/transporter/transport-events/pickup-shipment3.jsonld",
+      "podPath": "transport-events/vc/pickup-shipment3.jsonld",
+      "publication": "verifiableCredential",
+      "subjectDid": "did:secuweb:transporter:pickup-shipment3",
+      "catalog": true,
+      "anchor": true,
+      "grants": [
+        { "agent": "packager", "read": true },
+        { "agent": "retailer", "read": true }
+      ]
+    },
+    {
+      "id": "transporter-delivery-shipment-3",
+      "owner": "transporter",
+      "source": "resources/transporter/transport-events/delivery-shipment3.jsonld",
+      "podPath": "transport-events/vc/delivery-shipment3.jsonld",
+      "publication": "verifiableCredential",
+      "subjectDid": "did:secuweb:transporter:delivery-shipment3",
+      "catalog": true,
+      "anchor": true,
+      "grants": [
+        { "agent": "packager", "read": true },
+        { "agent": "retailer", "read": true }
+      ]
+    },
+    {
+      "id": "retailer-receipt-shipment-3",
+      "owner": "retailer",
+      "source": "resources/retailer/shipments/in/receipt-shipment3.jsonld",
+      "podPath": "shipments/in/vc/receipt-shipment3-vc.jsonld",
+      "publication": "verifiableCredential",
+      "subjectDid": "did:secuweb:retailer:shipment3",
+      "catalog": true,
+      "anchor": true,
+      "grants": [
+        { "agent": "packager", "read": true },
+        { "agent": "farmer", "read": true }
+      ]
+    }
+  ]
+}
