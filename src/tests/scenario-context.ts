@@ -8,6 +8,7 @@ import { loadActorsSync, requireActor } from "../fixtures/actors.js";
 import type {
   AuthenticatedFetch,
   CredentialFixture,
+  ExplorerData,
   ScenarioContext,
   VerificationResponse,
 } from "./scenario-types.js";
@@ -105,6 +106,12 @@ export function createContext(evidenceDir: string, repoRoot: string): ScenarioCo
     return await response.json() as VerificationResponse;
   }
 
+  async function getExplorerData(): Promise<ExplorerData> {
+    const response = await fetch(`${verifierBaseUrl}/explorer/data`);
+    assert.equal(response.status, 200, `Explorer returned ${response.status}`);
+    return await response.json() as ExplorerData;
+  }
+
   async function runVcCli(
     inputFile: string,
     configFile: string
@@ -152,6 +159,7 @@ export function createContext(evidenceDir: string, repoRoot: string): ScenarioCo
     fetchCredential,
     fetchJsonResource,
     verifyOnChain,
+    getExplorerData,
     runVcCli,
   };
 }

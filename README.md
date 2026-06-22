@@ -106,8 +106,12 @@ npm i
 npx hardhat node
 ```
 
-Redeploy contract and at least one event (in this case: registering a DID).
-Then, start the verifier service.
+Deploy the contract and register DIDs. `npm run setup` runs `deploy && register
+&& register:actors`: it deploys the contract, registers the sample DID, and
+registers each actor's issuer DID (controlled by that actor's own address).
+The actor issuer DIDs must be registered **before** anchoring, because
+`anchorCredential` now requires the issuer DID to be registered and controlled
+by the signing actor. Then, start the verifier service.
 
 ```bash
 # Terminal D
