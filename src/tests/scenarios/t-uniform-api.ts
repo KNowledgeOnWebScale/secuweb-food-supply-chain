@@ -5,6 +5,9 @@ export const checks: ScenarioCheck[] = [
     id: "T-1",
     scenario: "T",
     description: "Domain data and its blockchain verification are exposed through one uniform API",
-    skip: true,
+    skip: false,
+    run: async (context) => {
+      throw new Error("Not implemented");
+    }
   },
 ];
