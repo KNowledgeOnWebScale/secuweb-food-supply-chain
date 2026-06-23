@@ -7,7 +7,7 @@ export const checks: ScenarioCheck[] = [
   {
     id: "S-1",
     scenario: "S",
-    description: "The same Solid/LDP GET pattern retrieves resources from different actors",
+    description: "A uniform domain-data API pattern retrieves resources from different actors",
     run: async (context) => {
       const packagerFetch = await context.getActorFetch("packager");
       const sources = [
@@ -32,7 +32,7 @@ export const checks: ScenarioCheck[] = [
         3,
         `Expected three actor issuers, received ${[...issuers].join(", ")}`
       );
-      return `GET returned ${[...contentTypes][0]} for ${issuers.size} actor issuers`;
+      return `The same GET pattern returned ${[...contentTypes][0]} domain data for ${issuers.size} actor issuers`;
     },
   },
 ];

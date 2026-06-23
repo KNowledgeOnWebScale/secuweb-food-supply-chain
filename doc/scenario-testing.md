@@ -53,8 +53,8 @@ Skipped checks are categorized because they do not all mean the same thing:
 | `P-1` | P | One query joins shipment, event, and receipt facts across four actor Pods. | May pass |
 | `Q-1` | Q | A governed registration resolves one shipment identifier to its authoritative resource. | May pass after `setup:discoverability` |
 | `R-1` | R | One entry point discovers four manifests and eight registered resources. | May pass after `setup:discoverability` |
-| `S-1` | S | One Solid/LDP GET pattern retrieves resources from three actor Pods. | May pass |
-| `T-1` | T | Domain data and blockchain verification are available through adjacent uniform API resources. | Expected failure: no uniform verification API |
+| `S-1` | S | A uniform domain-data API pattern retrieves supply-chain resources from three actor data stores. | May pass |
+| `T-1` | T | Verification evidence for retrieved domain data is available through a uniform API pattern aligned with domain-data access. | Expected failure: no uniform verification-evidence API |
 | `U-1` | U | Product-shipment fixtures expose stable Web identifiers and shared semantic vocabularies across actors. | May pass |
 | `U-2` | U | Representative supply-chain event data is aligned with EPCIS/GS1 event semantics. | Skipped: under-specified |
 | `V-1` | V | The governance model accredits the Farmer to issue product-origin data. | Excluded from analysis |
