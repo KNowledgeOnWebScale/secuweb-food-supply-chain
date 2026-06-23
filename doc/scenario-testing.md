@@ -1,7 +1,7 @@
 # Scenario Tests
 
 The acceptance runner covers every scenario in SecuWeb scenario catalogue
-version `202606231754`, from Scenario B through Scenario V.
+version `202606231754`, from Scenario A through Scenario V.
 
 Coverage and successful implementation are separate concerns:
 
@@ -29,9 +29,9 @@ Skipped checks are categorized because they do not all mean the same thing:
 
 | Check | Scenario | Acceptance criterion | Current expectation |
 | --- | --- | --- | --- |
+| `A-1` | A | The Farmer VC anchor is signed by, and verified against, the Farmer's on-chain identity. | May pass |
 | `B-1` | B | The unchanged Farmer VC matches its on-chain commitment. | May pass |
 | `B-2` | B | A modified Farmer VC does not match an on-chain commitment. | May pass |
-| `B-3` | B | The Farmer VC anchor is signed by, and verified against, the Farmer's on-chain identity. | May pass |
 | `C-1` | C | The Farmer inspects recorded read and update operations for shared data. | Skipped: feature absent |
 | `D-1` | D | An auditor correlates a governance rule, access decision, and actor. | Skipped: feature absent |
 | `E-1` | E | The unchanged Farmer VC passes signature verification. | Excluded from analysis |
@@ -59,7 +59,7 @@ Skipped checks are categorized because they do not all mean the same thing:
 | `U-2` | U | Representative supply-chain event data is aligned with EPCIS/GS1 event semantics. | Skipped: under-specified |
 | `V-1` | V | The governance model accredits the Farmer to issue product-origin data. | Excluded from analysis |
 
-The runner validates that the result set contains all 21 catalogue scenario
+The runner validates that the result set contains all 22 catalogue scenario
 identifiers and that every included scenario has at least one included result.
 An omitted scenario therefore fails the test run as a framework error.
 

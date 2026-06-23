@@ -140,14 +140,15 @@ const scenarioMatrix = {
     INT: ["U"],
   },
   Verifiability: {
-    DS: ["B"],
+    DS: ["A"],
     DG: ["V"],
     TR: ["B"],
   },
 };
 
 const scenarioMetadata = {
-  B: { goals: ["TR", "DS"], aspect: "Verifiability" },
+  A: { goals: ["DS"], aspect: "Verifiability" },
+  B: { goals: ["TR"], aspect: "Verifiability" },
   C: { goals: ["DS"], aspect: "Auditability" },
   D: { goals: ["DG"], aspect: "Auditability" },
   E: { goals: ["TR"], aspect: "Auditability", includeInAnalysis: false },

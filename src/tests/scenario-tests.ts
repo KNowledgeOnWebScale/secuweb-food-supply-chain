@@ -14,6 +14,7 @@ import type {
   SkipCategory,
 } from "./scenario-types.js";
 
+import { checks as checksA } from "./scenarios/a-data-holder-verifiability.js";
 import { checks as checksB } from "./scenarios/b-blockchain-anchoring.js";
 import { checks as checksC } from "./scenarios/c-audit-trail.js";
 import { checks as checksD } from "./scenarios/d-governance-audit.js";
@@ -37,8 +38,8 @@ import { checks as checksU } from "./scenarios/u-data-model-interoperability.js"
 import { checks as checksV } from "./scenarios/v-issuer-accreditation-verifiability.js";
 
 const catalogueVersion = "202606231754";
-const definedScenarios = "BCDEFGHIJKLMNOPQRSTUV".split("");
-const analysisScenarios = ["B", "C", "D", "F", "G", "J", "K", "N", "O", "P", "Q", "R", "S", "T", "U"];
+const definedScenarios = "ABCDEFGHIJKLMNOPQRSTUV".split("");
+const analysisScenarios = ["A", "B", "C", "D", "F", "G", "J", "K", "N", "O", "P", "Q", "R", "S", "T", "U"];
 const excludedScenarios = definedScenarios.filter((scenario) => !analysisScenarios.includes(scenario));
 const repoRoot = process.cwd();
 const evidenceDir = path.resolve(
@@ -83,7 +84,7 @@ function parseScenarioStrictMode(value: string | undefined): boolean {
 const strictMode = parseScenarioStrictMode(process.env.SCENARIO_TEST_STRICT);
 
 const allChecks: ScenarioCheck[] = [
-  ...checksB, ...checksC, ...checksD,
+  ...checksA, ...checksB, ...checksC, ...checksD,
   ...checksE, ...checksF, ...checksG, ...checksH,
   ...checksI, ...checksJ, ...checksK, ...checksL,
   ...checksM, ...checksN, ...checksO, ...checksP,
