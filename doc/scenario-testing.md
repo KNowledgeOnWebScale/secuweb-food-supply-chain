@@ -11,6 +11,14 @@ Coverage and successful implementation are separate concerns:
   resource, policy, log, endpoint, or definition; and
 - one check contributes evidence to exactly one scenario.
 
+Skipped checks are categorized because they do not all mean the same thing:
+
+| Category | Matrix code | Meaning |
+| --- | --- | --- |
+| `feature-absent` | `FA` | The required architectural feature does not exist yet, such as an audit log or policy-decision evidence source. |
+| `pending-implementation` | `PI` | The scenario is implementable in the current architecture, but the specific fixture or test work has not been done yet. |
+| `under-specified` | `US` | The scenario still needs sharper acceptance criteria before an executable check would be meaningful. |
+
 ## Test Catalogue
 
 | Check | Scenario | Acceptance criterion | Current expectation |
@@ -85,6 +93,10 @@ The report includes:
 - passed and failed counts; and
 - a description, observed detail, timing metadata, and output-cache paths for
   every check.
+
+Skipped checks include `skipCategory` and `skipReason`, and the aggregate report
+includes `skippedByCategory`. The dashboard matrix renders cells as
+`passed/failed/total [skip-code:count]` when skipped checks are present.
 
 Each scenario run also caches per-check outputs under:
 

@@ -23,12 +23,16 @@ export type CheckOutputCache = {
   artifacts: CachedScenarioOutput[];
 };
 
+export type SkipCategory = "feature-absent" | "pending-implementation" | "under-specified";
+
 export type CheckResult = {
   id: string;
   scenario: string;
   description: string;
   passed: boolean;
   skipped: boolean;
+  skipCategory?: SkipCategory;
+  skipReason?: string;
   detail: string;
   startedAt: string;
   completedAt: string;
@@ -88,6 +92,8 @@ type SkippedCheck = {
   scenario: string;
   description: string;
   skip: true;
+  skipCategory: SkipCategory;
+  skipReason: string;
 };
 
 type RunnableCheck = {

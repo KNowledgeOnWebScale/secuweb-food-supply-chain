@@ -70,6 +70,36 @@ const technicalAspectOrder = [
   "Verifiability",
 ];
 
+const skipCategoryOrder = [
+  "feature-absent",
+  "pending-implementation",
+  "under-specified",
+  "unknown",
+];
+
+const skipCategoryMetadata = {
+  "feature-absent": {
+    code: "FA",
+    label: "Feature absent",
+    description: "Required architectural feature is absent",
+  },
+  "pending-implementation": {
+    code: "PI",
+    label: "Pending implementation",
+    description: "Implementable check has not been implemented yet",
+  },
+  "under-specified": {
+    code: "US",
+    label: "Under-specified",
+    description: "Scenario needs sharper acceptance criteria",
+  },
+  unknown: {
+    code: "UNK",
+    label: "Unknown skip",
+    description: "Legacy report without skip-category metadata",
+  },
+};
+
 const scenarioMatrix = {
   Auditability: {
     DS: ["C"],
@@ -297,6 +327,11 @@ function getOverviewRows(report) {
       interpretation: "Not negative evidence, but absence of validation",
     },
     {
+      metric: "Skipped by meaning",
+      result: formatReportSkipBreakdown(report),
+      interpretation: "FA = feature absent, PI = pending implementation, US = under-specified",
+    },
+    {
       metric: "Fully validated scenarios",
       result: formatMetricRatio(
         scenarioSummary.fullyValidated,
@@ -391,6 +426,7 @@ function createMatrixCell() {
     passed: 0,
     failed: 0,
     skipped: 0,
+    skipCategories: Object.fromEntries(skipCategoryOrder.map((category) => [category, 0])),
     total: 0,
     scenarios: new Set(),
   };
@@ -410,6 +446,8 @@ function addResultToMatrixCell(cell, result, scenario) {
   cell.scenarios.add(scenario);
   if (result.skipped) {
     cell.skipped += 1;
+    const category = result.skipCategory || "unknown";
+    cell.skipCategories[category] = (cell.skipCategories[category] || 0) + 1;
   } else if (result.passed) {
     cell.passed += 1;
   } else {
@@ -422,6 +460,8 @@ function addResultToAggregateCell(cell, result, scenarios) {
   scenarios.forEach((scenario) => cell.scenarios.add(scenario));
   if (result.skipped) {
     cell.skipped += 1;
+    const category = result.skipCategory || "unknown";
+    cell.skipCategories[category] = (cell.skipCategories[category] || 0) + 1;
   } else if (result.passed) {
     cell.passed += 1;
   } else {
@@ -438,6 +478,57 @@ function sortScenarios(scenarios) {
 function formatScenarioList(scenarios) {
   const sortedScenarios = sortScenarios(scenarios);
   return sortedScenarios.length === 0 ? "--" : sortedScenarios.join(", ");
+}
+
+function getSkipCategoryEntries(cell) {
+  return skipCategoryOrder
+    .map((category) => ({
+      category,
+      count: cell.skipCategories?.[category] || 0,
+      metadata: skipCategoryMetadata[category] || skipCategoryMetadata.unknown,
+    }))
+    .filter((entry) => entry.count > 0);
+}
+
+function formatSkipBreakdown(cell, separator = " ") {
+  const entries = getSkipCategoryEntries(cell);
+  return entries.length === 0
+    ? ""
+    : entries.map((entry) => `${entry.metadata.code}:${entry.count}`).join(separator);
+}
+
+function formatMatrixValue(cell) {
+  const base = `${cell.passed}/${cell.failed}/${cell.total}`;
+  const skipBreakdown = formatSkipBreakdown(cell);
+  return skipBreakdown ? `${base} [${skipBreakdown}]` : base;
+}
+
+function formatSkipTitleParts(cell) {
+  return getSkipCategoryEntries(cell).map((entry) =>
+    `${entry.metadata.label}: ${entry.count} (${entry.metadata.description})`
+  );
+}
+
+function formatReportSkipBreakdown(report) {
+  const counts = { ...(report.skippedByCategory || {}) };
+  if (Object.keys(counts).length === 0) {
+    for (const result of report.results || []) {
+      if (!result.skipped) {
+        continue;
+      }
+      const category = result.skipCategory || "unknown";
+      counts[category] = (counts[category] || 0) + 1;
+    }
+  }
+  const entries = skipCategoryOrder
+    .map((category) => ({
+      count: counts[category] || 0,
+      metadata: skipCategoryMetadata[category] || skipCategoryMetadata.unknown,
+    }))
+    .filter((entry) => entry.count > 0);
+  return entries.length === 0
+    ? "No skipped checks"
+    : entries.map((entry) => `${entry.metadata.code}:${entry.count}`).join(", ");
 }
 
 function getConfiguredAspectScenarios(aspect) {
@@ -540,8 +631,10 @@ function renderMatrixCell(cell, aspect, goal) {
     `Passed: ${cell.passed}`,
     `Failed: ${cell.failed}`,
     `Skipped: ${cell.skipped}`,
+    ...formatSkipTitleParts(cell),
     `Total: ${cell.total}`,
   ].join(" · ");
+  const skipBreakdown = formatSkipBreakdown(cell);
 
   return `
     <td class="matrix-cell ${matrixCellClass(cell)}" title="${escapeHtml(title)}">
@@ -550,6 +643,7 @@ function renderMatrixCell(cell, aspect, goal) {
         <span>${cell.failed}</span>
         <span>${cell.total}</span>
       </span>
+      ${skipBreakdown ? `<span class="matrix-skip-breakdown">${escapeHtml(skipBreakdown)}</span>` : ""}
       <small>${escapeHtml(scenarioLabel)}</small>
     </td>
   `;
@@ -584,8 +678,10 @@ function renderAggregateCountCell(cell, label, extraClass = "") {
     `Passed: ${cell.passed}`,
     `Failed: ${cell.failed}`,
     `Skipped: ${cell.skipped}`,
+    ...formatSkipTitleParts(cell),
     `Total: ${cell.total}`,
   ].join(" · ");
+  const skipBreakdown = formatSkipBreakdown(cell);
 
   return `
     <td class="matrix-cell matrix-aggregate-cell ${extraClass} ${matrixCellClass(cell)}" title="${escapeHtml(title)}">
@@ -594,6 +690,7 @@ function renderAggregateCountCell(cell, label, extraClass = "") {
         <span>${cell.failed}</span>
         <span>${cell.total}</span>
       </span>
+      ${skipBreakdown ? `<span class="matrix-skip-breakdown">${escapeHtml(skipBreakdown)}</span>` : ""}
     </td>
   `;
 }
@@ -694,7 +791,7 @@ function renderLatexMatrixCell(cell, aspect, goal) {
     return "--";
   }
 
-  return `${cell.passed}/${cell.failed}/${cell.total}`;
+  return formatMatrixValue(cell);
 }
 
 function generateMatrixLatex(report) {
@@ -719,7 +816,7 @@ function generateMatrixLatex(report) {
     );
     if (includeAggregates) {
       cells.push(
-        `${aggregates.aspects[aspect].passed}/${aggregates.aspects[aspect].failed}/${aggregates.aspects[aspect].total}`,
+        formatMatrixValue(aggregates.aspects[aspect]),
         escapeLatex(formatScenarioList(getConfiguredAspectScenarios(aspect)))
       );
     }
@@ -729,10 +826,7 @@ function generateMatrixLatex(report) {
     ? [
         [
           "Design goal totals",
-          ...designGoalOrder.map(
-            (goal) =>
-              `${aggregates.goals[goal].passed}/${aggregates.goals[goal].failed}/${aggregates.goals[goal].total}`
-          ),
+          ...designGoalOrder.map((goal) => formatMatrixValue(aggregates.goals[goal])),
           "--",
           "--",
         ],
@@ -748,7 +842,7 @@ function generateMatrixLatex(report) {
   return [
     "\\begin{table}[htbp]",
     "\\centering",
-    "\\caption{Scenario assurance matrix. Cell format: passing/failing/total.}",
+    "\\caption{Scenario assurance matrix. Cell format: passing/failing/total with optional skip breakdown (FA feature absent, PI pending implementation, US under-specified).}",
     `\\begin{tabular}{${columns}}`,
     "\\hline",
     `${header} \\\\`,
@@ -771,7 +865,7 @@ function renderMarkdownMatrixCell(cell, aspect, goal) {
     return "--";
   }
 
-  return `${cell.passed}/${cell.failed}/${cell.total}`;
+  return formatMatrixValue(cell);
 }
 
 function generateMatrixMarkdown(report) {
@@ -794,7 +888,7 @@ function generateMatrixMarkdown(report) {
     );
     if (includeAggregates) {
       cells.push(
-        `${aggregates.aspects[aspect].passed}/${aggregates.aspects[aspect].failed}/${aggregates.aspects[aspect].total}`,
+        formatMatrixValue(aggregates.aspects[aspect]),
         formatScenarioList(getConfiguredAspectScenarios(aspect))
       );
     }
@@ -804,10 +898,7 @@ function generateMatrixMarkdown(report) {
     ? [
         [
           "Design goal totals",
-          ...designGoalOrder.map(
-            (goal) =>
-              `${aggregates.goals[goal].passed}/${aggregates.goals[goal].failed}/${aggregates.goals[goal].total}`
-          ),
+          ...designGoalOrder.map((goal) => formatMatrixValue(aggregates.goals[goal])),
           "--",
           "--",
         ],
@@ -826,7 +917,7 @@ function generateMatrixMarkdown(report) {
     ...rows,
     ...aggregateRows,
     "",
-    "Cell format: passing/failing/total. Total includes skipped checks.",
+    "Cell format: passing/failing/total. Skip breakdown codes: FA = feature absent, PI = pending implementation, US = under-specified.",
   ].join("\n");
 }
 
@@ -837,7 +928,7 @@ function renderHtmlMatrixCell(cell, aspect, goal) {
     return `<td style="${cellStyle}">--</td>`;
   }
 
-  return `<td style="${cellStyle}">${cell.passed}/${cell.failed}/${cell.total}</td>`;
+  return `<td style="${cellStyle}">${escapeHtml(formatMatrixValue(cell))}</td>`;
 }
 
 function renderHtmlValueCell(value, textAlign = "center", extraStyle = "") {
@@ -873,7 +964,7 @@ function generateMatrixHtml(report) {
       const aggregateCells = includeAggregates
         ? [
             renderHtmlValueCell(
-              `${aggregates.aspects[aspect].passed}/${aggregates.aspects[aspect].failed}/${aggregates.aspects[aspect].total}`,
+              formatMatrixValue(aggregates.aspects[aspect]),
               "center",
               aggregateStartStyle
             ),
@@ -888,7 +979,7 @@ function generateMatrixHtml(report) {
         `  <tr>\n    <th scope="row" style="${rowHeadingStyle} ${aggregateRowStyle}">Design goal totals</th>\n    ${designGoalOrder
           .map((goal) =>
             renderHtmlValueCell(
-              `${aggregates.goals[goal].passed}/${aggregates.goals[goal].failed}/${aggregates.goals[goal].total}`,
+              formatMatrixValue(aggregates.goals[goal]),
               "center",
               aggregateRowStyle
             )
@@ -908,7 +999,7 @@ function generateMatrixHtml(report) {
 
   return [
     '<table aria-label="Scenario assurance matrix" style="border-collapse: collapse;">',
-    '  <caption style="caption-side: top; font-weight: 700; margin-bottom: 6px;">Scenario assurance matrix. Cell format: passing/failing/total. Total includes skipped checks.</caption>',
+    '  <caption style="caption-side: top; font-weight: 700; margin-bottom: 6px;">Scenario assurance matrix. Cell format: passing/failing/total. Skip breakdown codes: FA feature absent, PI pending implementation, US under-specified.</caption>',
     "  <thead>",
     `    <tr>${header}</tr>`,
     "  </thead>",
@@ -934,11 +1025,11 @@ function generateMatrixTsv(report) {
       const configuredScenarios = scenarioMatrix[aspect]?.[goal] || [];
       return configuredScenarios.length === 0
         ? "--"
-        : `${matrix[aspect][goal].passed}/${matrix[aspect][goal].failed}/${matrix[aspect][goal].total}`;
+        : formatMatrixValue(matrix[aspect][goal]);
     });
     if (includeAggregates) {
       cells.push(
-        `${aggregates.aspects[aspect].passed}/${aggregates.aspects[aspect].failed}/${aggregates.aspects[aspect].total}`,
+        formatMatrixValue(aggregates.aspects[aspect]),
         formatScenarioList(getConfiguredAspectScenarios(aspect))
       );
     }
@@ -948,10 +1039,7 @@ function generateMatrixTsv(report) {
     ? [
         [
           "Design goal totals",
-          ...designGoalOrder.map(
-            (goal) =>
-              `${aggregates.goals[goal].passed}/${aggregates.goals[goal].failed}/${aggregates.goals[goal].total}`
-          ),
+          ...designGoalOrder.map((goal) => formatMatrixValue(aggregates.goals[goal])),
           "--",
           "--",
         ],
@@ -969,7 +1057,7 @@ function generateMatrixTsv(report) {
     ...rows,
     ...aggregateRows,
     "",
-    "Cell format: passing/failing/total. Total includes skipped checks.",
+    "Cell format: passing/failing/total. Skip breakdown codes: FA = feature absent, PI = pending implementation, US = under-specified.",
   ].join("\n");
 }
 
@@ -1282,7 +1370,7 @@ function getScenarioMetadata(scenario) {
 }
 
 function scenarioSearchTerms(result) {
-  return getResultScenarios(result).flatMap((scenario) => {
+  const scenarioTerms = getResultScenarios(result).flatMap((scenario) => {
     const metadata = getScenarioMetadata(scenario);
     const placements = getScenarioMatrixPlacements(scenario);
     return [
@@ -1296,6 +1384,15 @@ function scenarioSearchTerms(result) {
       ...placements.map((placement) => designGoalLabels[placement.goal]),
     ].filter(Boolean);
   });
+  const skipMetadata = result.skipped ? getSkipMetadata(result) : null;
+  return [
+    ...scenarioTerms,
+    result.skipCategory,
+    result.skipReason,
+    skipMetadata?.code,
+    skipMetadata?.label,
+    skipMetadata?.description,
+  ].filter(Boolean);
 }
 
 function renderScenarioTag(scenario) {
@@ -1339,9 +1436,13 @@ function formatDuration(durationMs) {
   return `${(durationMs / 1000).toFixed(2)} s`;
 }
 
+function getSkipMetadata(result) {
+  return skipCategoryMetadata[result.skipCategory] || skipCategoryMetadata.unknown;
+}
+
 function checkStatus(result) {
   if (result.skipped) {
-    return { label: "Skipped", className: "is-skipped" };
+    return { label: `Skipped: ${getSkipMetadata(result).label}`, className: "is-skipped" };
   }
   if (result.passed) {
     return { label: "Passed", className: "is-passed" };
@@ -1567,7 +1668,7 @@ function renderResults() {
       const isSkipped = result.skipped === true;
       const isPassed = result.passed && !isSkipped;
       const cardClass = isSkipped ? "is-skipped" : isPassed ? "is-passed" : "is-failed";
-      const statusLabel = isSkipped ? "Skipped" : isPassed ? "Passed" : "Failed";
+      const statusLabel = isSkipped ? `Skipped: ${getSkipMetadata(result).label}` : isPassed ? "Passed" : "Failed";
       const statusIcon = isSkipped ? "–" : isPassed ? "✓" : "!";
       const scenarioTags = getResultScenarios(result)
         .map(renderScenarioTag)

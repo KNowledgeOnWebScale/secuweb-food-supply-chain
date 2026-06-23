@@ -11,6 +11,7 @@ import type {
   CheckResult,
   ScenarioCacheWrite,
   ScenarioCheck,
+  SkipCategory,
 } from "./scenario-types.js";
 
 import { checks as checksA } from "./scenarios/a-provenance-integrity.js";
@@ -49,6 +50,11 @@ const runId = runStartedAt.toISOString().replace(/[:.]/g, "-");
 const outputCacheRoot = path.resolve(
   process.env.SCENARIO_OUTPUT_CACHE_DIR || path.join(evidenceDir, "output-cache", runId)
 );
+const skipCategories: SkipCategory[] = [
+  "feature-absent",
+  "pending-implementation",
+  "under-specified",
+];
 
 /** Parses the environment flag that controls whether scenario failures fail the process. */
 function parseScenarioStrictMode(value: string | undefined): boolean {
@@ -190,7 +196,9 @@ async function runCheck(check: ScenarioCheck): Promise<CheckResult> {
       description: check.description,
       passed: false,
       skipped: true,
-      detail: "TODO — no scenario or acceptance criteria defined yet",
+      skipCategory: check.skipCategory,
+      skipReason: check.skipReason,
+      detail: check.skipReason,
       startedAt: startedAt.toISOString(),
       completedAt: completedAt.toISOString(),
       durationMs: completedAt.getTime() - startedAt.getTime(),
@@ -268,6 +276,12 @@ async function main(): Promise<void> {
     passed: results.filter((result) => result.passed && !result.skipped).length,
     failed: results.filter((result) => !result.passed && !result.skipped).length,
     skipped: results.filter((result) => result.skipped).length,
+    skippedByCategory: Object.fromEntries(
+      skipCategories.map((category) => [
+        category,
+        results.filter((result) => result.skipped && result.skipCategory === category).length,
+      ])
+    ),
     results,
   };
   const reportJson = `${JSON.stringify(report, null, 2)}\n`;

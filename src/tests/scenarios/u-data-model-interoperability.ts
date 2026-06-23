@@ -165,6 +165,8 @@ export const checks: ScenarioCheck[] = [
     scenario: "U",
     description: "Representative supply-chain event data is aligned with EPCIS/GS1 event semantics",
     skip: true,
+    skipCategory: "under-specified",
+    skipReason: "The representative EPCIS/GS1 alignment level still needs to be specified before this can be a stable executable check.",
     // run: async (context) => {
     //   const documents = await Promise.all(
     //     representativeResources

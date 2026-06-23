@@ -6,5 +6,7 @@ export const checks: ScenarioCheck[] = [
     scenario: "H",
     description: "A governance rule is attributable to the actor that issued it",
     skip: true,
+    skipCategory: "feature-absent",
+    skipReason: "No executable governance-rule resource exists yet for issuer attribution.",
   },
 ];

@@ -6,5 +6,7 @@ export const checks: ScenarioCheck[] = [
     scenario: "J",
     description: "A compliance assessor attributes a data-sharing operation to an actor",
     skip: true,
+    skipCategory: "feature-absent",
+    skipReason: "No compliance operation evidence exists yet for actor attribution.",
   },
 ];

@@ -776,6 +776,16 @@ h1 {
   color: var(--red);
 }
 
+.matrix-skip-breakdown {
+  display: block;
+  margin-top: 5px;
+  color: #8a5b00;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.01em;
+}
+
 .matrix-cell small {
   display: block;
   margin-top: 6px;

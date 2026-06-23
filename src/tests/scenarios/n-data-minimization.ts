@@ -55,6 +55,8 @@ export const checks: ScenarioCheck[] = [
     scenario: "N",
     description: "The Farmer credential states the permitted processing purpose",
     skip: true,
+    skipCategory: "pending-implementation",
+    skipReason: "The termsOfUse or equivalent purpose statement is implementable but has not yet been added to the shared credential.",
   },
   {
     id: "N-3",
