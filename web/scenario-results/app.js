@@ -4,6 +4,7 @@ const state = {
   search: "",
   showMatrixAggregates: true,
   copyStatusTimeout: null,
+  overviewCopyStatusTimeout: null,
 };
 
 const elements = {
@@ -20,6 +21,11 @@ const elements = {
   coverageFill: document.querySelector("#coverage-fill"),
   coverageTrack: document.querySelector("#coverage-track"),
   coveragePercent: document.querySelector("#coverage-percent"),
+  overviewBody: document.querySelector("#overview-body"),
+  copyOverviewButton: document.querySelector("#copy-overview-button"),
+  copyMarkdownOverviewButton: document.querySelector("#copy-markdown-overview-button"),
+  copyHtmlOverviewButton: document.querySelector("#copy-html-overview-button"),
+  copyOverviewStatus: document.querySelector("#copy-overview-status"),
   allFilterCount: document.querySelector("#all-filter-count"),
   passedFilterCount: document.querySelector("#passed-filter-count"),
   failedFilterCount: document.querySelector("#failed-filter-count"),
@@ -169,6 +175,176 @@ function formatTimestamp(timestamp) {
       year: "numeric",
     }).format(date),
   };
+}
+
+function formatPercent(numerator, denominator) {
+  if (denominator === 0) {
+    return "--";
+  }
+  return `${((numerator / denominator) * 100).toFixed(1)}%`;
+}
+
+function formatMetricRatio(numerator, denominator) {
+  return `${numerator}/${denominator} = <strong>${formatPercent(numerator, denominator)}</strong>`;
+}
+
+function pluralize(count, singular, plural = `${singular}s`) {
+  return `${count} ${count === 1 ? singular : plural}`;
+}
+
+function getDefinedScenarioList(report) {
+  if (Array.isArray(report.definedScenarios) && report.definedScenarios.length > 0) {
+    return sortScenarios(report.definedScenarios);
+  }
+  return sortScenarios(Object.keys(scenarioMetadata));
+}
+
+function summarizeScenarioEvidence(report) {
+  const definedScenarios = getDefinedScenarioList(report);
+  const scenarioCounts = Object.fromEntries(
+    definedScenarios.map((scenario) => [
+      scenario,
+      { passed: 0, failed: 0, skipped: 0, total: 0 },
+    ])
+  );
+
+  for (const result of report.results || []) {
+    for (const scenario of getResultScenarios(result)) {
+      if (!scenarioCounts[scenario]) {
+        scenarioCounts[scenario] = { passed: 0, failed: 0, skipped: 0, total: 0 };
+      }
+
+      scenarioCounts[scenario].total += 1;
+      if (result.skipped) {
+        scenarioCounts[scenario].skipped += 1;
+      } else if (result.passed) {
+        scenarioCounts[scenario].passed += 1;
+      } else {
+        scenarioCounts[scenario].failed += 1;
+      }
+    }
+  }
+
+  return Object.values(scenarioCounts).reduce(
+    (summary, counts) => {
+      if (counts.failed > 0) {
+        summary.failedOrAbsent += 1;
+      } else if (counts.passed > 0 && counts.skipped === 0) {
+        summary.fullyValidated += 1;
+      } else if (counts.passed > 0) {
+        summary.partiallyEvidenced += 1;
+      } else {
+        summary.untested += 1;
+      }
+      return summary;
+    },
+    {
+      total: Object.keys(scenarioCounts).length,
+      fullyValidated: 0,
+      partiallyEvidenced: 0,
+      untested: 0,
+      failedOrAbsent: 0,
+    }
+  );
+}
+
+function getOverviewRows(report) {
+  const definedCriteria = (report.results || []).length;
+  const passed = report.passed ?? 0;
+  const failed = report.failed ?? 0;
+  const skipped = report.skipped ?? 0;
+  const executed = passed + failed;
+  const scenarioSummary = summarizeScenarioEvidence(report);
+
+  return [
+    {
+      metric: "Defined criteria",
+      result: String(definedCriteria),
+      interpretation: "Total intended checks",
+    },
+    {
+      metric: "Executed criteria",
+      result: formatMetricRatio(executed, definedCriteria),
+      interpretation:
+        skipped === 0
+          ? "All defined criteria have executable evidence"
+          : `${pluralize(skipped, "criterion", "criteria")} still unexecuted`,
+    },
+    {
+      metric: "Passed among executed criteria",
+      result: formatMetricRatio(passed, executed),
+      interpretation:
+        executed === 0
+          ? "No implemented checks executed yet"
+          : passed / executed >= 0.9
+          ? "High success rate for implemented checks"
+          : "Implemented checks still expose material failures",
+    },
+    {
+      metric: "Failed among executed criteria",
+      result: formatMetricRatio(failed, executed),
+      interpretation:
+        failed === 0
+          ? "No explicit architectural gaps surfaced"
+          : `${pluralize(failed, "explicit architectural gap")} surfaced`,
+    },
+    {
+      metric: "Skipped criteria",
+      result: formatMetricRatio(skipped, definedCriteria),
+      interpretation: "Not negative evidence, but absence of validation",
+    },
+    {
+      metric: "Fully validated scenarios",
+      result: formatMetricRatio(
+        scenarioSummary.fullyValidated,
+        scenarioSummary.total
+      ),
+      interpretation: "All currently defined checks passed",
+    },
+    {
+      metric: "Partially evidenced scenarios",
+      result: formatMetricRatio(
+        scenarioSummary.partiallyEvidenced,
+        scenarioSummary.total
+      ),
+      interpretation: "Some checks pass, but a material condition remains untested",
+    },
+    {
+      metric: "Untested scenarios",
+      result: formatMetricRatio(scenarioSummary.untested, scenarioSummary.total),
+      interpretation: "No executable evidence",
+    },
+    {
+      metric: "Failed/absent scenarios",
+      result: formatMetricRatio(
+        scenarioSummary.failedOrAbsent,
+        scenarioSummary.total
+      ),
+      interpretation: "Required mechanism is missing",
+    },
+  ];
+}
+
+function renderOverview(report) {
+  if (!elements.overviewBody) {
+    return;
+  }
+
+  elements.overviewBody.innerHTML = getOverviewRows(report)
+    .map(
+      (row) => `
+        <tr>
+          <th scope="row">${escapeHtml(row.metric)}</th>
+          <td class="overview-result">${row.result}</td>
+          <td>${escapeHtml(row.interpretation)}</td>
+        </tr>
+      `
+    )
+    .join("");
+}
+
+function stripHtml(value) {
+  return String(value).replace(/<[^>]*>/g, "");
 }
 
 function renderSummary(report) {
@@ -794,6 +970,84 @@ function generateMatrixTsv(report) {
   ].join("\n");
 }
 
+function getOverviewExportRows(report) {
+  return getOverviewRows(report).map((row) => ({
+    metric: row.metric,
+    resultText: stripHtml(row.result),
+    resultHtml: row.result,
+    interpretation: row.interpretation,
+  }));
+}
+
+function generateOverviewLatex(report) {
+  const rows = getOverviewExportRows(report).map((row) =>
+    [row.metric, row.resultText, row.interpretation].map(escapeLatex).join(" & ") + " \\\\"
+  );
+
+  return [
+    "\\begin{table}[htbp]",
+    "\\centering",
+    "\\caption{Scenario evidence overview.}",
+    "\\begin{tabular}{lrl}",
+    "\\hline",
+    "Metric & Result & Interpretation \\\\",
+    "\\hline",
+    ...rows,
+    "\\hline",
+    "\\end{tabular}",
+    "\\end{table}",
+  ].join("\n");
+}
+
+function generateOverviewMarkdown(report) {
+  const rows = getOverviewExportRows(report).map((row) =>
+    `| ${[row.metric, row.resultText, row.interpretation].map(escapeMarkdownTableCell).join(" | ")} |`
+  );
+
+  return [
+    "| Metric | Result | Interpretation |",
+    "| --- | ---: | --- |",
+    ...rows,
+  ].join("\n");
+}
+
+function generateOverviewHtml(report) {
+  const headingStyle = "border: 1px solid #d0d7de; padding: 6px 8px; background: #f6f8fa; font-weight: 700;";
+  const metricHeadingStyle = "border: 1px solid #d0d7de; padding: 6px 8px; text-align: left; font-weight: 700; background: #f7f9fb;";
+  const rows = getOverviewExportRows(report)
+    .map((row) => {
+      return [
+        "  <tr>",
+        `    <th scope="row" style="${metricHeadingStyle}">${escapeHtml(row.metric)}</th>`,
+        `    <td style="border: 1px solid #d0d7de; padding: 6px 8px; text-align: right; white-space: nowrap;">${row.resultHtml}</td>`,
+        `    <td style="border: 1px solid #d0d7de; padding: 6px 8px; text-align: left;">${escapeHtml(row.interpretation)}</td>`,
+        "  </tr>",
+      ].join("\n");
+    })
+    .join("\n");
+
+  return [
+    '<table aria-label="Scenario evidence overview" style="border-collapse: collapse;">',
+    '  <caption style="caption-side: top; font-weight: 700; margin-bottom: 6px;">Scenario evidence overview</caption>',
+    "  <thead>",
+    `    <tr><th scope="col" style="${headingStyle}">Metric</th><th scope="col" style="${headingStyle} text-align: right;">Result</th><th scope="col" style="${headingStyle} text-align: left;">Interpretation</th></tr>`,
+    "  </thead>",
+    "  <tbody>",
+    rows,
+    "  </tbody>",
+    "</table>",
+  ].join("\n");
+}
+
+function generateOverviewTsv(report) {
+  return [
+    "Metric\tResult\tInterpretation",
+    ...getOverviewExportRows(report).map((row) =>
+      [row.metric, row.resultText, row.interpretation].join("\t")
+    ),
+  ].join("\n");
+}
+
 async function copyTextToClipboard(text) {
   if (navigator.clipboard?.writeText) {
     try {
@@ -889,6 +1143,75 @@ function setCopyMatrixStatus(message, isError = false) {
       elements.copyMatrixStatus.classList.remove("is-error");
       state.copyStatusTimeout = null;
     }, 3200);
+  }
+}
+
+function setCopyOverviewStatus(message, isError = false) {
+  if (!elements.copyOverviewStatus) {
+    return;
+  }
+
+  if (state.overviewCopyStatusTimeout) {
+    clearTimeout(state.overviewCopyStatusTimeout);
+  }
+
+  elements.copyOverviewStatus.textContent = message;
+  elements.copyOverviewStatus.classList.toggle("is-error", isError);
+  if (message) {
+    state.overviewCopyStatusTimeout = window.setTimeout(() => {
+      elements.copyOverviewStatus.textContent = "";
+      elements.copyOverviewStatus.classList.remove("is-error");
+      state.overviewCopyStatusTimeout = null;
+    }, 3200);
+  }
+}
+
+async function copyOverviewAsLatex() {
+  if (!state.report) {
+    setCopyOverviewStatus("No report loaded", true);
+    return;
+  }
+
+  try {
+    const latex = generateOverviewLatex(state.report);
+    await copyTextToClipboard(latex);
+    setCopyOverviewStatus("Copied");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    setCopyOverviewStatus(message, true);
+  }
+}
+
+async function copyOverviewAsMarkdown() {
+  if (!state.report) {
+    setCopyOverviewStatus("No report loaded", true);
+    return;
+  }
+
+  try {
+    const markdown = generateOverviewMarkdown(state.report);
+    await copyTextToClipboard(markdown);
+    setCopyOverviewStatus("Copied Markdown");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    setCopyOverviewStatus(message, true);
+  }
+}
+
+async function copyOverviewAsHtml() {
+  if (!state.report) {
+    setCopyOverviewStatus("No report loaded", true);
+    return;
+  }
+
+  try {
+    const html = generateOverviewHtml(state.report);
+    const plainText = generateOverviewTsv(state.report);
+    await copyHtmlToClipboard(html, plainText);
+    setCopyOverviewStatus("Copied HTML");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    setCopyOverviewStatus(message, true);
   }
 }
 
@@ -1074,6 +1397,9 @@ function setLoading(isLoading) {
   elements.refreshButton.disabled = isLoading;
   elements.refreshButton.classList.toggle("is-loading", isLoading);
   [
+    elements.copyOverviewButton,
+    elements.copyMarkdownOverviewButton,
+    elements.copyHtmlOverviewButton,
     elements.copyMatrixButton,
     elements.copyMarkdownMatrixButton,
     elements.copyHtmlMatrixButton,
@@ -1099,6 +1425,7 @@ async function loadReport() {
 
     state.report = payload;
     renderSummary(payload);
+    renderOverview(payload);
     renderAssuranceMatrix(payload);
     renderResults();
   } catch (error) {
@@ -1140,6 +1467,18 @@ if (elements.matrixAggregatesToggle) {
       renderAssuranceMatrix(state.report);
     }
   });
+}
+
+if (elements.copyOverviewButton) {
+  elements.copyOverviewButton.addEventListener("click", copyOverviewAsLatex);
+}
+
+if (elements.copyMarkdownOverviewButton) {
+  elements.copyMarkdownOverviewButton.addEventListener("click", copyOverviewAsMarkdown);
+}
+
+if (elements.copyHtmlOverviewButton) {
+  elements.copyHtmlOverviewButton.addEventListener("click", copyOverviewAsHtml);
 }
 
 if (elements.copyMatrixButton) {

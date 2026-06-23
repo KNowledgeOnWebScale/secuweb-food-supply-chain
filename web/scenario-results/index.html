@@ -100,6 +100,64 @@
           </div>
         </section>
 
+        <section class="overview-section" aria-labelledby="overview-title">
+          <div class="overview-heading">
+            <div>
+              <p class="section-kicker">Assurance summary</p>
+              <h2 id="overview-title">Scenario evidence overview</h2>
+            </div>
+            <div class="overview-actions">
+              <p class="overview-note">
+                Criteria-level execution and scenario-level validation status
+                derived from the latest evidence report.
+              </p>
+              <div class="overview-copy-buttons">
+                <button
+                  class="copy-overview-button"
+                  id="copy-overview-button"
+                  type="button"
+                  disabled
+                >
+                  Copy LaTeX table
+                </button>
+                <button
+                  class="copy-overview-button"
+                  id="copy-markdown-overview-button"
+                  type="button"
+                  disabled
+                >
+                  Copy Markdown table
+                </button>
+                <button
+                  class="copy-overview-button"
+                  id="copy-html-overview-button"
+                  type="button"
+                  disabled
+                >
+                  Copy HTML table
+                </button>
+              </div>
+              <span
+                class="copy-status"
+                id="copy-overview-status"
+                aria-live="polite"
+              ></span>
+            </div>
+          </div>
+          <div class="overview-scroll">
+            <table class="overview-table">
+              <thead>
+                <tr>
+                  <th scope="col">Metric</th>
+                  <th scope="col">Result</th>
+                  <th scope="col">Interpretation</th>
+                </tr>
+              </thead>
+              <tbody id="overview-body"></tbody>
+            </table>
+          </div>
+        </section>
+
         <section class="matrix-section" aria-labelledby="matrix-title">
           <div class="matrix-heading">
             <div>
