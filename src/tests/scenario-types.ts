@@ -23,7 +23,11 @@ export type CheckOutputCache = {
   artifacts: CachedScenarioOutput[];
 };
 
-export type SkipCategory = "feature-absent" | "pending-implementation" | "under-specified";
+export type SkipCategory =
+  | "feature-absent"
+  | "pending-implementation"
+  | "under-specified"
+  | "excluded-from-analysis";
 
 export type CheckResult = {
   id: string;
@@ -31,6 +35,7 @@ export type CheckResult = {
   description: string;
   passed: boolean;
   skipped: boolean;
+  includeInAnalysis: boolean;
   skipCategory?: SkipCategory;
   skipReason?: string;
   detail: string;

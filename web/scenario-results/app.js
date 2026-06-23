@@ -74,6 +74,7 @@ const skipCategoryOrder = [
   "feature-absent",
   "pending-implementation",
   "under-specified",
+  "excluded-from-analysis",
   "unknown",
 ];
 
@@ -92,6 +93,11 @@ const skipCategoryMetadata = {
     code: "US",
     label: "Under-specified",
     description: "Scenario needs sharper acceptance criteria",
+  },
+  "excluded-from-analysis": {
+    code: "EX",
+    label: "Excluded from analysis",
+    description: "Scenario catalogue excludes this check from coverage metrics",
   },
   unknown: {
     code: "UNK",
@@ -141,23 +147,18 @@ const scenarioMatrix = {
 };
 
 const scenarioMetadata = {
-  A: {
-    goals: ["DS", "TR"],
-    aspect: "Verifiability",
-    title: "Cross-actor provenance reconstruction",
-  },
   B: { goals: ["TR", "DS"], aspect: "Verifiability" },
   C: { goals: ["DS"], aspect: "Auditability" },
   D: { goals: ["DG"], aspect: "Auditability" },
-  E: { goals: ["TR"], aspect: "Auditability" },
+  E: { goals: ["TR"], aspect: "Auditability", includeInAnalysis: false },
   F: { goals: ["LC"], aspect: "Auditability" },
   G: { goals: ["DS"], aspect: "Authentication" },
-  H: { goals: ["DG"], aspect: "Authentication" },
-  I: { goals: ["TR"], aspect: "Authentication" },
+  H: { goals: ["DG"], aspect: "Authentication", includeInAnalysis: false },
+  I: { goals: ["TR"], aspect: "Authentication", includeInAnalysis: false },
   J: { goals: ["LC"], aspect: "Authentication" },
   K: { goals: ["DS"], aspect: "Authorization" },
-  L: { goals: ["DG"], aspect: "Authorization" },
-  M: { goals: ["TR"], aspect: "Authorization" },
+  L: { goals: ["DG"], aspect: "Authorization", includeInAnalysis: false },
+  M: { goals: ["TR"], aspect: "Authorization", includeInAnalysis: false },
   N: { goals: ["LC"], aspect: "Authorization" },
   O: { goals: ["DS"], aspect: "Queryability" },
   P: { goals: ["INT"], aspect: "Queryability" },
@@ -166,7 +167,7 @@ const scenarioMetadata = {
   S: { goals: ["INT"], aspect: "Data API interoperability" },
   T: { goals: ["INT"], aspect: "Data API interoperability" },
   U: { goals: ["INT"], aspect: "Data model interoperability" },
-  V: { goals: ["DG"], aspect: "Verifiability" },
+  V: { goals: ["DG"], aspect: "Verifiability", includeInAnalysis: false },
 };
 
 function getScenarioMatrixPlacements(scenario) {
@@ -232,17 +233,59 @@ function getDefinedScenarioList(report) {
   return sortScenarios(Object.keys(scenarioMetadata));
 }
 
+function scenarioIncludedByMetadata(scenario) {
+  return getScenarioMetadata(scenario).includeInAnalysis !== false;
+}
+
+function getAnalysisScenarioList(report) {
+  if (Array.isArray(report.analysisScenarios) && report.analysisScenarios.length > 0) {
+    return sortScenarios(report.analysisScenarios);
+  }
+  return getDefinedScenarioList(report).filter(scenarioIncludedByMetadata);
+}
+
+function getExcludedScenarioList(report) {
+  if (Array.isArray(report.excludedScenarios)) {
+    return sortScenarios(report.excludedScenarios);
+  }
+  return getDefinedScenarioList(report).filter((scenario) => !scenarioIncludedByMetadata(scenario));
+}
+
+function resultIncludedInAnalysis(result) {
+  return result.includeInAnalysis !== false;
+}
+
+function getAnalysisResults(report) {
+  return (report.results || []).filter(resultIncludedInAnalysis);
+}
+
+function getExcludedResults(report) {
+  return (report.results || []).filter((result) => !resultIncludedInAnalysis(result));
+}
+
+function getIncludedScenarioSet(report) {
+  return new Set(getAnalysisScenarioList(report));
+}
+
+function getExcludedScenarioSet(report) {
+  return new Set(getExcludedScenarioList(report));
+}
+
 function summarizeScenarioEvidence(report) {
-  const definedScenarios = getDefinedScenarioList(report);
+  const analysisScenarios = getAnalysisScenarioList(report);
+  const analysisScenarioSet = new Set(analysisScenarios);
   const scenarioCounts = Object.fromEntries(
-    definedScenarios.map((scenario) => [
+    analysisScenarios.map((scenario) => [
       scenario,
       { passed: 0, failed: 0, skipped: 0, total: 0 },
     ])
   );
 
-  for (const result of report.results || []) {
+  for (const result of getAnalysisResults(report)) {
     for (const scenario of getResultScenarios(result)) {
+      if (!analysisScenarioSet.has(scenario)) {
+        continue;
+      }
       if (!scenarioCounts[scenario]) {
         scenarioCounts[scenario] = { passed: 0, failed: 0, skipped: 0, total: 0 };
       }
@@ -282,10 +325,12 @@ function summarizeScenarioEvidence(report) {
 }
 
 function getOverviewRows(report) {
-  const definedCriteria = (report.results || []).length;
-  const passed = report.passed ?? 0;
-  const failed = report.failed ?? 0;
-  const skipped = report.skipped ?? 0;
+  const analysisResults = getAnalysisResults(report);
+  const definedCriteria = analysisResults.length;
+  const passed = report.passed ?? analysisResults.filter((result) => result.passed && !result.skipped).length;
+  const failed = report.failed ?? analysisResults.filter((result) => !result.passed && !result.skipped).length;
+  const skipped = report.skipped ?? analysisResults.filter((result) => result.skipped).length;
+  const excluded = report.excluded ?? getExcludedResults(report).length;
   const executed = passed + failed;
   const scenarioSummary = summarizeScenarioEvidence(report);
 
@@ -293,7 +338,12 @@ function getOverviewRows(report) {
     {
       metric: "Defined criteria",
       result: String(definedCriteria),
-      interpretation: "Total intended checks",
+      interpretation: "Checks included in analysis",
+    },
+    {
+      metric: "Excluded criteria",
+      result: String(excluded),
+      interpretation: "Skipped by Include in Analysis = false and not counted in coverage metrics",
     },
     {
       metric: "Executed criteria",
@@ -386,30 +436,34 @@ function stripHtml(value) {
 }
 
 function renderSummary(report) {
-  const skipped = report.skipped ?? 0;
-  const evaluated = report.passed + report.failed;
+  const analysisResults = getAnalysisResults(report);
+  const passed = report.passed ?? analysisResults.filter((result) => result.passed && !result.skipped).length;
+  const failed = report.failed ?? analysisResults.filter((result) => !result.passed && !result.skipped).length;
+  const skipped = report.skipped ?? analysisResults.filter((result) => result.skipped).length;
+  const evaluated = passed + failed;
   const total = evaluated + skipped;
-  const percentage = evaluated === 0 ? 0 : Math.round((report.passed / evaluated) * 100);
-  const scenarios = [...new Set(report.results.flatMap(getResultScenarios))].sort();
+  const percentage = evaluated === 0 ? 0 : Math.round((passed / evaluated) * 100);
+  const scenarios = getAnalysisScenarioList(report);
   const generated = formatTimestamp(report.generatedAt);
-  const allPassed = report.failed === 0 && skipped === 0 && total > 0;
-  const someSkipped = report.failed === 0 && skipped > 0;
+  const allPassed = failed === 0 && skipped === 0 && total > 0;
+  const someSkipped = failed === 0 && skipped > 0;
+  const allResults = report.results || [];
 
-  elements.passedCount.textContent = report.passed;
-  elements.failedCount.textContent = report.failed;
+  elements.passedCount.textContent = passed;
+  elements.failedCount.textContent = failed;
   elements.skippedCount.textContent = skipped;
   elements.scenarioCount.textContent = scenarios.length;
   elements.scenarioList.textContent = scenarios.join(" · ");
-  elements.passedNote.textContent = `${report.passed} of ${evaluated} evaluated checks`;
+  elements.passedNote.textContent = `${passed} of ${evaluated} evaluated checks`;
   elements.generatedTime.textContent = generated.time;
   elements.generatedDate.textContent = generated.date;
   elements.coverageFill.style.width = `${percentage}%`;
   elements.coverageTrack.setAttribute("aria-valuenow", String(percentage));
   elements.coveragePercent.textContent = `${percentage}%`;
-  elements.allFilterCount.textContent = total;
-  elements.passedFilterCount.textContent = report.passed;
-  elements.failedFilterCount.textContent = report.failed;
-  elements.skippedFilterCount.textContent = skipped;
+  elements.allFilterCount.textContent = allResults.length;
+  elements.passedFilterCount.textContent = allResults.filter((result) => result.passed && !result.skipped).length;
+  elements.failedFilterCount.textContent = allResults.filter((result) => !result.passed && !result.skipped).length;
+  elements.skippedFilterCount.textContent = allResults.filter((result) => result.skipped).length;
   elements.runState.classList.toggle("is-failed", !allPassed && !someSkipped);
   elements.runState.classList.toggle("is-skipped", someSkipped);
   elements.runStateLabel.textContent = allPassed
@@ -512,7 +566,7 @@ function formatSkipTitleParts(cell) {
 function formatReportSkipBreakdown(report) {
   const counts = { ...(report.skippedByCategory || {}) };
   if (Object.keys(counts).length === 0) {
-    for (const result of report.results || []) {
+    for (const result of getAnalysisResults(report)) {
       if (!result.skipped) {
         continue;
       }
@@ -531,22 +585,31 @@ function formatReportSkipBreakdown(report) {
     : entries.map((entry) => `${entry.metadata.code}:${entry.count}`).join(", ");
 }
 
-function getConfiguredAspectScenarios(aspect) {
-  return sortScenarios(
-    designGoalOrder.flatMap((goal) => scenarioMatrix[aspect]?.[goal] || [])
-  );
+function getConfiguredAspectScenarios(aspect, report) {
+  const scenarios = designGoalOrder.flatMap((goal) => scenarioMatrix[aspect]?.[goal] || []);
+  if (!report) {
+    return sortScenarios(scenarios.filter(scenarioIncludedByMetadata));
+  }
+  const includedScenarios = getIncludedScenarioSet(report);
+  return sortScenarios(scenarios.filter((scenario) => includedScenarios.has(scenario)));
 }
 
-function getConfiguredGoalScenarios(goal) {
-  return sortScenarios(
-    technicalAspectOrder.flatMap((aspect) => scenarioMatrix[aspect]?.[goal] || [])
-  );
+function getConfiguredGoalScenarios(goal, report) {
+  const scenarios = technicalAspectOrder.flatMap((aspect) => scenarioMatrix[aspect]?.[goal] || []);
+  if (!report) {
+    return sortScenarios(scenarios.filter(scenarioIncludedByMetadata));
+  }
+  const includedScenarios = getIncludedScenarioSet(report);
+  return sortScenarios(scenarios.filter((scenario) => includedScenarios.has(scenario)));
 }
 
 function buildMatrixCounts(results) {
   const matrix = createEmptyMatrix();
 
   for (const result of results) {
+    if (!resultIncludedInAnalysis(result)) {
+      continue;
+    }
     const countedCells = new Set();
     for (const scenario of getResultScenarios(result)) {
       for (const placement of getScenarioMatrixPlacements(scenario)) {
@@ -564,7 +627,7 @@ function buildMatrixCounts(results) {
   return matrix;
 }
 
-function buildMatrixAggregates(results) {
+function buildMatrixAggregates(results, report) {
   const aspects = Object.fromEntries(
     technicalAspectOrder.map((aspect) => [aspect, createMatrixCell()])
   );
@@ -574,14 +637,17 @@ function buildMatrixAggregates(results) {
   const aspectScenarioSets = Object.fromEntries(
     technicalAspectOrder.map((aspect) => [
       aspect,
-      new Set(getConfiguredAspectScenarios(aspect)),
+      new Set(getConfiguredAspectScenarios(aspect, report)),
     ])
   );
   const goalScenarioSets = Object.fromEntries(
-    designGoalOrder.map((goal) => [goal, new Set(getConfiguredGoalScenarios(goal))])
+    designGoalOrder.map((goal) => [goal, new Set(getConfiguredGoalScenarios(goal, report))])
   );
 
   for (const result of results) {
+    if (!resultIncludedInAnalysis(result)) {
+      continue;
+    }
     const scenarios = getResultScenarios(result);
     for (const aspect of technicalAspectOrder) {
       const matchedScenarios = scenarios.filter((scenario) =>
@@ -618,22 +684,62 @@ function matrixCellClass(cell) {
   return "is-passed";
 }
 
-function renderMatrixCell(cell, aspect, goal) {
+function getMatrixScenarioGroups(aspect, goal, report) {
   const configuredScenarios = scenarioMatrix[aspect]?.[goal] || [];
+  const includedScenarios = report ? getIncludedScenarioSet(report) : new Set(configuredScenarios.filter(scenarioIncludedByMetadata));
+  const excludedScenarios = report ? getExcludedScenarioSet(report) : new Set(configuredScenarios.filter((scenario) => !scenarioIncludedByMetadata(scenario)));
+
+  return {
+    configuredScenarios,
+    includedConfigured: configuredScenarios.filter((scenario) => includedScenarios.has(scenario)),
+    excludedConfigured: configuredScenarios.filter((scenario) => excludedScenarios.has(scenario)),
+  };
+}
+
+function formatConfiguredScenarioLabel(includedConfigured, excludedConfigured) {
+  const parts = [];
+  if (includedConfigured.length > 0) {
+    parts.push(includedConfigured.join(", "));
+  }
+  if (excludedConfigured.length > 0) {
+    parts.push(`EX: ${excludedConfigured.join(", ")}`);
+  }
+  return parts.join(" · ");
+}
+
+function renderMatrixCell(cell, aspect, goal, report) {
+  const { configuredScenarios, includedConfigured, excludedConfigured } =
+    getMatrixScenarioGroups(aspect, goal, report);
   if (configuredScenarios.length === 0) {
     return `<td class="matrix-cell is-empty" title="No scenarios defined for ${escapeHtml(goal)} x ${escapeHtml(aspect)}">—</td>`;
   }
 
-  const scenarioLabel = configuredScenarios.join(", ");
+  if (includedConfigured.length === 0 && excludedConfigured.length > 0) {
+    const excludedLabel = excludedConfigured.join(", ");
+    const title = [
+      `${designGoalLabels[goal] || goal} x ${aspect}`,
+      `Excluded from analysis: ${excludedLabel}`,
+    ].join(" · ");
+
+    return `
+      <td class="matrix-cell is-excluded" title="${escapeHtml(title)}">
+        <span class="matrix-excluded">EX</span>
+        <small>${escapeHtml(excludedLabel)}</small>
+      </td>
+    `;
+  }
+
+  const scenarioLabel = formatConfiguredScenarioLabel(includedConfigured, excludedConfigured);
   const title = [
     `${designGoalLabels[goal] || goal} x ${aspect}`,
-    `Scenarios: ${scenarioLabel}`,
+    `Included scenarios: ${includedConfigured.join(", ")}`,
+    excludedConfigured.length > 0 ? `Excluded scenarios: ${excludedConfigured.join(", ")}` : "",
     `Passed: ${cell.passed}`,
     `Failed: ${cell.failed}`,
     `Skipped: ${cell.skipped}`,
     ...formatSkipTitleParts(cell),
     `Total: ${cell.total}`,
-  ].join(" · ");
+  ].filter(Boolean).join(" · ");
   const skipBreakdown = formatSkipBreakdown(cell);
 
   return `
@@ -730,7 +836,7 @@ function renderGoalAggregateScenarioRow() {
       ${designGoalOrder
         .map((goal) =>
           renderAggregateScenarioCell(
-            getConfiguredGoalScenarios(goal),
+            getConfiguredGoalScenarios(goal, state.report),
             `${designGoalLabels[goal]} scenarios`
           )
         )
@@ -747,16 +853,16 @@ function renderAssuranceMatrix(report) {
   }
 
   const matrix = buildMatrixCounts(report.results || []);
-  const aggregates = buildMatrixAggregates(report.results || []);
+  const aggregates = buildMatrixAggregates(report.results || [], report);
   const rows = technicalAspectOrder
     .map((aspect) => `
       <tr>
         <th scope="row">${escapeHtml(aspect)}</th>
-        ${designGoalOrder.map((goal) => renderMatrixCell(matrix[aspect][goal], aspect, goal)).join("")}
+        ${designGoalOrder.map((goal) => renderMatrixCell(matrix[aspect][goal], aspect, goal, report)).join("")}
         ${
           state.showMatrixAggregates
             ? renderAggregateCountCell(aggregates.aspects[aspect], `${aspect} total`, "matrix-aggregate-start") +
-              renderAggregateScenarioCell(getConfiguredAspectScenarios(aspect), `${aspect} scenarios`)
+              renderAggregateScenarioCell(getConfiguredAspectScenarios(aspect, report), `${aspect} scenarios`)
             : ""
         }
       </tr>
@@ -785,10 +891,14 @@ function escapeLatex(value) {
   return String(value).replace(/[\\{}#$%&_~^]/g, (character) => replacements[character]);
 }
 
-function renderLatexMatrixCell(cell, aspect, goal) {
-  const configuredScenarios = scenarioMatrix[aspect]?.[goal] || [];
+function renderLatexMatrixCell(cell, aspect, goal, report) {
+  const { configuredScenarios, includedConfigured, excludedConfigured } =
+    getMatrixScenarioGroups(aspect, goal, report);
   if (configuredScenarios.length === 0) {
     return "--";
+  }
+  if (includedConfigured.length === 0 && excludedConfigured.length > 0) {
+    return "EX";
   }
 
   return formatMatrixValue(cell);
@@ -796,7 +906,7 @@ function renderLatexMatrixCell(cell, aspect, goal) {
 
 function generateMatrixLatex(report) {
   const matrix = buildMatrixCounts(report.results || []);
-  const aggregates = buildMatrixAggregates(report.results || []);
+  const aggregates = buildMatrixAggregates(report.results || [], report);
   const includeAggregates = state.showMatrixAggregates;
   const columns = [
     "l",
@@ -812,12 +922,12 @@ function generateMatrixLatex(report) {
     .join(" & ");
   const rows = technicalAspectOrder.map((aspect) => {
     const cells = designGoalOrder.map((goal) =>
-      renderLatexMatrixCell(matrix[aspect][goal], aspect, goal)
+      renderLatexMatrixCell(matrix[aspect][goal], aspect, goal, report)
     );
     if (includeAggregates) {
       cells.push(
         formatMatrixValue(aggregates.aspects[aspect]),
-        escapeLatex(formatScenarioList(getConfiguredAspectScenarios(aspect)))
+        escapeLatex(formatScenarioList(getConfiguredAspectScenarios(aspect, report)))
       );
     }
     return `${escapeLatex(aspect)} & ${cells.join(" & ")} \\\\`;
@@ -832,7 +942,7 @@ function generateMatrixLatex(report) {
         ],
         [
           "Design goal scenarios",
-          ...designGoalOrder.map((goal) => formatScenarioList(getConfiguredGoalScenarios(goal))),
+          ...designGoalOrder.map((goal) => formatScenarioList(getConfiguredGoalScenarios(goal, report))),
           "--",
           "--",
         ],
@@ -842,7 +952,7 @@ function generateMatrixLatex(report) {
   return [
     "\\begin{table}[htbp]",
     "\\centering",
-    "\\caption{Scenario assurance matrix. Cell format: passing/failing/total with optional skip breakdown (FA feature absent, PI pending implementation, US under-specified).}",
+    "\\caption{Scenario assurance matrix. Cell format: passing/failing/total with optional skip breakdown (FA feature absent, PI pending implementation, US under-specified). EX means excluded from analysis.}",
     `\\begin{tabular}{${columns}}`,
     "\\hline",
     `${header} \\\\`,
@@ -859,10 +969,14 @@ function escapeMarkdownTableCell(value) {
   return String(value).replaceAll("|", "\\|").replaceAll("\n", "<br>");
 }
 
-function renderMarkdownMatrixCell(cell, aspect, goal) {
-  const configuredScenarios = scenarioMatrix[aspect]?.[goal] || [];
+function renderMarkdownMatrixCell(cell, aspect, goal, report) {
+  const { configuredScenarios, includedConfigured, excludedConfigured } =
+    getMatrixScenarioGroups(aspect, goal, report);
   if (configuredScenarios.length === 0) {
     return "--";
+  }
+  if (includedConfigured.length === 0 && excludedConfigured.length > 0) {
+    return "EX";
   }
 
   return formatMatrixValue(cell);
@@ -870,7 +984,7 @@ function renderMarkdownMatrixCell(cell, aspect, goal) {
 
 function generateMatrixMarkdown(report) {
   const matrix = buildMatrixCounts(report.results || []);
-  const aggregates = buildMatrixAggregates(report.results || []);
+  const aggregates = buildMatrixAggregates(report.results || [], report);
   const includeAggregates = state.showMatrixAggregates;
   const header = [
     "Technical aspect",
@@ -884,12 +998,12 @@ function generateMatrixMarkdown(report) {
   ];
   const rows = technicalAspectOrder.map((aspect) => {
     const cells = designGoalOrder.map((goal) =>
-      renderMarkdownMatrixCell(matrix[aspect][goal], aspect, goal)
+      renderMarkdownMatrixCell(matrix[aspect][goal], aspect, goal, report)
     );
     if (includeAggregates) {
       cells.push(
         formatMatrixValue(aggregates.aspects[aspect]),
-        formatScenarioList(getConfiguredAspectScenarios(aspect))
+        formatScenarioList(getConfiguredAspectScenarios(aspect, report))
       );
     }
     return `| ${[aspect, ...cells].map(escapeMarkdownTableCell).join(" | ")} |`;
@@ -904,7 +1018,7 @@ function generateMatrixMarkdown(report) {
         ],
         [
           "Design goal scenarios",
-          ...designGoalOrder.map((goal) => formatScenarioList(getConfiguredGoalScenarios(goal))),
+          ...designGoalOrder.map((goal) => formatScenarioList(getConfiguredGoalScenarios(goal, report))),
           "--",
           "--",
         ],
@@ -917,15 +1031,19 @@ function generateMatrixMarkdown(report) {
     ...rows,
     ...aggregateRows,
     "",
-    "Cell format: passing/failing/total. Skip breakdown codes: FA = feature absent, PI = pending implementation, US = under-specified.",
+    "Cell format: passing/failing/total. Skip breakdown codes: FA = feature absent, PI = pending implementation, US = under-specified. EX = excluded from analysis.",
   ].join("\n");
 }
 
-function renderHtmlMatrixCell(cell, aspect, goal) {
-  const configuredScenarios = scenarioMatrix[aspect]?.[goal] || [];
+function renderHtmlMatrixCell(cell, aspect, goal, report) {
+  const { configuredScenarios, includedConfigured, excludedConfigured } =
+    getMatrixScenarioGroups(aspect, goal, report);
   const cellStyle = "border: 1px solid #d0d7de; padding: 6px 8px; text-align: center;";
   if (configuredScenarios.length === 0) {
     return `<td style="${cellStyle}">--</td>`;
+  }
+  if (includedConfigured.length === 0 && excludedConfigured.length > 0) {
+    return `<td style="${cellStyle} background: #eef2f6;">EX</td>`;
   }
 
   return `<td style="${cellStyle}">${escapeHtml(formatMatrixValue(cell))}</td>`;
@@ -937,7 +1055,7 @@ function renderHtmlValueCell(value, textAlign = "center", extraStyle = "") {
 
 function generateMatrixHtml(report) {
   const matrix = buildMatrixCounts(report.results || []);
-  const aggregates = buildMatrixAggregates(report.results || []);
+  const aggregates = buildMatrixAggregates(report.results || [], report);
   const includeAggregates = state.showMatrixAggregates;
   const headingStyle = "border: 1px solid #d0d7de; padding: 6px 8px; background: #f6f8fa; font-weight: 700;";
   const aggregateStartStyle = "border-left: 4px solid #294b72;";
@@ -959,7 +1077,7 @@ function generateMatrixHtml(report) {
   const rows = technicalAspectOrder
     .map((aspect) => {
       const cells = designGoalOrder
-        .map((goal) => renderHtmlMatrixCell(matrix[aspect][goal], aspect, goal))
+        .map((goal) => renderHtmlMatrixCell(matrix[aspect][goal], aspect, goal, report))
         .join("");
       const aggregateCells = includeAggregates
         ? [
@@ -968,7 +1086,7 @@ function generateMatrixHtml(report) {
               "center",
               aggregateStartStyle
             ),
-            renderHtmlValueCell(formatScenarioList(getConfiguredAspectScenarios(aspect)), "left"),
+            renderHtmlValueCell(formatScenarioList(getConfiguredAspectScenarios(aspect, report)), "left"),
           ].join("")
         : "";
       return `  <tr>\n    <th scope="row" style="${rowHeadingStyle}">${escapeHtml(aspect)}</th>\n    ${cells}${aggregateCells}\n  </tr>`;
@@ -988,7 +1106,7 @@ function generateMatrixHtml(report) {
         `  <tr>\n    <th scope="row" style="${rowHeadingStyle} ${aggregateRowStyle}">Design goal scenarios</th>\n    ${designGoalOrder
           .map((goal) =>
             renderHtmlValueCell(
-              formatScenarioList(getConfiguredGoalScenarios(goal)),
+              formatScenarioList(getConfiguredGoalScenarios(goal, report)),
               "left",
               aggregateRowStyle
             )
@@ -999,7 +1117,7 @@ function generateMatrixHtml(report) {
 
   return [
     '<table aria-label="Scenario assurance matrix" style="border-collapse: collapse;">',
-    '  <caption style="caption-side: top; font-weight: 700; margin-bottom: 6px;">Scenario assurance matrix. Cell format: passing/failing/total. Skip breakdown codes: FA feature absent, PI pending implementation, US under-specified.</caption>',
+    '  <caption style="caption-side: top; font-weight: 700; margin-bottom: 6px;">Scenario assurance matrix. Cell format: passing/failing/total. Skip breakdown codes: FA feature absent, PI pending implementation, US under-specified. EX excluded from analysis.</caption>',
     "  <thead>",
     `    <tr>${header}</tr>`,
     "  </thead>",
@@ -1013,7 +1131,7 @@ function generateMatrixHtml(report) {
 
 function generateMatrixTsv(report) {
   const matrix = buildMatrixCounts(report.results || []);
-  const aggregates = buildMatrixAggregates(report.results || []);
+  const aggregates = buildMatrixAggregates(report.results || [], report);
   const includeAggregates = state.showMatrixAggregates;
   const header = [
     "Technical aspect",
@@ -1022,15 +1140,20 @@ function generateMatrixTsv(report) {
   ].join("\t");
   const rows = technicalAspectOrder.map((aspect) => {
     const cells = designGoalOrder.map((goal) => {
-      const configuredScenarios = scenarioMatrix[aspect]?.[goal] || [];
-      return configuredScenarios.length === 0
-        ? "--"
-        : formatMatrixValue(matrix[aspect][goal]);
+      const { configuredScenarios, includedConfigured, excludedConfigured } =
+        getMatrixScenarioGroups(aspect, goal, report);
+      if (configuredScenarios.length === 0) {
+        return "--";
+      }
+      if (includedConfigured.length === 0 && excludedConfigured.length > 0) {
+        return "EX";
+      }
+      return formatMatrixValue(matrix[aspect][goal]);
     });
     if (includeAggregates) {
       cells.push(
         formatMatrixValue(aggregates.aspects[aspect]),
-        formatScenarioList(getConfiguredAspectScenarios(aspect))
+        formatScenarioList(getConfiguredAspectScenarios(aspect, report))
       );
     }
     return [aspect, ...cells].join("\t");
@@ -1045,7 +1168,7 @@ function generateMatrixTsv(report) {
         ],
         [
           "Design goal scenarios",
-          ...designGoalOrder.map((goal) => formatScenarioList(getConfiguredGoalScenarios(goal))),
+          ...designGoalOrder.map((goal) => formatScenarioList(getConfiguredGoalScenarios(goal, report))),
           "--",
           "--",
         ],
@@ -1057,7 +1180,7 @@ function generateMatrixTsv(report) {
     ...rows,
     ...aggregateRows,
     "",
-    "Cell format: passing/failing/total. Skip breakdown codes: FA = feature absent, PI = pending implementation, US = under-specified.",
+    "Cell format: passing/failing/total. Skip breakdown codes: FA = feature absent, PI = pending implementation, US = under-specified. EX = excluded from analysis.",
   ].join("\n");
 }
 
@@ -1387,6 +1510,8 @@ function scenarioSearchTerms(result) {
   const skipMetadata = result.skipped ? getSkipMetadata(result) : null;
   return [
     ...scenarioTerms,
+    result.includeInAnalysis === false ? "excluded from analysis" : "included in analysis",
+    result.includeInAnalysis === false ? "include in analysis false" : "include in analysis true",
     result.skipCategory,
     result.skipReason,
     skipMetadata?.code,
@@ -1405,10 +1530,11 @@ function renderScenarioTag(scenario) {
     metadata.title || `Scenario ${scenario}`,
     goalLabel,
     metadata.aspect,
+    metadata.includeInAnalysis === false ? "Excluded from analysis" : "",
   ].filter(Boolean).join(" · ");
 
   return `
-    <span class="scenario-tag" title="${escapeHtml(title)}">
+    <span class="scenario-tag ${metadata.includeInAnalysis === false ? "is-excluded" : ""}" title="${escapeHtml(title)}">
       <span class="scenario-code">${escapeHtml(scenario)}</span>
       <span class="scenario-goal">${escapeHtml(goalCode)}</span>
       <span class="scenario-aspect">${escapeHtml(metadata.aspect)}</span>
@@ -1441,6 +1567,9 @@ function getSkipMetadata(result) {
 }
 
 function checkStatus(result) {
+  if (result.includeInAnalysis === false) {
+    return { label: "Excluded from analysis", className: "is-excluded" };
+  }
   if (result.skipped) {
     return { label: `Skipped: ${getSkipMetadata(result).label}`, className: "is-skipped" };
   }
@@ -1451,9 +1580,14 @@ function checkStatus(result) {
 }
 
 function scenarioStatus(results) {
-  const failed = results.filter((result) => !result.passed && !result.skipped).length;
-  const skipped = results.filter((result) => result.skipped).length;
-  const passed = results.filter((result) => result.passed && !result.skipped).length;
+  if (results.length > 0 && results.every((result) => result.includeInAnalysis === false)) {
+    return { label: "Excluded", className: "is-excluded" };
+  }
+
+  const includedResults = results.filter(resultIncludedInAnalysis);
+  const failed = includedResults.filter((result) => !result.passed && !result.skipped).length;
+  const skipped = includedResults.filter((result) => result.skipped).length;
+  const passed = includedResults.filter((result) => result.passed && !result.skipped).length;
   if (failed > 0) {
     return { label: "Failed", className: "is-failed" };
   }
@@ -1665,11 +1799,17 @@ function renderResults() {
   const results = state.report.results.filter(resultMatches);
   elements.resultList.innerHTML = results
     .map((result, index) => {
-      const isSkipped = result.skipped === true;
-      const isPassed = result.passed && !isSkipped;
-      const cardClass = isSkipped ? "is-skipped" : isPassed ? "is-passed" : "is-failed";
-      const statusLabel = isSkipped ? `Skipped: ${getSkipMetadata(result).label}` : isPassed ? "Passed" : "Failed";
-      const statusIcon = isSkipped ? "–" : isPassed ? "✓" : "!";
+      const status = checkStatus(result);
+      const cardClass = status.className;
+      const statusLabel = status.label;
+      const statusIcon =
+        status.className === "is-excluded"
+          ? "EX"
+          : status.className === "is-skipped"
+          ? "–"
+          : status.className === "is-passed"
+          ? "✓"
+          : "!";
       const scenarioTags = getResultScenarios(result)
         .map(renderScenarioTag)
         .join("");
@@ -1682,7 +1822,7 @@ function renderResults() {
           <div class="result-main">
             <div class="result-meta">
               <span class="check-id">${escapeHtml(result.id)}</span>
-              <span class="status-label">${statusLabel}</span>
+              <span class="status-label ${escapeHtml(status.className)}">${escapeHtml(statusLabel)}</span>
               <div class="scenario-tags" aria-label="Scenarios">${scenarioTags}</div>
             </div>
             <h3>${escapeHtml(result.description)}</h3>

@@ -14,7 +14,6 @@ import type {
   SkipCategory,
 } from "./scenario-types.js";
 
-import { checks as checksA } from "./scenarios/a-provenance-integrity.js";
 import { checks as checksB } from "./scenarios/b-blockchain-anchoring.js";
 import { checks as checksC } from "./scenarios/c-audit-trail.js";
 import { checks as checksD } from "./scenarios/d-governance-audit.js";
@@ -37,8 +36,10 @@ import { checks as checksT } from "./scenarios/t-uniform-api.js";
 import { checks as checksU } from "./scenarios/u-data-model-interoperability.js";
 import { checks as checksV } from "./scenarios/v-issuer-accreditation-verifiability.js";
 
-const catalogueVersion = "202606190419";
-const definedScenarios = "ABCDEFGHIJKLMNOPQRSTUV".split("");
+const catalogueVersion = "202606231754";
+const definedScenarios = "BCDEFGHIJKLMNOPQRSTUV".split("");
+const analysisScenarios = ["B", "C", "D", "F", "G", "J", "K", "N", "O", "P", "Q", "R", "S", "T", "U"];
+const excludedScenarios = definedScenarios.filter((scenario) => !analysisScenarios.includes(scenario));
 const repoRoot = process.cwd();
 const evidenceDir = path.resolve(
   process.env.SCENARIO_EVIDENCE_DIR || "local-run/readme-smoke/scenarios"
@@ -54,6 +55,7 @@ const skipCategories: SkipCategory[] = [
   "feature-absent",
   "pending-implementation",
   "under-specified",
+  "excluded-from-analysis",
 ];
 
 /** Parses the environment flag that controls whether scenario failures fail the process. */
@@ -81,13 +83,18 @@ function parseScenarioStrictMode(value: string | undefined): boolean {
 const strictMode = parseScenarioStrictMode(process.env.SCENARIO_TEST_STRICT);
 
 const allChecks: ScenarioCheck[] = [
-  ...checksA, ...checksB, ...checksC, ...checksD,
+  ...checksB, ...checksC, ...checksD,
   ...checksE, ...checksF, ...checksG, ...checksH,
   ...checksI, ...checksJ, ...checksK, ...checksL,
   ...checksM, ...checksN, ...checksO, ...checksP,
   ...checksQ, ...checksR, ...checksS, ...checksT,
   ...checksU, ...checksV,
 ];
+
+/** Returns whether a scenario should execute and contribute to analysis metrics. */
+function includeScenarioInAnalysis(scenario: string): boolean {
+  return analysisScenarios.includes(scenario);
+}
 
 /** Converts absolute paths into portable report paths relative to the repository root. */
 function relativeToRepo(absolutePath: string): string {
@@ -180,12 +187,39 @@ async function runCheck(check: ScenarioCheck): Promise<CheckResult> {
     check.id.startsWith(`${check.scenario}-`),
     `Check ${check.id} must belong to exactly scenario ${check.scenario}`
   );
+  assert.ok(
+    definedScenarios.includes(check.scenario),
+    `Check ${check.id} belongs to scenario ${check.scenario}, which is not in catalogue version ${catalogueVersion}`
+  );
 
   const startedAt = new Date();
   const checkOutputDir = path.join(outputCacheRoot, check.id.toLowerCase());
   const artifacts: CachedScenarioOutput[] = [];
+  const includeInAnalysis = includeScenarioInAnalysis(check.scenario);
 
   let resultWithoutCache: Omit<CheckResult, "outputCache">;
+
+  if (!includeInAnalysis) {
+    console.log(`EXCLUDE ${check.id}: ${check.description}`);
+    const completedAt = new Date();
+    const skipReason = "Excluded from coverage analysis by the scenario catalogue Include in Analysis flag.";
+    resultWithoutCache = {
+      id: check.id,
+      scenario: check.scenario,
+      description: check.description,
+      passed: false,
+      skipped: true,
+      includeInAnalysis,
+      skipCategory: "excluded-from-analysis",
+      skipReason,
+      detail: skipReason,
+      startedAt: startedAt.toISOString(),
+      completedAt: completedAt.toISOString(),
+      durationMs: completedAt.getTime() - startedAt.getTime(),
+    };
+    const outputCache = await writeCheckOutputCache(checkOutputDir, resultWithoutCache, artifacts);
+    return { ...resultWithoutCache, outputCache };
+  }
 
   if (check.skip) {
     console.log(`SKIP ${check.id}: ${check.description}`);
@@ -196,6 +230,7 @@ async function runCheck(check: ScenarioCheck): Promise<CheckResult> {
       description: check.description,
       passed: false,
       skipped: true,
+      includeInAnalysis,
       skipCategory: check.skipCategory,
       skipReason: check.skipReason,
       detail: check.skipReason,
@@ -220,6 +255,7 @@ async function runCheck(check: ScenarioCheck): Promise<CheckResult> {
       description: check.description,
       passed: true,
       skipped: false,
+      includeInAnalysis,
       detail,
       startedAt: startedAt.toISOString(),
       completedAt: completedAt.toISOString(),
@@ -235,6 +271,7 @@ async function runCheck(check: ScenarioCheck): Promise<CheckResult> {
       description: check.description,
       passed: false,
       skipped: false,
+      includeInAnalysis,
       detail,
       startedAt: startedAt.toISOString(),
       completedAt: completedAt.toISOString(),
@@ -262,6 +299,14 @@ async function main(): Promise<void> {
     definedScenarios,
     "The scenario report does not cover every catalogue scenario"
   );
+  const analysisResults = results.filter((result) => result.includeInAnalysis);
+  const excludedResults = results.filter((result) => !result.includeInAnalysis);
+  const analysisCoveredScenarios = [...new Set(analysisResults.map((result) => result.scenario))].sort();
+  assert.deepEqual(
+    analysisCoveredScenarios,
+    analysisScenarios,
+    "The scenario report does not cover every scenario included in analysis"
+  );
 
   const report = {
     catalogueVersion,
@@ -272,14 +317,18 @@ async function main(): Promise<void> {
     strictMode,
     outputCacheRoot: relativeToRepo(outputCacheRoot),
     definedScenarios,
+    analysisScenarios,
+    excludedScenarios,
     coveredScenarios,
-    passed: results.filter((result) => result.passed && !result.skipped).length,
-    failed: results.filter((result) => !result.passed && !result.skipped).length,
-    skipped: results.filter((result) => result.skipped).length,
+    analysisCoveredScenarios,
+    passed: analysisResults.filter((result) => result.passed && !result.skipped).length,
+    failed: analysisResults.filter((result) => !result.passed && !result.skipped).length,
+    skipped: analysisResults.filter((result) => result.skipped).length,
+    excluded: excludedResults.length,
     skippedByCategory: Object.fromEntries(
       skipCategories.map((category) => [
         category,
-        results.filter((result) => result.skipped && result.skipCategory === category).length,
+        analysisResults.filter((result) => result.skipped && result.skipCategory === category).length,
       ])
     ),
     results,
