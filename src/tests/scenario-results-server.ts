@@ -1,4 +1,4 @@
-import { createServer, type ServerResponse } from "node:http";
+import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -16,6 +16,7 @@ const reportPath = path.resolve(
       "scenario-test-report.json"
     )
 );
+const evidenceRoot = path.dirname(reportPath);
 
 const staticFiles = new Map([
   ["/", ["index.html", "text/html; charset=utf-8"]],
@@ -24,6 +25,7 @@ const staticFiles = new Map([
   ["/styles.css", ["styles.css", "text/css; charset=utf-8"]],
 ]);
 
+/** Sends an HTTP response with consistent security and cache headers. */
 function send(
   response: ServerResponse,
   status: number,
@@ -38,6 +40,7 @@ function send(
   response.end(body);
 }
 
+/** Serves the latest scenario JSON report or a structured not-found response. */
 async function serveReport(response: ServerResponse): Promise<void> {
   try {
     const report = await readFile(reportPath);
@@ -57,7 +60,55 @@ async function serveReport(response: ServerResponse): Promise<void> {
   }
 }
 
-const server = createServer(async (request, response) => {
+/** Resolves a requested cached-output path while keeping access inside the evidence directory. */
+function resolveOutputPath(outputPath: string): string {
+  const resolvedPath = path.resolve(repoRoot, outputPath);
+  const relativeToEvidenceRoot = path.relative(evidenceRoot, resolvedPath);
+
+  if (
+    relativeToEvidenceRoot.startsWith("..") ||
+    path.isAbsolute(relativeToEvidenceRoot)
+  ) {
+    throw new Error(`Output path is outside the scenario evidence directory: ${outputPath}`);
+  }
+
+  return resolvedPath;
+}
+
+/** Serves one cached scenario-output file as inert text for dashboard display. */
+async function serveOutput(requestUrl: URL, response: ServerResponse): Promise<void> {
+  const outputPath = requestUrl.searchParams.get("path");
+  if (!outputPath) {
+    send(
+      response,
+      400,
+      "application/json; charset=utf-8",
+      JSON.stringify({ error: "Missing required query parameter: path" })
+    );
+    return;
+  }
+
+  try {
+    const resolvedPath = resolveOutputPath(outputPath);
+    const output = await readFile(resolvedPath, "utf8");
+    send(response, 200, "text/plain; charset=utf-8", output);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    send(
+      response,
+      404,
+      "application/json; charset=utf-8",
+      JSON.stringify({
+        error: "Scenario output not found",
+        detail: message,
+        outputPath,
+      })
+    );
+  }
+}
+
+/** Routes dashboard HTTP requests to the API, health endpoint, or static assets. */
+async function handleRequest(request: IncomingMessage, response: ServerResponse): Promise<void> {
   const requestUrl = new URL(request.url || "/", `http://${host}:${port}`);
 
   if (request.method !== "GET") {
@@ -67,6 +118,11 @@ const server = createServer(async (request, response) => {
 
   if (requestUrl.pathname === "/api/results") {
     await serveReport(response);
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/output") {
+    await serveOutput(requestUrl, response);
     return;
   }
 
@@ -94,7 +150,9 @@ const server = createServer(async (request, response) => {
     const message = error instanceof Error ? error.message : String(error);
     send(response, 500, "text/plain; charset=utf-8", message);
   }
-});
+}
+
+const server = createServer(handleRequest);
 
 server.listen(port, host, () => {
   console.log(`Scenario results UI: http://${host}:${port}`);

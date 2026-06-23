@@ -1,5 +1,28 @@
 export type AuthenticatedFetch = typeof fetch;
 
+export type CachedScenarioOutput = {
+  label: string;
+  path: string;
+  contentType: string;
+  bytes: number;
+};
+
+export type ScenarioCacheWrite = CachedScenarioOutput & {
+  absolutePath: string;
+};
+
+export type CacheOutputOptions = {
+  contentType?: string;
+  label?: string;
+};
+
+export type CheckOutputCache = {
+  directory: string;
+  result: string;
+  detail: string;
+  artifacts: CachedScenarioOutput[];
+};
+
 export type CheckResult = {
   id: string;
   scenario: string;
@@ -7,6 +30,10 @@ export type CheckResult = {
   passed: boolean;
   skipped: boolean;
   detail: string;
+  startedAt: string;
+  completedAt: string;
+  durationMs: number;
+  outputCache: CheckOutputCache;
 };
 
 export type VerificationResponse = {
@@ -41,7 +68,9 @@ export type CredentialFixture = {
 
 export type ScenarioContext = {
   evidenceDir: string;
+  outputCacheDir: string;
   repoRoot: string;
+  cacheOutput: (name: string, value: unknown, options?: CacheOutputOptions) => Promise<ScenarioCacheWrite>;
   isDeniedStatus: (status: number) => boolean;
   asObject: (value: unknown, label: string) => Record<string, any>;
   linkedIdentifier: (value: unknown) => string | undefined;

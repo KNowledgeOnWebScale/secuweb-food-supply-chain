@@ -16,10 +16,12 @@ const farmerProductSourcePath = path.join(
   "product-x.jsonld"
 );
 
+/** Returns whether a JSON object explicitly defines a property. */
 function hasOwnProperty(object: Record<string, any>, property: string): boolean {
   return Object.prototype.hasOwnProperty.call(object, property);
 }
 
+/** Loads the full Farmer product source fixture used as minimization evidence. */
 async function loadSourceProduct(repoRoot: string): Promise<Record<string, any>> {
   const fixture = await readFile(path.join(repoRoot, farmerProductSourcePath), "utf8");
   return JSON.parse(fixture) as Record<string, any>;

@@ -5,6 +5,7 @@ const state = {
   showMatrixAggregates: true,
   copyStatusTimeout: null,
   overviewCopyStatusTimeout: null,
+  outputContentCache: new Map(),
 };
 
 const elements = {
@@ -37,6 +38,8 @@ const elements = {
   copyMarkdownMatrixButton: document.querySelector("#copy-markdown-matrix-button"),
   copyHtmlMatrixButton: document.querySelector("#copy-html-matrix-button"),
   copyMatrixStatus: document.querySelector("#copy-matrix-status"),
+  scenarioOutputList: document.querySelector("#scenario-output-list"),
+  scenarioOutputEmpty: document.querySelector("#scenario-output-empty"),
   resultList: document.querySelector("#result-list"),
   loadingPanel: document.querySelector("#loading-panel"),
   errorPanel: document.querySelector("#error-panel"),
@@ -1316,6 +1319,219 @@ function renderScenarioTag(scenario) {
   `;
 }
 
+function formatBytes(bytes) {
+  if (!Number.isFinite(bytes)) {
+    return "";
+  }
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
+  return `${(bytes / 1024).toFixed(1)} KB`;
+}
+
+function formatDuration(durationMs) {
+  if (!Number.isFinite(durationMs)) {
+    return "";
+  }
+  if (durationMs < 1000) {
+    return `${durationMs} ms`;
+  }
+  return `${(durationMs / 1000).toFixed(2)} s`;
+}
+
+function checkStatus(result) {
+  if (result.skipped) {
+    return { label: "Skipped", className: "is-skipped" };
+  }
+  if (result.passed) {
+    return { label: "Passed", className: "is-passed" };
+  }
+  return { label: "Failed", className: "is-failed" };
+}
+
+function scenarioStatus(results) {
+  const failed = results.filter((result) => !result.passed && !result.skipped).length;
+  const skipped = results.filter((result) => result.skipped).length;
+  const passed = results.filter((result) => result.passed && !result.skipped).length;
+  if (failed > 0) {
+    return { label: "Failed", className: "is-failed" };
+  }
+  if (passed > 0 && skipped === 0) {
+    return { label: "Validated", className: "is-passed" };
+  }
+  if (passed > 0) {
+    return { label: "Partial", className: "is-skipped" };
+  }
+  return { label: "Untested", className: "is-skipped" };
+}
+
+function getOutputFiles(result) {
+  const outputCache = result.outputCache || {};
+  const files = [];
+  if (outputCache.detail) {
+    files.push({
+      label: "Observed detail",
+      path: outputCache.detail,
+      contentType: "text/plain",
+    });
+  }
+  if (outputCache.result) {
+    files.push({
+      label: "Cached check result",
+      path: outputCache.result,
+      contentType: "application/json",
+    });
+  }
+  for (const artifact of outputCache.artifacts || []) {
+    files.push({
+      label: artifact.label || artifact.path,
+      path: artifact.path,
+      contentType: artifact.contentType,
+      bytes: artifact.bytes,
+    });
+  }
+  return files;
+}
+
+function renderOutputFile(file, resultId, index) {
+  const size = file.bytes === undefined ? "" : ` · ${formatBytes(file.bytes)}`;
+  return `
+    <details
+      class="output-file"
+      data-output-path="${escapeHtml(file.path)}"
+      data-output-content-type="${escapeHtml(file.contentType || "")}"
+    >
+      <summary>
+        <span>${escapeHtml(file.label)}</span>
+        <small>${escapeHtml(file.contentType || "text/plain")}${escapeHtml(size)}</small>
+      </summary>
+      <pre id="output-${escapeHtml(resultId)}-${index}" class="output-content">Open to load cached output…</pre>
+    </details>
+  `;
+}
+
+function renderOutputCheck(result) {
+  const status = checkStatus(result);
+  const duration = formatDuration(result.durationMs);
+  const files = getOutputFiles(result);
+  const fileMarkup = files.length === 0
+    ? `<p class="output-empty">No cached files for this check.</p>`
+    : files.map((file, index) => renderOutputFile(file, result.id, index)).join("");
+
+  return `
+    <details class="output-check">
+      <summary>
+        <span class="check-id">${escapeHtml(result.id)}</span>
+        <span class="status-label ${status.className}">${escapeHtml(status.label)}</span>
+        <span class="output-check-title">${escapeHtml(result.description)}</span>
+        ${duration ? `<small>${escapeHtml(duration)}</small>` : ""}
+      </summary>
+      <div class="output-check-body">
+        <p>${escapeHtml(result.detail)}</p>
+        <div class="output-files">${fileMarkup}</div>
+      </div>
+    </details>
+  `;
+}
+
+function renderScenarioOutputs(report) {
+  if (!elements.scenarioOutputList || !elements.scenarioOutputEmpty) {
+    return;
+  }
+
+  const resultsByScenario = new Map();
+  for (const scenario of getDefinedScenarioList(report)) {
+    resultsByScenario.set(scenario, []);
+  }
+  for (const result of report.results || []) {
+    for (const scenario of getResultScenarios(result)) {
+      if (!resultsByScenario.has(scenario)) {
+        resultsByScenario.set(scenario, []);
+      }
+      resultsByScenario.get(scenario).push(result);
+    }
+  }
+
+  const scenarioSections = [...resultsByScenario.entries()]
+    .map(([scenario, results]) => {
+      const status = scenarioStatus(results);
+      const fileCount = results.flatMap(getOutputFiles).length;
+      const checkLabel = pluralize(results.length, "check");
+      const fileLabel = pluralize(fileCount, "cached file");
+
+      return `
+        <details class="scenario-output ${status.className}">
+          <summary>
+            <span class="scenario-output-code">${escapeHtml(scenario)}</span>
+            <span class="scenario-output-title">${escapeHtml(getScenarioMetadata(scenario).title || `Scenario ${scenario}`)}</span>
+            <span class="scenario-output-status">${escapeHtml(status.label)}</span>
+            <small>${escapeHtml(checkLabel)} · ${escapeHtml(fileLabel)}</small>
+          </summary>
+          <div class="scenario-output-body">
+            ${results.length === 0
+              ? `<p class="output-empty">No checks were reported for this scenario.</p>`
+              : results.map(renderOutputCheck).join("")}
+          </div>
+        </details>
+      `;
+    })
+    .join("");
+
+  elements.scenarioOutputList.innerHTML = scenarioSections;
+  elements.scenarioOutputEmpty.hidden = scenarioSections.length !== 0;
+}
+
+function formatOutputContent(content, contentType, path) {
+  if (
+    contentType.includes("json") ||
+    path.endsWith(".json") ||
+    path.endsWith(".jsonld")
+  ) {
+    try {
+      return JSON.stringify(JSON.parse(content), null, 2);
+    } catch (error) {
+      return content;
+    }
+  }
+  return content;
+}
+
+async function loadOutputFile(details) {
+  if (details.dataset.loaded === "true") {
+    return;
+  }
+
+  const outputPath = details.dataset.outputPath;
+  const contentType = details.dataset.outputContentType || "";
+  const contentElement = details.querySelector(".output-content");
+  if (!outputPath || !contentElement) {
+    return;
+  }
+
+  contentElement.textContent = "Loading cached output…";
+
+  try {
+    let content = state.outputContentCache.get(outputPath);
+    if (content === undefined) {
+      const response = await fetch(`/api/output?path=${encodeURIComponent(outputPath)}`, {
+        cache: "no-store",
+      });
+      content = await response.text();
+      if (!response.ok) {
+        throw new Error(content || `HTTP ${response.status}`);
+      }
+      state.outputContentCache.set(outputPath, content);
+    }
+
+    contentElement.textContent = formatOutputContent(content, contentType, outputPath);
+    details.dataset.loaded = "true";
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    contentElement.textContent = `Unable to load cached output: ${message}`;
+    details.dataset.loaded = "error";
+  }
+}
+
 function resultMatches(result) {
   if (state.filter === "passed" && (!result.passed || result.skipped)) {
     return false;
@@ -1427,11 +1643,18 @@ async function loadReport() {
     renderSummary(payload);
     renderOverview(payload);
     renderAssuranceMatrix(payload);
+    renderScenarioOutputs(payload);
     renderResults();
   } catch (error) {
     state.report = null;
     elements.resultList.hidden = true;
     elements.emptyState.hidden = true;
+    if (elements.scenarioOutputList) {
+      elements.scenarioOutputList.innerHTML = "";
+    }
+    if (elements.scenarioOutputEmpty) {
+      elements.scenarioOutputEmpty.hidden = true;
+    }
     elements.errorMessage.textContent =
       error instanceof Error ? error.message : String(error);
     elements.errorPanel.hidden = false;
@@ -1491,6 +1714,23 @@ if (elements.copyMarkdownMatrixButton) {
 
 if (elements.copyHtmlMatrixButton) {
   elements.copyHtmlMatrixButton.addEventListener("click", copyMatrixAsHtml);
+}
+
+if (elements.scenarioOutputList) {
+  elements.scenarioOutputList.addEventListener(
+    "toggle",
+    (event) => {
+      const details = event.target;
+      if (
+        details instanceof HTMLDetailsElement &&
+        details.classList.contains("output-file") &&
+        details.open
+      ) {
+        loadOutputFile(details);
+      }
+    },
+    true
+  );
 }
 
 elements.resultList.addEventListener("click", (event) => {
