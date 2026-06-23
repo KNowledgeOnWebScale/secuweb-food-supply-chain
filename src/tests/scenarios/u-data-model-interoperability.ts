@@ -48,24 +48,29 @@ const representativeResources: FixtureExpectation[] = [
   },
 ];
 
+/** Wraps a scalar or missing JSON-LD value as an array for uniform checks. */
 function asArray(value: unknown): unknown[] {
   return Array.isArray(value) ? value : [value].filter((item) => item !== undefined);
 }
 
+/** Extracts object-valued JSON-LD context entries from a fixture document. */
 function contextObjects(document: JsonObject): JsonObject[] {
   return asArray(document["@context"]).filter(
     (item): item is JsonObject => Boolean(item) && typeof item === "object" && !Array.isArray(item)
   );
 }
 
+/** Collects all context aliases declared by a fixture document. */
 function contextAliases(document: JsonObject): Set<string> {
   return new Set(contextObjects(document).flatMap((context) => Object.keys(context)));
 }
 
+/** Returns whether a fixture document has the given JSON-LD type. */
 function hasType(document: JsonObject, type: string): boolean {
   return asArray(document["@type"]).includes(type);
 }
 
+/** Extracts an identifier from a string value or JSON-LD node reference. */
 function linkedIdentifier(value: unknown): string | undefined {
   if (typeof value === "string") {
     return value;
@@ -76,10 +81,12 @@ function linkedIdentifier(value: unknown): string | undefined {
   return undefined;
 }
 
+/** Loads a JSON-LD fixture relative to the repository root. */
 async function loadFixture(repoRoot: string, relativePath: string): Promise<JsonObject> {
   return JSON.parse(await readFile(path.join(repoRoot, relativePath), "utf8")) as JsonObject;
 }
 
+/** Returns semantic-shape validation gaps for one interoperability fixture. */
 function assertResolvableSemanticShape(label: string, document: JsonObject): string[] {
   const aliases = contextAliases(document);
   const missing: string[] = [];
@@ -103,6 +110,7 @@ function assertResolvableSemanticShape(label: string, document: JsonObject): str
   return missing;
 }
 
+/** Returns EPCIS event-model validation gaps for one fixture document. */
 function assertEpcisEventModel(label: string, document: JsonObject): string[] {
   const aliases = contextAliases(document);
   const missing: string[] = [];

@@ -30,14 +30,17 @@ export type FixtureQueryResult = {
   rows: Record<string, string>[];
 };
 
+/** Rewrites fixture-local URLs to the configured runtime CSS base URL. */
 function replaceFixtureBaseUrl(value: string): string {
   return value.split(fixtureBaseUrl).join(cssBaseUrl);
 }
 
+/** Resolves the fixture overlay directory for a scenario identifier. */
 function scenarioOverlayPath(scenario: string): string {
   return path.join(overlayRoot, `scenario-${scenario.toLowerCase()}`);
 }
 
+/** Loads a named SPARQL query from a scenario overlay. */
 export async function loadScenarioQuery(scenario: string, queryName: string): Promise<{
   query: string;
   queryPath: string;
@@ -49,6 +52,7 @@ export async function loadScenarioQuery(scenario: string, queryName: string): Pr
   };
 }
 
+/** Loads the expected SPARQL JSON results for a scenario overlay query. */
 async function loadExpectedResults(scenario: string, queryName: string): Promise<{
   expected: SparqlJsonResults;
   expectedPath: string;
@@ -58,6 +62,7 @@ async function loadExpectedResults(scenario: string, queryName: string): Promise
   return { expected, expectedPath };
 }
 
+/** Converts Comunica RDFJS term kinds to SPARQL JSON result term kinds. */
 function termType(term: Term): string {
   switch (term.termType) {
     case "NamedNode":
@@ -71,6 +76,7 @@ function termType(term: Term): string {
   }
 }
 
+/** Serializes a binding into a stable string for order-insensitive comparison. */
 function comparableBinding(binding: Record<string, SparqlJsonBindingTerm>): string {
   return JSON.stringify(
     Object.fromEntries(
@@ -81,6 +87,7 @@ function comparableBinding(binding: Record<string, SparqlJsonBindingTerm>): stri
   );
 }
 
+/** Normalizes expected bindings to the declared result variables. */
 function expectedBindings(expected: SparqlJsonResults): Record<string, SparqlJsonBindingTerm>[] {
   return expected.results.bindings.map((binding) => {
     const normalized: Record<string, SparqlJsonBindingTerm> = {};
@@ -94,6 +101,7 @@ function expectedBindings(expected: SparqlJsonResults): Record<string, SparqlJso
   });
 }
 
+/** Executes a SPARQL query against authenticated Solid resources. */
 async function actualBindings(
   query: string,
   sources: string[],
@@ -121,6 +129,7 @@ async function actualBindings(
   });
 }
 
+/** Strips term metadata from bindings so scenario evidence can show plain values. */
 function valueRows(bindings: Record<string, SparqlJsonBindingTerm>[]): Record<string, string>[] {
   return bindings.map((binding) => (
     Object.fromEntries(
@@ -129,6 +138,7 @@ function valueRows(bindings: Record<string, SparqlJsonBindingTerm>[]): Record<st
   ));
 }
 
+/** Runs a fixture query and asserts that its actual rows match the expected SRJ file. */
 export async function assertFixtureQueryMatchesExpected(params: {
   scenario: string;
   queryName: string;
@@ -152,6 +162,7 @@ export async function assertFixtureQueryMatchesExpected(params: {
   };
 }
 
+/** Recursively lists JSON-LD resources below an overlay fixture directory. */
 async function listJsonLdFiles(root: string): Promise<string[]> {
   const entries = await readdir(root, { withFileTypes: true });
   const nested = await Promise.all(entries.map(async (entry) => {
@@ -164,6 +175,7 @@ async function listJsonLdFiles(root: string): Promise<string[]> {
   return nested.flat().sort();
 }
 
+/** Converts all JSON-LD files in an overlay into runtime resource URLs. */
 export async function overlayResourceUrls(overlayName: string): Promise<string[]> {
   const root = path.join(overlayRoot, overlayName);
   const files = await listJsonLdFiles(root);

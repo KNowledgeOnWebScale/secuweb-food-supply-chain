@@ -5,10 +5,12 @@ import path from "node:path";
 import { webId } from "../../config/runtime.js";
 import type { ScenarioCheck } from "../scenario-types.js";
 
+/** Wraps a scalar or missing JSON-LD value as an array for uniform checks. */
 function asArray(value: unknown): unknown[] {
   return Array.isArray(value) ? value : [value].filter((item) => item !== undefined);
 }
 
+/** Extracts an identifier from a string value or JSON-LD node reference. */
 function linkedIdentifier(value: unknown): string | undefined {
   if (typeof value === "string") {
     return value;

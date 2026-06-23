@@ -365,6 +365,7 @@ Supported environment variables:
 | `CSS_BASE_URL` | `http://localhost:3000` |
 | `VERIFIER_BASE_URL` | `http://localhost:4444` |
 | `SCENARIO_EVIDENCE_DIR` | `local-run/readme-smoke/scenarios` |
+| `SCENARIO_OUTPUT_CACHE_DIR` | `local-run/readme-smoke/scenarios/output-cache/<run-id>` |
 
 See [`doc/scenario-testing.md`](../doc/scenario-testing.md) for the
 acceptance-check inventory.

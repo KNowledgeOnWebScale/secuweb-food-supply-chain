@@ -785,6 +785,202 @@ h1 {
   font-weight: 750;
 }
 
+.outputs-section {
+  margin-bottom: 56px;
+}
+
+.outputs-heading {
+  display: flex;
+  gap: 24px;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.outputs-heading .section-kicker {
+  margin-bottom: 6px;
+}
+
+.outputs-heading h2 {
+  margin-bottom: 0;
+  font-size: 31px;
+  letter-spacing: -0.04em;
+}
+
+.outputs-note {
+  max-width: 390px;
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: right;
+}
+
+.scenario-output-list {
+  display: grid;
+  gap: 12px;
+}
+
+.scenario-output,
+.output-check,
+.output-file {
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface);
+}
+
+.scenario-output > summary,
+.output-check > summary,
+.output-file > summary {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 14px 16px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.scenario-output > summary::-webkit-details-marker,
+.output-check > summary::-webkit-details-marker,
+.output-file > summary::-webkit-details-marker {
+  display: none;
+}
+
+.scenario-output > summary::before,
+.output-check > summary::before,
+.output-file > summary::before {
+  color: var(--blue);
+  content: "▸";
+  font-size: 12px;
+  font-weight: 900;
+  transition: transform 150ms ease;
+}
+
+.scenario-output[open] > summary::before,
+.output-check[open] > summary::before,
+.output-file[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.scenario-output-code {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--blue-soft);
+  color: #174c8f;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.scenario-output-title,
+.output-check-title,
+.output-file summary span {
+  flex: 1;
+  min-width: 0;
+  color: var(--ink);
+  font-weight: 750;
+}
+
+.scenario-output-status {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #eef2f6;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.scenario-output.is-passed .scenario-output-status {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.scenario-output.is-failed .scenario-output-status {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.scenario-output.is-skipped .scenario-output-status {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.scenario-output summary small,
+.output-check summary small,
+.output-file summary small {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.scenario-output-body {
+  display: grid;
+  gap: 10px;
+  padding: 0 14px 14px 54px;
+}
+
+.output-check {
+  background: #fbfcfe;
+}
+
+.output-check-body {
+  padding: 0 15px 15px 44px;
+}
+
+.output-check-body > p,
+.output-empty {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.output-files {
+  display: grid;
+  gap: 8px;
+}
+
+.output-file {
+  background: white;
+}
+
+.output-file > summary {
+  padding: 11px 13px;
+}
+
+.output-content {
+  max-height: 420px;
+  margin: 0;
+  overflow: auto;
+  padding: 14px 16px;
+  border-top: 1px solid var(--line);
+  border-radius: 0 0 12px 12px;
+  background: #101828;
+  color: #dbe7ff;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 11px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.status-label.is-passed {
+  color: var(--green);
+}
+
+.status-label.is-failed {
+  color: var(--red);
+}
+
+.status-label.is-skipped {
+  color: var(--amber);
+}
+
 .results-section {
   margin-bottom: 56px;
 }
@@ -1260,6 +1456,7 @@ footer {
   .coverage-panel,
   .overview-heading,
   .matrix-heading,
+  .outputs-heading,
   .results-heading,
   .toolbar,
   footer {
@@ -1299,6 +1496,23 @@ footer {
 
   .matrix-section {
     padding: 21px 18px 22px;
+  }
+
+  .outputs-note {
+    max-width: none;
+    text-align: left;
+  }
+
+  .scenario-output > summary,
+  .output-check > summary,
+  .output-file > summary {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .scenario-output-body,
+  .output-check-body {
+    padding-left: 16px;
   }
 
   .coverage-meter,

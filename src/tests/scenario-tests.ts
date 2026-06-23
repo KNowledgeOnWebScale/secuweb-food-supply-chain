@@ -4,7 +4,14 @@ import path from "node:path";
 
 import { cssBaseUrl, verifierBaseUrl } from "../config/runtime.js";
 import { createContext } from "./scenario-context.js";
-import type { CheckResult, ScenarioCheck } from "./scenario-types.js";
+import type {
+  CachedScenarioOutput,
+  CacheOutputOptions,
+  CheckOutputCache,
+  CheckResult,
+  ScenarioCacheWrite,
+  ScenarioCheck,
+} from "./scenario-types.js";
 
 import { checks as checksA } from "./scenarios/a-provenance-integrity.js";
 import { checks as checksB } from "./scenarios/b-blockchain-anchoring.js";
@@ -37,7 +44,13 @@ const evidenceDir = path.resolve(
 );
 const reportFileName = "scenario-test-report.json";
 const legacyReportFileName = "initial-scenarios-report.json";
+const runStartedAt = new Date();
+const runId = runStartedAt.toISOString().replace(/[:.]/g, "-");
+const outputCacheRoot = path.resolve(
+  process.env.SCENARIO_OUTPUT_CACHE_DIR || path.join(evidenceDir, "output-cache", runId)
+);
 
+/** Parses the environment flag that controls whether scenario failures fail the process. */
 function parseScenarioStrictMode(value: string | undefined): boolean {
   if (value === undefined || value === "") {
     return true;
@@ -70,40 +83,169 @@ const allChecks: ScenarioCheck[] = [
   ...checksU, ...checksV,
 ];
 
-async function runCheck(
-  check: ScenarioCheck,
-  context: ReturnType<typeof createContext>
-): Promise<CheckResult> {
+/** Converts absolute paths into portable report paths relative to the repository root. */
+function relativeToRepo(absolutePath: string): string {
+  return path.relative(repoRoot, absolutePath).split(path.sep).join("/");
+}
+
+/** Prevents cache writes from escaping a check's output directory. */
+function assertSafeRelativePath(name: string): void {
+  const normalized = path.normalize(name);
+  assert.ok(name.length > 0, "Cached output name must not be empty");
+  assert.notEqual(normalized, ".", "Cached output name must refer to a file");
+  assert.ok(!path.isAbsolute(name), `Cached output name must be relative: ${name}`);
+  assert.ok(
+    normalized !== ".." && !normalized.startsWith(`..${path.sep}`),
+    `Cached output name must not escape output cache: ${name}`
+  );
+}
+
+/** Serializes arbitrary scenario output into a cacheable file payload. */
+function serializeCachedValue(
+  value: unknown,
+  options: CacheOutputOptions | undefined
+): { content: string | Uint8Array; contentType: string; bytes: number } {
+  if (typeof value === "string") {
+    const contentType = options?.contentType || "text/plain; charset=utf-8";
+    return { content: value, contentType, bytes: Buffer.byteLength(value) };
+  }
+
+  if (value instanceof Uint8Array) {
+    const contentType = options?.contentType || "application/octet-stream";
+    return { content: value, contentType, bytes: value.byteLength };
+  }
+
+  const content = `${JSON.stringify(value, null, 2)}\n`;
+  const contentType = options?.contentType || "application/json; charset=utf-8";
+  return { content, contentType, bytes: Buffer.byteLength(content) };
+}
+
+/** Creates a cache writer scoped to one scenario check. */
+function createCacheOutputWriter(
+  checkOutputDir: string,
+  cachedOutputs: CachedScenarioOutput[]
+): (name: string, value: unknown, options?: CacheOutputOptions) => Promise<ScenarioCacheWrite> {
+  return async (name: string, value: unknown, options?: CacheOutputOptions) => {
+    assertSafeRelativePath(name);
+    const outputPath = path.join(checkOutputDir, path.normalize(name));
+    const serialized = serializeCachedValue(value, options);
+    await mkdir(path.dirname(outputPath), { recursive: true });
+    await writeFile(outputPath, serialized.content);
+
+    const output: CachedScenarioOutput = {
+      label: options?.label || name,
+      path: relativeToRepo(outputPath),
+      contentType: serialized.contentType,
+      bytes: serialized.bytes,
+    };
+    cachedOutputs.push(output);
+    return { ...output, absolutePath: outputPath };
+  };
+}
+
+/** Writes the per-check cached result files and returns report metadata for them. */
+async function writeCheckOutputCache(
+  checkOutputDir: string,
+  result: Omit<CheckResult, "outputCache">,
+  artifacts: CachedScenarioOutput[]
+): Promise<CheckOutputCache> {
+  await mkdir(checkOutputDir, { recursive: true });
+
+  const detailPath = path.join(checkOutputDir, "detail.txt");
+  const resultPath = path.join(checkOutputDir, "result.json");
+  const outputCache: CheckOutputCache = {
+    directory: relativeToRepo(checkOutputDir),
+    result: relativeToRepo(resultPath),
+    detail: relativeToRepo(detailPath),
+    artifacts,
+  };
+  const cachedResult: CheckResult = { ...result, outputCache };
+
+  await writeFile(detailPath, `${result.detail}\n`, "utf8");
+  await writeFile(resultPath, `${JSON.stringify(cachedResult, null, 2)}\n`, "utf8");
+
+  return outputCache;
+}
+
+/** Executes one scenario check and converts its outcome to report evidence. */
+async function runCheck(check: ScenarioCheck): Promise<CheckResult> {
   assert.match(check.scenario, /^[A-Z]$/, `Invalid scenario identifier: ${check.scenario}`);
   assert.ok(
     check.id.startsWith(`${check.scenario}-`),
     `Check ${check.id} must belong to exactly scenario ${check.scenario}`
   );
 
+  const startedAt = new Date();
+  const checkOutputDir = path.join(outputCacheRoot, check.id.toLowerCase());
+  const artifacts: CachedScenarioOutput[] = [];
+
+  let resultWithoutCache: Omit<CheckResult, "outputCache">;
+
   if (check.skip) {
     console.log(`SKIP ${check.id}: ${check.description}`);
-    return { id: check.id, scenario: check.scenario, description: check.description, passed: false, skipped: true, detail: "TODO — no scenario or acceptance criteria defined yet" };
+    const completedAt = new Date();
+    resultWithoutCache = {
+      id: check.id,
+      scenario: check.scenario,
+      description: check.description,
+      passed: false,
+      skipped: true,
+      detail: "TODO — no scenario or acceptance criteria defined yet",
+      startedAt: startedAt.toISOString(),
+      completedAt: completedAt.toISOString(),
+      durationMs: completedAt.getTime() - startedAt.getTime(),
+    };
+    const outputCache = await writeCheckOutputCache(checkOutputDir, resultWithoutCache, artifacts);
+    return { ...resultWithoutCache, outputCache };
   }
+
+  const cacheOutput = createCacheOutputWriter(checkOutputDir, artifacts);
+  const context = createContext(evidenceDir, checkOutputDir, repoRoot, cacheOutput);
 
   try {
     const detail = await check.run(context);
     console.log(`PASS ${check.id}: ${check.description}`);
-    return { id: check.id, scenario: check.scenario, description: check.description, passed: true, skipped: false, detail };
+    const completedAt = new Date();
+    resultWithoutCache = {
+      id: check.id,
+      scenario: check.scenario,
+      description: check.description,
+      passed: true,
+      skipped: false,
+      detail,
+      startedAt: startedAt.toISOString(),
+      completedAt: completedAt.toISOString(),
+      durationMs: completedAt.getTime() - startedAt.getTime(),
+    };
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error);
     console.error(`FAIL ${check.id}: ${check.description}: ${detail}`);
-    return { id: check.id, scenario: check.scenario, description: check.description, passed: false, skipped: false, detail };
+    const completedAt = new Date();
+    resultWithoutCache = {
+      id: check.id,
+      scenario: check.scenario,
+      description: check.description,
+      passed: false,
+      skipped: false,
+      detail,
+      startedAt: startedAt.toISOString(),
+      completedAt: completedAt.toISOString(),
+      durationMs: completedAt.getTime() - startedAt.getTime(),
+    };
   }
+
+  const outputCache = await writeCheckOutputCache(checkOutputDir, resultWithoutCache, artifacts);
+  return { ...resultWithoutCache, outputCache };
 }
 
+/** Runs all scenario checks and writes the current scenario evidence report. */
 async function main(): Promise<void> {
   await mkdir(evidenceDir, { recursive: true });
-
-  const context = createContext(evidenceDir, repoRoot);
+  await mkdir(outputCacheRoot, { recursive: true });
   const results: CheckResult[] = [];
 
   for (const check of allChecks) {
-    results.push(await runCheck(check, context));
+    results.push(await runCheck(check));
   }
 
   const coveredScenarios = [...new Set(results.map((result) => result.scenario))].sort();
@@ -115,10 +257,12 @@ async function main(): Promise<void> {
 
   const report = {
     catalogueVersion,
-    generatedAt: new Date().toISOString(),
+    generatedAt: runStartedAt.toISOString(),
+    runId,
     cssBaseUrl,
     verifierBaseUrl,
     strictMode,
+    outputCacheRoot: relativeToRepo(outputCacheRoot),
     definedScenarios,
     coveredScenarios,
     passed: results.filter((result) => result.passed && !result.skipped).length,

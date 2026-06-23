@@ -83,7 +83,20 @@ The report includes:
 - the scenario-catalogue version;
 - all defined and covered scenario identifiers;
 - passed and failed counts; and
-- a description and observed detail for every check.
+- a description, observed detail, timing metadata, and output-cache paths for
+  every check.
+
+Each scenario run also caches per-check outputs under:
+
+```text
+local-run/readme-smoke/scenarios/output-cache/<run-id>/<check-id>/
+```
+
+Every check directory contains `result.json` and `detail.txt`. Checks that use
+shared framework helpers also cache fetched Solid resources, verifier
+responses, explorer responses, and VC CLI outputs as structured artifacts. The
+aggregate report records the cache root as `outputCacheRoot` and each check's
+cache metadata under `outputCache`.
 
 By default, `npm run test:scenarios` exits unsuccessfully when any non-skipped
 scenario check fails. Set `SCENARIO_TEST_STRICT=false` to collect the full JSON
