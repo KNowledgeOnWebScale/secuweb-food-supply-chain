@@ -37,6 +37,7 @@ const fixtureRoots = [
   path.join(projectRoot, "dev", "fixtures", "product-shipment", "overlays", "shared"),
   path.join(projectRoot, "dev", "fixtures", "product-shipment", "overlays", "scenario-q"),
   path.join(projectRoot, "dev", "fixtures", "product-shipment", "overlays", "scenario-r"),
+  path.join(projectRoot, "dev", "fixtures", "product-shipment", "overlays", "scenario-v"),
 ];
 
 const actorFetches = new Map<string, Promise<AuthenticatedFetch>>();

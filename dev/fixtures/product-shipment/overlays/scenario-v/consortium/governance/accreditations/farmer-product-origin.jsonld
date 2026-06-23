@@ -1,0 +1,20 @@
+{
+  "@context": {
+    "ex": "http://example.org/terms#",
+    "schema": "http://schema.org/"
+  },
+  "@id": "urn:secuweb:issuer-accreditation:farmer-product-origin",
+  "@type": "ex:IssuerAccreditation",
+  "schema:name": "Farmer product-origin issuer accreditation",
+  "schema:description": "Governance evidence that the Farmer is accredited to issue product-origin data for the product shipment use case.",
+  "ex:accreditedIssuer": {
+    "@id": "http://localhost:3000/farmer/profile/card#me"
+  },
+  "ex:authorizedClaimType": {
+    "@id": "http://example.org/terms#ProductOriginData"
+  },
+  "ex:accreditingAuthority": {
+    "@id": "http://localhost:3000/consortium/profile/card#me"
+  },
+  "ex:governanceStatus": "active"
+}

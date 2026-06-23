@@ -43,7 +43,7 @@ Coverage and successful implementation are separate concerns:
 | `T-1` | T | Domain data and blockchain verification are available through adjacent uniform API resources. | Expected failure: no uniform verification API |
 | `U-1` | U | Product-shipment fixtures expose stable Web identifiers and shared semantic vocabularies across actors. | May pass |
 | `U-2` | U | Representative supply-chain event data is aligned with EPCIS/GS1 event semantics. | Expected failure: transport-event examples still use mostly local `ex:` terms |
-| `V-1` | V | The governance model accredits the Farmer to issue product-origin data. | Expected failure: no issuer-accreditation governance evidence |
+| `V-1` | V | The governance model accredits the Farmer to issue product-origin data. | May pass after Scenario V fixture setup |
 
 The runner validates that the result set contains all 22 scenario identifiers.
 An omitted scenario therefore fails the test run as a framework error.

@@ -42,6 +42,11 @@ export const checks: ScenarioCheck[] = [
         );
       }
 
+      await context.cacheOutput("governance/farmer-product-origin-accreditation.jsonld", body, {
+        contentType: "application/ld+json",
+        label: "Farmer product-origin issuer accreditation",
+      });
+
       const accreditation = context.asObject(JSON.parse(body), "issuer-accreditation governance evidence");
       assert.ok(
         asArray(accreditation["@type"]).includes("ex:IssuerAccreditation"),
