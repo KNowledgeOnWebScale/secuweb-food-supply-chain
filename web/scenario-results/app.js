@@ -110,19 +110,19 @@ const scenarioMatrix = {
   Auditability: {
     DS: ["C"],
     DG: ["D"],
-    TR: ["C", "D"],
+    TR: ["E"],
     LC: ["F"],
   },
   Authentication: {
     DS: ["G"],
-    DG: ["G", "Q"],
-    TR: ["G", "Q"],
+    DG: ["H"],
+    TR: ["I"],
     LC: ["J"],
   },
   Authorization: {
     DS: ["K"],
-    DG: ["K", "Q"],
-    TR: ["K", "Q"],
+    DG: ["L"],
+    TR: ["M"],
     LC: ["N"],
   },
   Queryability: {
