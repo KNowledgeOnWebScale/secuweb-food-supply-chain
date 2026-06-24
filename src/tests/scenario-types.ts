@@ -92,6 +92,8 @@ export type ScenarioContext = {
   runVcCli: (inputFile: string, configFile: string) => Promise<{ exitCode: number; output: string }>;
 };
 
+type ScenarioRun = (context: ScenarioContext) => Promise<string>;
+
 type SkippedCheck = {
   id: string;
   scenario: string;
@@ -99,6 +101,7 @@ type SkippedCheck = {
   skip: true;
   skipCategory: SkipCategory;
   skipReason: string;
+  run?: ScenarioRun;
 };
 
 type RunnableCheck = {
@@ -106,7 +109,7 @@ type RunnableCheck = {
   scenario: string;
   description: string;
   skip?: false;
-  run: (context: ScenarioContext) => Promise<string>;
+  run: ScenarioRun;
 };
 
 export type ScenarioCheck = SkippedCheck | RunnableCheck;

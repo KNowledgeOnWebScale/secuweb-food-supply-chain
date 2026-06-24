@@ -167,26 +167,26 @@ export const checks: ScenarioCheck[] = [
     skip: true,
     skipCategory: "under-specified",
     skipReason: "The representative EPCIS/GS1 alignment level still needs to be specified before this can be a stable executable check.",
-    // run: async (context) => {
-    //   const documents = await Promise.all(
-    //     representativeResources
-    //       .filter((resource) => resource.requiresEpcisEventModel)
-    //       .map(async (resource) => ({
-    //         ...resource,
-    //         document: await loadFixture(context.repoRoot, resource.relativePath),
-    //       }))
-    //   );
-    //   const missing = documents.flatMap(({ label, document }) =>
-    //     assertEpcisEventModel(label, document)
-    //   );
+    run: async (context) => {
+      const documents = await Promise.all(
+        representativeResources
+          .filter((resource) => resource.requiresEpcisEventModel)
+          .map(async (resource) => ({
+            ...resource,
+            document: await loadFixture(context.repoRoot, resource.relativePath),
+          }))
+      );
+      const missing = documents.flatMap(({ label, document }) =>
+        assertEpcisEventModel(label, document)
+      );
 
-    //   assert.deepEqual(
-    //     missing,
-    //     [],
-    //     `Scenario U requires representative EPCIS/GS1 event-model alignment:\n${missing.join("\n")}`
-    //   );
+      assert.deepEqual(
+        missing,
+        [],
+        `Scenario U requires representative EPCIS/GS1 event-model alignment:\n${missing.join("\n")}`
+      );
 
-    //   return `${documents.length} representative resources include epcis:ObjectEvent, epcis:bizStep, and epcis:disposition`;
-    // },
+      return `${documents.length} representative resources include epcis:ObjectEvent, epcis:bizStep, and epcis:disposition`;
+    },
   },
 ];

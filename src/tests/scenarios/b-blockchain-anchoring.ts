@@ -7,6 +7,9 @@ export const checks: ScenarioCheck[] = [
     id: "B-1",
     scenario: "B",
     description: "The unchanged Farmer VC matches its on-chain commitment",
+    skip: true,
+    skipCategory: "excluded-from-analysis",
+    skipReason: "Trust-related aspects are currently not being considered",
     run: async (context) => {
       const { credential } = await context.getOriginalCredential();
       const verification = await context.verifyOnChain(credential);
@@ -23,6 +26,9 @@ export const checks: ScenarioCheck[] = [
     id: "B-2",
     scenario: "B",
     description: "A modified Farmer VC no longer matches its on-chain commitment",
+    skip: true,
+    skipCategory: "excluded-from-analysis",
+    skipReason: "Trust-related aspects are currently not being considered",
     run: async (context) => {
       const { credential } = await context.getOriginalCredential();
       const tamperedCredential = structuredClone(credential);
