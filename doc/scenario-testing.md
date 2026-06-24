@@ -29,7 +29,8 @@ Skipped checks are categorized because they do not all mean the same thing:
 
 | Check | Scenario | Acceptance criterion | Current expectation |
 | --- | --- | --- | --- |
-| `A-1` | A | The Farmer VC anchor is signed by, and verified against, the Farmer's on-chain identity. | May pass |
+| `A-1` | A | The Farmer VC anchor is signed by the `did:secuweb:farmer` cryptographic identity. | May pass |
+| `A-2` | A | The Farmer WebID-DID binding and product-origin control or accreditation assertion are verifiable. | Skipped: feature absent |
 | `B-1` | B | The unchanged Farmer VC matches its on-chain commitment. | May pass |
 | `B-2` | B | A modified Farmer VC does not match an on-chain commitment. | May pass |
 | `C-1` | C | The Farmer inspects recorded read and update operations for shared data. | Skipped: feature absent |

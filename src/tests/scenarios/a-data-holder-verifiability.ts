@@ -9,7 +9,7 @@ export const checks: ScenarioCheck[] = [
   {
     id: "A-1",
     scenario: "A",
-    description: "The Farmer VC anchor is signed by, and verified against, the Farmer's on-chain identity",
+    description: "The Farmer VC anchor is signed by the did:secuweb:farmer cryptographic identity",
     run: async (context) => {
       const { credential } = await context.getOriginalCredential();
       const verification = await context.verifyOnChain(credential);
@@ -32,5 +32,14 @@ export const checks: ScenarioCheck[] = [
       );
       return `Anchor issued by ${verification.anchor?.issuerDid} (${verification.anchor?.issuer})`;
     },
+  },
+  {
+    id: "A-2",
+    scenario: "A",
+    description: "The Farmer WebID-DID binding and product-origin control or accreditation assertion are verifiable",
+    skip: true,
+    skipCategory: "feature-absent",
+    skipReason:
+      "No evidence source currently links the Farmer WebID to did:secuweb:farmer and to a verifiable resource-control or issuer-accreditation assertion for product-origin data. A-1 only proves control of the cryptographic DID.",
   },
 ];
