@@ -35,18 +35,19 @@ Skipped checks are categorized because they do not all mean the same thing:
 | `B-2` | B | A modified Farmer VC does not match an on-chain commitment. | May pass |
 | `C-1` | C | The Farmer inspects recorded read and update operations for shared data. | Skipped: feature absent |
 | `D-1` | D | An auditor correlates a governance rule, access decision, and actor. | Skipped: feature absent |
-| `E-1` | E | The unchanged Farmer VC passes signature verification. | Excluded from analysis |
-| `E-2` | E | A modified Farmer VC fails signature verification. | Excluded from analysis |
+| `E-1` | E | The unchanged Farmer VC passes signature verification. | May pass |
+| `E-2` | E | A modified Farmer VC fails signature verification. | May pass |
 | `F-1` | F | A compliance package contains controller, recipient, policy, log, and resource evidence. | Skipped: feature absent |
 | `G-1` | G | The authenticated Farmer can inspect its resource ACL. | May pass |
 | `G-2` | G | Another authenticated actor cannot change the Farmer ACL. | May pass |
 | `H-1` | H | A governance rule identifies its issuer and governed action. | Excluded from analysis |
-| `I-1` | I | The VC issuer WebID resolves to its actor DID. | Excluded from analysis |
+| `I-1` | I | The VC issuer WebID resolves to its actor DID. | May pass |
+| `I-2` | I | The Farmer DID is registered on-chain with the Farmer address as controller. | May pass |
 | `J-1` | J | A compliance operation identifies the responsible actor. | Skipped: feature absent |
 | `K-1` | K | The authorized Packager can read the Farmer product. | May pass |
 | `K-2` | K | The unauthorized Transporter cannot read the Farmer product. | May pass |
 | `L-1` | L | An explicit governance rule agrees with runtime authorization. | Excluded from analysis |
-| `M-1` | M | An auditor can verify the policy basis of an access decision. | Excluded from analysis |
+| `M-1` | M | An auditor can verify the policy basis of an access decision. | Skipped: feature absent |
 | `N-1` | N | Anonymous and unrelated actors cannot read confidential data. | May pass |
 | `N-2` | N | The shared credential states its permitted processing purpose. | Skipped: pending implementation |
 | `N-3` | N | The Packager view retains source product weight while removing source-only location and farm-lot fields. | May pass after fixture setup publishes the minimized product view |

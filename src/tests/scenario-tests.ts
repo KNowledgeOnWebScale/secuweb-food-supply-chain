@@ -39,7 +39,11 @@ import { checks as checksV } from "./scenarios/v-issuer-accreditation-verifiabil
 
 const catalogueVersion = "202606231754";
 const definedScenarios = "ABCDEFGHIJKLMNOPQRSTUV".split("");
-const analysisScenarios = ["A", "B", "C", "D", "F", "G", "J", "K", "N", "O", "P", "Q", "R", "S", "T", "U"];
+const analysisScenarios = [
+  "A", "B", "C", "D", "E", "F", "G", "I",
+  "J", "K", "M", "N", "O", "P", "Q", "R",
+  "S", "T", "U",
+];
 const excludedScenarios = definedScenarios.filter((scenario) => !analysisScenarios.includes(scenario));
 const repoRoot = process.cwd();
 const evidenceDir = path.resolve(
