@@ -16,6 +16,17 @@ flag set to `false` are still represented in the report for traceability, but
 their checks are skipped and excluded from coverage metrics, the assurance
 matrix counts, and strict-mode failure decisions.
 
+Trust (`TR`) is treated as a proxy design goal. TR scenarios therefore carry
+dependency semantics that identify which non-TR design-goal evidence they rely
+on:
+
+| TR scenario | Primary dependency | Secondary dependency |
+| --- | --- | --- |
+| B - TR x Verifiability | DS via A | -- |
+| E - TR x Auditability | DS via C | DG via D |
+| I - TR x Authentication | DS via G | DG via Q |
+| M - TR x Authorization | DS via K | DG via Q |
+
 Skipped checks are categorized because they do not all mean the same thing:
 
 | Category | Matrix code | Meaning |

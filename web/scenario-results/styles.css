@@ -1291,14 +1291,16 @@ h1 {
 }
 
 .scenario-tag.is-excluded .scenario-goal,
-.scenario-tag.is-excluded .scenario-aspect {
+.scenario-tag.is-excluded .scenario-aspect,
+.scenario-tag.is-excluded .scenario-dependency {
   border-left-color: #d6dde7;
   color: #526070;
 }
 
 .scenario-code,
 .scenario-goal,
-.scenario-aspect {
+.scenario-aspect,
+.scenario-dependency {
   display: inline-flex;
   align-items: center;
   padding: 0 7px;
@@ -1322,6 +1324,14 @@ h1 {
 .scenario-aspect {
   border-left: 1px solid #cad9ef;
   color: #486783;
+  text-transform: none;
+}
+
+.scenario-dependency {
+  border-left: 1px solid #cad9ef;
+  color: #486783;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  letter-spacing: 0.01em;
   text-transform: none;
 }
 

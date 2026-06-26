@@ -148,18 +148,37 @@ const scenarioMatrix = {
 
 const scenarioMetadata = {
   A: { goals: ["DS"], aspect: "Verifiability" },
-  B: { goals: ["TR"], aspect: "Verifiability" },
+  B: {
+    goals: ["TR"],
+    aspect: "Verifiability",
+    primaryDependency: { designGoal: "DS", scenario: "A" },
+  },
   C: { goals: ["DS"], aspect: "Auditability" },
   D: { goals: ["DG"], aspect: "Auditability" },
-  E: { goals: ["TR"], aspect: "Auditability" },
+  E: {
+    goals: ["TR"],
+    aspect: "Auditability",
+    primaryDependency: { designGoal: "DS", scenario: "C" },
+    secondaryDependency: { designGoal: "DG", scenario: "D" },
+  },
   F: { goals: ["LC"], aspect: "Auditability" },
   G: { goals: ["DS"], aspect: "Authentication" },
   H: { goals: ["DG"], aspect: "Authentication", includeInAnalysis: false },
-  I: { goals: ["TR"], aspect: "Authentication" },
+  I: {
+    goals: ["TR"],
+    aspect: "Authentication",
+    primaryDependency: { designGoal: "DS", scenario: "G" },
+    secondaryDependency: { designGoal: "DG", scenario: "Q" },
+  },
   J: { goals: ["LC"], aspect: "Authentication" },
   K: { goals: ["DS"], aspect: "Authorization" },
   L: { goals: ["DG"], aspect: "Authorization", includeInAnalysis: false },
-  M: { goals: ["TR"], aspect: "Authorization" },
+  M: {
+    goals: ["TR"],
+    aspect: "Authorization",
+    primaryDependency: { designGoal: "DS", scenario: "K" },
+    secondaryDependency: { designGoal: "DG", scenario: "Q" },
+  },
   N: { goals: ["LC"], aspect: "Authorization" },
   O: { goals: ["DS"], aspect: "Queryability" },
   P: { goals: ["INT"], aspect: "Queryability" },
@@ -1493,6 +1512,32 @@ function getScenarioMetadata(scenario) {
   };
 }
 
+function formatDependencyReference(dependency) {
+  if (!dependency) {
+    return "";
+  }
+
+  const goal = dependency.designGoal || dependency.goal;
+  const scenario = dependency.scenario;
+  if (!goal) {
+    return "";
+  }
+  return scenario ? `${goal} via ${scenario}` : goal;
+}
+
+function scenarioDependencyTerms(metadata) {
+  return [
+    metadata.primaryDependency ? "primary dependency" : "",
+    formatDependencyReference(metadata.primaryDependency),
+    metadata.secondaryDependency ? "secondary dependency" : "",
+    formatDependencyReference(metadata.secondaryDependency),
+    metadata.primaryDependency?.designGoal,
+    metadata.primaryDependency?.scenario,
+    metadata.secondaryDependency?.designGoal,
+    metadata.secondaryDependency?.scenario,
+  ].filter(Boolean);
+}
+
 function scenarioSearchTerms(result) {
   const scenarioTerms = getResultScenarios(result).flatMap((scenario) => {
     const metadata = getScenarioMetadata(scenario);
@@ -1503,6 +1548,7 @@ function scenarioSearchTerms(result) {
       metadata.title,
       ...metadata.goals,
       ...metadata.goals.map((goal) => designGoalLabels[goal]),
+      ...scenarioDependencyTerms(metadata),
       ...placements.map((placement) => placement.aspect),
       ...placements.map((placement) => placement.goal),
       ...placements.map((placement) => designGoalLabels[placement.goal]),
@@ -1531,14 +1577,25 @@ function renderScenarioTag(scenario) {
     metadata.title || `Scenario ${scenario}`,
     goalLabel,
     metadata.aspect,
+    metadata.primaryDependency
+      ? `Primary dependency: ${formatDependencyReference(metadata.primaryDependency)}`
+      : "",
+    metadata.secondaryDependency
+      ? `Secondary dependency: ${formatDependencyReference(metadata.secondaryDependency)}`
+      : "",
     metadata.includeInAnalysis === false ? "Excluded from analysis" : "",
   ].filter(Boolean).join(" · ");
+  const dependencyLabel = [
+    formatDependencyReference(metadata.primaryDependency),
+    formatDependencyReference(metadata.secondaryDependency),
+  ].filter(Boolean).join(" + ");
 
   return `
     <span class="scenario-tag ${metadata.includeInAnalysis === false ? "is-excluded" : ""}" title="${escapeHtml(title)}">
       <span class="scenario-code">${escapeHtml(scenario)}</span>
       <span class="scenario-goal">${escapeHtml(goalCode)}</span>
       <span class="scenario-aspect">${escapeHtml(metadata.aspect)}</span>
+      ${dependencyLabel ? `<span class="scenario-dependency">dep ${escapeHtml(dependencyLabel)}</span>` : ""}
     </span>
   `;
 }
