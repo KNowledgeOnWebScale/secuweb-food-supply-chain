@@ -3,6 +3,11 @@ const state = {
   filter: "all",
   search: "",
   showMatrixAggregates: true,
+  matrixCopyValues: {
+    scores: true,
+    codes: true,
+    scenarios: false,
+  },
   copyStatusTimeout: null,
   overviewCopyStatusTimeout: null,
   outputContentCache: new Map(),
@@ -33,7 +38,11 @@ const elements = {
   skippedFilterCount: document.querySelector("#skipped-filter-count"),
   matrixHead: document.querySelector("#matrix-head"),
   matrixBody: document.querySelector("#matrix-body"),
+  matrixRunTimestamp: document.querySelector("#matrix-run-timestamp"),
   matrixAggregatesToggle: document.querySelector("#matrix-aggregates-toggle"),
+  matrixCopyScores: document.querySelector("#matrix-copy-scores"),
+  matrixCopyCodes: document.querySelector("#matrix-copy-codes"),
+  matrixCopyScenarios: document.querySelector("#matrix-copy-scenarios"),
   copyMatrixButton: document.querySelector("#copy-matrix-button"),
   copyMarkdownMatrixButton: document.querySelector("#copy-markdown-matrix-button"),
   copyHtmlMatrixButton: document.querySelector("#copy-html-matrix-button"),
@@ -229,6 +238,27 @@ function formatTimestamp(timestamp) {
       year: "numeric",
     }).format(date),
   };
+}
+
+function formatFullTimestamp(timestamp) {
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) {
+    return "unknown generation time";
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZoneName: "short",
+  }).format(date);
+}
+
+function formatMatrixTimestamp(report) {
+  return `Latest run: ${formatFullTimestamp(report.generatedAt)}`;
 }
 
 function formatPercent(numerator, denominator) {
@@ -549,9 +579,9 @@ function sortScenarios(scenarios) {
   );
 }
 
-function formatScenarioList(scenarios) {
+function formatScenarioList(scenarios, separator = ", ") {
   const sortedScenarios = sortScenarios(scenarios);
-  return sortedScenarios.length === 0 ? "--" : sortedScenarios.join(", ");
+  return sortedScenarios.length === 0 ? "--" : sortedScenarios.join(separator);
 }
 
 function getSkipCategoryEntries(cell) {
@@ -571,10 +601,70 @@ function formatSkipBreakdown(cell, separator = " ") {
     : entries.map((entry) => `${entry.metadata.code}:${entry.count}`).join(separator);
 }
 
+function formatMatrixScore(cell) {
+  return `${cell.passed}/${cell.failed}/${cell.total}`;
+}
+
 function formatMatrixValue(cell) {
-  const base = `${cell.passed}/${cell.failed}/${cell.total}`;
+  const base = formatMatrixScore(cell);
   const skipBreakdown = formatSkipBreakdown(cell);
   return skipBreakdown ? `${base} [${skipBreakdown}]` : base;
+}
+
+function currentMatrixCopyOptions() {
+  return {
+    scores: elements.matrixCopyScores?.checked ?? state.matrixCopyValues.scores,
+    codes: elements.matrixCopyCodes?.checked ?? state.matrixCopyValues.codes,
+    scenarios: elements.matrixCopyScenarios?.checked ?? state.matrixCopyValues.scenarios,
+  };
+}
+
+function syncMatrixCopyOptions() {
+  state.matrixCopyValues = currentMatrixCopyOptions();
+}
+
+function joinMatrixCopyParts(parts, separator = "\n") {
+  return parts.filter(Boolean).join(separator) || "--";
+}
+
+function formatMatrixCopyValue({
+  cell,
+  includedScenarios = [],
+  excludedScenarios = [],
+  excludedOnly = false,
+  separator = "\n",
+  scenarioSeparator = ", ",
+}) {
+  const options = state.matrixCopyValues;
+  const parts = [];
+
+  if (options.scores && !excludedOnly && cell) {
+    parts.push(formatMatrixScore(cell));
+  }
+
+  if (options.codes) {
+    if (cell) {
+      const skipBreakdown = formatSkipBreakdown(cell);
+      if (skipBreakdown) {
+        parts.push(skipBreakdown);
+      }
+    }
+    if (excludedScenarios.length > 0) {
+      parts.push("EX");
+    }
+  }
+
+  if (options.scenarios) {
+    const scenarioLabel = formatScenarioList(
+      [...includedScenarios, ...excludedScenarios],
+      scenarioSeparator
+    );
+    if (scenarioLabel !== "--") {
+      parts.push(scenarioLabel);
+    }
+  }
+
+  return joinMatrixCopyParts(parts, separator);
 }
 
 function formatSkipTitleParts(cell) {
@@ -889,6 +979,9 @@ function renderAssuranceMatrix(report) {
     `)
     .join("");
   renderMatrixHeader();
+  if (elements.matrixRunTimestamp) {
+    elements.matrixRunTimestamp.textContent = formatMatrixTimestamp(report);
+  }
   elements.matrixBody.innerHTML = state.showMatrixAggregates
     ? rows + renderGoalAggregateCountRow(aggregates) + renderGoalAggregateScenarioRow()
     : rows;
@@ -911,17 +1004,78 @@ function escapeLatex(value) {
   return String(value).replace(/[\\{}#$%&_~^]/g, (character) => replacements[character]);
 }
 
-function renderLatexMatrixCell(cell, aspect, goal, report) {
+function formatMatrixConfiguredCopyCell(cell, aspect, goal, report, separator = "\n") {
   const { configuredScenarios, includedConfigured, excludedConfigured } =
     getMatrixScenarioGroups(aspect, goal, report);
   if (configuredScenarios.length === 0) {
     return "--";
   }
-  if (includedConfigured.length === 0 && excludedConfigured.length > 0) {
-    return "EX";
+
+  return formatMatrixCopyValue({
+    cell,
+    includedScenarios: includedConfigured,
+    excludedScenarios: excludedConfigured,
+    excludedOnly: includedConfigured.length === 0 && excludedConfigured.length > 0,
+    separator,
+  });
+}
+
+function formatAggregateCopyValue(
+  cell,
+  scenarios,
+  separator = "\n",
+  scenarioSeparator = ", "
+) {
+  return formatMatrixCopyValue({
+    cell,
+    includedScenarios: scenarios,
+    separator,
+    scenarioSeparator,
+  });
+}
+
+function formatScenarioOnlyCopyValue(
+  scenarios,
+  separator = "\n",
+  scenarioSeparator = ", "
+) {
+  if (!state.matrixCopyValues.scenarios) {
+    return "--";
+  }
+  return joinMatrixCopyParts([formatScenarioList(scenarios, scenarioSeparator)], separator);
+}
+
+function describeMatrixCopyValues() {
+  const labels = [];
+  if (state.matrixCopyValues.scores) {
+    labels.push("scenario scores");
+  }
+  if (state.matrixCopyValues.codes) {
+    labels.push("status codes");
+  }
+  if (state.matrixCopyValues.scenarios) {
+    labels.push("scenario identifiers");
+  }
+  const selected = labels.length === 0 ? "no value components" : labels.join(", ");
+  const codeNote = state.matrixCopyValues.codes
+    ? " Codes: FA = feature absent, PI = pending implementation, US = under-specified, EX = excluded from analysis."
+    : "";
+  return `Selected copied cell values: ${selected}.${codeNote}`;
+}
+
+function renderLatexMatrixCell(cell, aspect, goal, report) {
+  return formatMatrixConfiguredCopyCell(cell, aspect, goal, report, "\n");
+}
+
+function renderLatexCellValue(value, alignment = "c") {
+  const lines = String(value).split("\n");
+  if (lines.length <= 1) {
+    return escapeLatex(value);
   }
 
-  return formatMatrixValue(cell);
+  return `\\begin{tabular}[c]{@{}${alignment}@{}}${lines
+    .map(escapeLatex)
+    .join(" \\\\ ")}\\end{tabular}`;
 }
 
 function generateMatrixLatex(report) {
@@ -944,35 +1098,60 @@ function generateMatrixLatex(report) {
     const cells = designGoalOrder.map((goal) =>
       renderLatexMatrixCell(matrix[aspect][goal], aspect, goal, report)
     );
+    const cellAlignments = designGoalOrder.map(() => "c");
     if (includeAggregates) {
       cells.push(
-        formatMatrixValue(aggregates.aspects[aspect]),
-        escapeLatex(formatScenarioList(getConfiguredAspectScenarios(aspect, report)))
+        formatAggregateCopyValue(
+          aggregates.aspects[aspect],
+          getConfiguredAspectScenarios(aspect, report),
+          "\n"
+        ),
+        formatScenarioOnlyCopyValue(getConfiguredAspectScenarios(aspect, report), "\n")
       );
+      cellAlignments.push("c", "l");
     }
-    return `${escapeLatex(aspect)} & ${cells.join(" & ")} \\\\`;
+    return `${escapeLatex(aspect)} & ${cells
+      .map((cell, index) => renderLatexCellValue(cell, cellAlignments[index]))
+      .join(" & ")} \\\\`;
   });
   const aggregateRows = includeAggregates
     ? [
         [
           "Design goal totals",
-          ...designGoalOrder.map((goal) => formatMatrixValue(aggregates.goals[goal])),
+          ...designGoalOrder.map((goal) =>
+            formatAggregateCopyValue(
+              aggregates.goals[goal],
+              getConfiguredGoalScenarios(goal, report),
+              "\n"
+            )
+          ),
           "--",
           "--",
         ],
         [
           "Design goal scenarios",
-          ...designGoalOrder.map((goal) => formatScenarioList(getConfiguredGoalScenarios(goal, report))),
+          ...designGoalOrder.map((goal) =>
+            formatScenarioOnlyCopyValue(getConfiguredGoalScenarios(goal, report), "\n")
+          ),
           "--",
           "--",
         ],
-      ].map((row) => row.map(escapeLatex).join(" & ") + " \\\\")
+      ].map((row, rowIndex) => {
+        const alignments = rowIndex === 0 ? designGoalOrder.map(() => "c") : designGoalOrder.map(() => "l");
+        alignments.push("c", "l");
+        return `${escapeLatex(row[0])} & ${row
+          .slice(1)
+          .map((cell, index) => renderLatexCellValue(cell, alignments[index]))
+          .join(" & ")} \\\\`;
+      })
     : [];
 
   return [
     "\\begin{table}[htbp]",
     "\\centering",
-    "\\caption{Scenario assurance matrix. Cell format: passing/failing/total with optional skip breakdown (FA feature absent, PI pending implementation, US under-specified). EX means excluded from analysis.}",
+    `\\caption{Scenario assurance matrix. ${escapeLatex(formatMatrixTimestamp(report))}. ${escapeLatex(describeMatrixCopyValues())}}`,
+    "",
+    "\\resizebox{\\textwidth}{!}{%",
     `\\begin{tabular}{${columns}}`,
     "\\hline",
     `${header} \\\\`,
@@ -980,7 +1159,9 @@ function generateMatrixLatex(report) {
     ...rows,
     ...aggregateRows,
     "\\hline",
-    "\\end{tabular}",
+    "\\end{tabular}%",
+    "}",
+    "",
     "\\end{table}",
   ].join("\n");
 }
@@ -990,16 +1171,7 @@ function escapeMarkdownTableCell(value) {
 }
 
 function renderMarkdownMatrixCell(cell, aspect, goal, report) {
-  const { configuredScenarios, includedConfigured, excludedConfigured } =
-    getMatrixScenarioGroups(aspect, goal, report);
-  if (configuredScenarios.length === 0) {
-    return "--";
-  }
-  if (includedConfigured.length === 0 && excludedConfigured.length > 0) {
-    return "EX";
-  }
-
-  return formatMatrixValue(cell);
+  return formatMatrixConfiguredCopyCell(cell, aspect, goal, report, "\n");
 }
 
 function generateMatrixMarkdown(report) {
@@ -1022,8 +1194,12 @@ function generateMatrixMarkdown(report) {
     );
     if (includeAggregates) {
       cells.push(
-        formatMatrixValue(aggregates.aspects[aspect]),
-        formatScenarioList(getConfiguredAspectScenarios(aspect, report))
+        formatAggregateCopyValue(
+          aggregates.aspects[aspect],
+          getConfiguredAspectScenarios(aspect, report),
+          "\n"
+        ),
+        formatScenarioOnlyCopyValue(getConfiguredAspectScenarios(aspect, report), "\n")
       );
     }
     return `| ${[aspect, ...cells].map(escapeMarkdownTableCell).join(" | ")} |`;
@@ -1032,13 +1208,21 @@ function generateMatrixMarkdown(report) {
     ? [
         [
           "Design goal totals",
-          ...designGoalOrder.map((goal) => formatMatrixValue(aggregates.goals[goal])),
+          ...designGoalOrder.map((goal) =>
+            formatAggregateCopyValue(
+              aggregates.goals[goal],
+              getConfiguredGoalScenarios(goal, report),
+              "\n"
+            )
+          ),
           "--",
           "--",
         ],
         [
           "Design goal scenarios",
-          ...designGoalOrder.map((goal) => formatScenarioList(getConfiguredGoalScenarios(goal, report))),
+          ...designGoalOrder.map((goal) =>
+            formatScenarioOnlyCopyValue(getConfiguredGoalScenarios(goal, report), "\n")
+          ),
           "--",
           "--",
         ],
@@ -1051,7 +1235,8 @@ function generateMatrixMarkdown(report) {
     ...rows,
     ...aggregateRows,
     "",
-    "Cell format: passing/failing/total. Skip breakdown codes: FA = feature absent, PI = pending implementation, US = under-specified. EX = excluded from analysis.",
+    formatMatrixTimestamp(report),
+    describeMatrixCopyValues(),
   ].join("\n");
 }
 
@@ -1062,15 +1247,22 @@ function renderHtmlMatrixCell(cell, aspect, goal, report) {
   if (configuredScenarios.length === 0) {
     return `<td style="${cellStyle}">--</td>`;
   }
-  if (includedConfigured.length === 0 && excludedConfigured.length > 0) {
-    return `<td style="${cellStyle} background: #eef2f6;">EX</td>`;
-  }
 
-  return `<td style="${cellStyle}">${escapeHtml(formatMatrixValue(cell))}</td>`;
+  const extraStyle =
+    includedConfigured.length === 0 && excludedConfigured.length > 0
+      ? " background: #eef2f6;"
+      : "";
+  return `<td style="${cellStyle}${extraStyle}">${formatHtmlCellValue(
+    formatMatrixConfiguredCopyCell(cell, aspect, goal, report, "\n")
+  )}</td>`;
+}
+
+function formatHtmlCellValue(value) {
+  return String(value).split("\n").map(escapeHtml).join("<br>");
 }
 
 function renderHtmlValueCell(value, textAlign = "center", extraStyle = "") {
-  return `<td style="border: 1px solid #d0d7de; padding: 6px 8px; text-align: ${textAlign}; ${extraStyle}">${escapeHtml(value)}</td>`;
+  return `<td style="border: 1px solid #d0d7de; padding: 6px 8px; text-align: ${textAlign}; ${extraStyle}">${formatHtmlCellValue(value)}</td>`;
 }
 
 function generateMatrixHtml(report) {
@@ -1102,11 +1294,18 @@ function generateMatrixHtml(report) {
       const aggregateCells = includeAggregates
         ? [
             renderHtmlValueCell(
-              formatMatrixValue(aggregates.aspects[aspect]),
+              formatAggregateCopyValue(
+                aggregates.aspects[aspect],
+                getConfiguredAspectScenarios(aspect, report),
+                "\n"
+              ),
               "center",
               aggregateStartStyle
             ),
-            renderHtmlValueCell(formatScenarioList(getConfiguredAspectScenarios(aspect, report)), "left"),
+            renderHtmlValueCell(
+              formatScenarioOnlyCopyValue(getConfiguredAspectScenarios(aspect, report), "\n"),
+              "left"
+            ),
           ].join("")
         : "";
       return `  <tr>\n    <th scope="row" style="${rowHeadingStyle}">${escapeHtml(aspect)}</th>\n    ${cells}${aggregateCells}\n  </tr>`;
@@ -1117,7 +1316,11 @@ function generateMatrixHtml(report) {
         `  <tr>\n    <th scope="row" style="${rowHeadingStyle} ${aggregateRowStyle}">Design goal totals</th>\n    ${designGoalOrder
           .map((goal) =>
             renderHtmlValueCell(
-              formatMatrixValue(aggregates.goals[goal]),
+              formatAggregateCopyValue(
+                aggregates.goals[goal],
+                getConfiguredGoalScenarios(goal, report),
+                "\n"
+              ),
               "center",
               aggregateRowStyle
             )
@@ -1126,7 +1329,7 @@ function generateMatrixHtml(report) {
         `  <tr>\n    <th scope="row" style="${rowHeadingStyle} ${aggregateRowStyle}">Design goal scenarios</th>\n    ${designGoalOrder
           .map((goal) =>
             renderHtmlValueCell(
-              formatScenarioList(getConfiguredGoalScenarios(goal, report)),
+              formatScenarioOnlyCopyValue(getConfiguredGoalScenarios(goal, report), "\n"),
               "left",
               aggregateRowStyle
             )
@@ -1137,7 +1340,7 @@ function generateMatrixHtml(report) {
 
   return [
     '<table aria-label="Scenario assurance matrix" style="border-collapse: collapse;">',
-    '  <caption style="caption-side: top; font-weight: 700; margin-bottom: 6px;">Scenario assurance matrix. Cell format: passing/failing/total. Skip breakdown codes: FA feature absent, PI pending implementation, US under-specified. EX excluded from analysis.</caption>',
+    `  <caption style="caption-side: top; font-weight: 700; margin-bottom: 6px;">Scenario assurance matrix. ${escapeHtml(formatMatrixTimestamp(report))}. ${escapeHtml(describeMatrixCopyValues())}</caption>`,
     "  <thead>",
     `    <tr>${header}</tr>`,
     "  </thead>",
@@ -1160,20 +1363,16 @@ function generateMatrixTsv(report) {
   ].join("\t");
   const rows = technicalAspectOrder.map((aspect) => {
     const cells = designGoalOrder.map((goal) => {
-      const { configuredScenarios, includedConfigured, excludedConfigured } =
-        getMatrixScenarioGroups(aspect, goal, report);
-      if (configuredScenarios.length === 0) {
-        return "--";
-      }
-      if (includedConfigured.length === 0 && excludedConfigured.length > 0) {
-        return "EX";
-      }
-      return formatMatrixValue(matrix[aspect][goal]);
+      return formatMatrixConfiguredCopyCell(matrix[aspect][goal], aspect, goal, report, "; ");
     });
     if (includeAggregates) {
       cells.push(
-        formatMatrixValue(aggregates.aspects[aspect]),
-        formatScenarioList(getConfiguredAspectScenarios(aspect, report))
+        formatAggregateCopyValue(
+          aggregates.aspects[aspect],
+          getConfiguredAspectScenarios(aspect, report),
+          "; "
+        ),
+        formatScenarioOnlyCopyValue(getConfiguredAspectScenarios(aspect, report), "; ")
       );
     }
     return [aspect, ...cells].join("\t");
@@ -1182,13 +1381,21 @@ function generateMatrixTsv(report) {
     ? [
         [
           "Design goal totals",
-          ...designGoalOrder.map((goal) => formatMatrixValue(aggregates.goals[goal])),
+          ...designGoalOrder.map((goal) =>
+            formatAggregateCopyValue(
+              aggregates.goals[goal],
+              getConfiguredGoalScenarios(goal, report),
+              "; "
+            )
+          ),
           "--",
           "--",
         ],
         [
           "Design goal scenarios",
-          ...designGoalOrder.map((goal) => formatScenarioList(getConfiguredGoalScenarios(goal, report))),
+          ...designGoalOrder.map((goal) =>
+            formatScenarioOnlyCopyValue(getConfiguredGoalScenarios(goal, report), "; ")
+          ),
           "--",
           "--",
         ],
@@ -1200,7 +1407,8 @@ function generateMatrixTsv(report) {
     ...rows,
     ...aggregateRows,
     "",
-    "Cell format: passing/failing/total. Skip breakdown codes: FA = feature absent, PI = pending implementation, US = under-specified. EX = excluded from analysis.",
+    formatMatrixTimestamp(report),
+    describeMatrixCopyValues(),
   ].join("\n");
 }
 
@@ -1456,6 +1664,7 @@ async function copyMatrixAsLatex() {
   }
 
   try {
+    syncMatrixCopyOptions();
     const latex = generateMatrixLatex(state.report);
     await copyTextToClipboard(latex);
     setCopyMatrixStatus("Copied");
@@ -1472,6 +1681,7 @@ async function copyMatrixAsMarkdown() {
   }
 
   try {
+    syncMatrixCopyOptions();
     const markdown = generateMatrixMarkdown(state.report);
     await copyTextToClipboard(markdown);
     setCopyMatrixStatus("Copied Markdown");
@@ -1488,6 +1698,7 @@ async function copyMatrixAsHtml() {
   }
 
   try {
+    syncMatrixCopyOptions();
     const html = generateMatrixHtml(state.report);
     const plainText = generateMatrixTsv(state.report);
     await copyHtmlToClipboard(html, plainText);

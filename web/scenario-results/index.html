@@ -179,6 +179,21 @@
                 />
                 <span>Show aggregate rows and columns</span>
               </label>
+              <fieldset class="matrix-copy-options">
+                <legend>Copied cell values</legend>
+                <label>
+                  <input id="matrix-copy-scores" type="checkbox" checked />
+                  <span>Scores</span>
+                </label>
+                <label>
+                  <input id="matrix-copy-codes" type="checkbox" checked />
+                  <span>Codes</span>
+                </label>
+                <label>
+                  <input id="matrix-copy-scenarios" type="checkbox" />
+                  <span>Scenario IDs</span>
+                </label>
+              </fieldset>
               <div class="matrix-copy-buttons">
                 <button
                   class="copy-matrix-button"
@@ -214,6 +229,9 @@
           </div>
           <div class="matrix-scroll">
             <table class="assurance-matrix">
+              <caption id="matrix-run-timestamp">
+                Latest run: waiting for evidence
+              </caption>
               <thead id="matrix-head"></thead>
               <tbody id="matrix-body"></tbody>
             </table>
