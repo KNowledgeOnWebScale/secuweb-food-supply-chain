@@ -1,7 +1,7 @@
 # Scenario Tests
 
 The acceptance runner covers every scenario in SecuWeb scenario catalogue
-version `202606231754`, from Scenario A through Scenario V.
+version `202606292322`, from Scenario A through Scenario V.
 
 Coverage and successful implementation are separate concerns:
 

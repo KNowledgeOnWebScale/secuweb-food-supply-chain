@@ -37,7 +37,7 @@ import { checks as checksT } from "./scenarios/t-uniform-api.js";
 import { checks as checksU } from "./scenarios/u-data-model-interoperability.js";
 import { checks as checksV } from "./scenarios/v-issuer-accreditation-verifiability.js";
 
-const catalogueVersion = "202606231754";
+const catalogueVersion = "202606292322";
 const definedScenarios = "ABCDEFGHIJKLMNOPQRSTUV".split("");
 const analysisScenarios = [
   "A", "B", "C", "D", "E", "F", "G", "I",
