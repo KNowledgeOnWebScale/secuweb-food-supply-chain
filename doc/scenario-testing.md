@@ -27,14 +27,19 @@ on:
 | I - TR x Authentication | DS via G | DG via Q |
 | M - TR x Authorization | DS via K | DG via Q |
 
-Skipped checks are categorized because they do not all mean the same thing:
+## Skip Category Codes
 
-| Category | Matrix code | Meaning |
-| --- | --- | --- |
-| `feature-absent` | `FA` | The required architectural feature does not exist yet, such as an audit log or policy-decision evidence source. |
-| `pending-implementation` | `PI` | The scenario is implementable in the current architecture, but the specific fixture or test work has not been done yet. |
-| `under-specified` | `US` | The scenario still needs sharper acceptance criteria before an executable check would be meaningful. |
-| `excluded-from-analysis` | `EX` | The scenario catalogue sets `Include in Analysis` to `false`; the check is skipped and not counted in coverage metrics. |
+Skipped checks are categorized because they do not all mean the same thing. The
+JSON report stores the category in `skipCategory`; the dashboard and copied
+assurance matrix use the shorter matrix code.
+
+| Matrix code | `skipCategory` | Description | Evaluation meaning |
+| --- | --- | --- | --- |
+| `FA` | `feature-absent` | Required architectural feature is absent. | The scenario identifies a capability gap in the demonstrator, such as a missing audit log or policy-decision evidence source. |
+| `PI` | `pending-implementation` | Implementable check has not been implemented yet. | The scenario is expected to be testable in the current architecture, but fixture or test work is still pending. |
+| `US` | `under-specified` | Scenario needs sharper acceptance criteria. | The scenario should be refined before an executable check can provide meaningful evidence. |
+| `EX` | `excluded-from-analysis` | Scenario catalogue excludes this check from coverage metrics. | The scenario is represented for traceability, but is not counted in coverage metrics, assurance matrix totals, or strict-mode failure decisions. |
+| `UNK` | `unknown` | Skip category was missing or not recognized. | Treat this as a report metadata issue; the skipped check should be assigned one of the explicit categories above. |
 
 ## Test Catalogue
 
@@ -69,7 +74,7 @@ Skipped checks are categorized because they do not all mean the same thing:
 | `S-1` | S | A uniform domain-data API pattern retrieves supply-chain resources from three actor data stores. | May pass |
 | `T-1` | T | Verification evidence for retrieved domain data is available through a uniform API pattern aligned with domain-data access. | Expected failure: no uniform verification-evidence API |
 | `U-1` | U | Product-shipment fixtures expose stable Web identifiers and shared semantic vocabularies across actors. | May pass |
-| `U-2` | U | Representative supply-chain event data is aligned with EPCIS/GS1 event semantics. | Skipped: under-specified |
+| `U-2` | U | Representative supply-chain event resources declare EPCIS vocabulary usage through `epcis:ObjectEvent`, `epcis:bizStep`, and `epcis:disposition`. | Expected failure: transporter event fixtures still lack EPCIS vocabulary usage |
 | `V-1` | V | The governance model accredits the Farmer to issue product-origin data. | Excluded from analysis |
 
 The runner validates that the result set contains all 22 catalogue scenario

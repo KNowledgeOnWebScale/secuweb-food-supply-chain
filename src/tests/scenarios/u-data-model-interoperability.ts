@@ -9,7 +9,7 @@ type JsonObject = Record<string, any>;
 type FixtureExpectation = {
   label: string;
   relativePath: string;
-  requiresEpcisEventModel?: boolean;
+  requiresEpcisVocabulary?: boolean;
 };
 
 const representativeResources: FixtureExpectation[] = [
@@ -24,27 +24,27 @@ const representativeResources: FixtureExpectation[] = [
   {
     label: "Packager packaging data",
     relativePath: "dev/fixtures/product-shipment/resources/packager/products/packaged-batch-001.jsonld",
-    requiresEpcisEventModel: true,
+    requiresEpcisVocabulary: true,
   },
   {
     label: "Packager receipt data",
     relativePath: "dev/fixtures/product-shipment/resources/packager/shipments/in/receipt-shipment1.jsonld",
-    requiresEpcisEventModel: true,
+    requiresEpcisVocabulary: true,
   },
   {
     label: "Transporter pickup event",
     relativePath: "dev/fixtures/product-shipment/resources/transporter/transport-events/pickup-shipment1.jsonld",
-    requiresEpcisEventModel: true,
+    requiresEpcisVocabulary: true,
   },
   {
     label: "Transporter delivery event",
     relativePath: "dev/fixtures/product-shipment/resources/transporter/transport-events/delivery-shipment1.jsonld",
-    requiresEpcisEventModel: true,
+    requiresEpcisVocabulary: true,
   },
   {
     label: "Retailer receipt data",
     relativePath: "dev/fixtures/product-shipment/resources/retailer/shipments/in/receipt-shipment3.jsonld",
-    requiresEpcisEventModel: true,
+    requiresEpcisVocabulary: true,
   },
 ];
 
@@ -110,8 +110,8 @@ function assertResolvableSemanticShape(label: string, document: JsonObject): str
   return missing;
 }
 
-/** Returns EPCIS event-model validation gaps for one fixture document. */
-function assertEpcisEventModel(label: string, document: JsonObject): string[] {
+/** Returns EPCIS vocabulary usage gaps for one representative event document. */
+function assertEpcisVocabularyUsage(label: string, document: JsonObject): string[] {
   const aliases = contextAliases(document);
   const missing: string[] = [];
 
@@ -132,6 +132,21 @@ function assertEpcisEventModel(label: string, document: JsonObject): string[] {
   }
 
   return missing;
+}
+
+/** Summarizes EPCIS vocabulary usage for dashboard evidence. */
+function summarizeEpcisVocabularyUsage(label: string, relativePath: string, document: JsonObject): JsonObject {
+  const aliases = contextAliases(document);
+  return {
+    label,
+    relativePath,
+    hasEpcisAlias: aliases.has("epcis"),
+    types: asArray(document["@type"]),
+    hasObjectEventType: hasType(document, "epcis:ObjectEvent"),
+    hasBizStep: typeof document["epcis:bizStep"] === "string",
+    hasDisposition: typeof document["epcis:disposition"] === "string",
+    missing: assertEpcisVocabularyUsage(label, document),
+  };
 }
 
 export const checks: ScenarioCheck[] = [
@@ -163,27 +178,32 @@ export const checks: ScenarioCheck[] = [
   {
     id: "U-2",
     scenario: "U",
-    description: "Representative supply-chain event data is aligned with EPCIS/GS1 event semantics",
-    skip: true,
-    skipCategory: "under-specified",
-    skipReason: "The representative EPCIS/GS1 alignment level still needs to be specified before this can be a stable executable check.",
+    description: "Representative supply-chain event resources use EPCIS event vocabulary",
     run: async (context) => {
       const documents = await Promise.all(
         representativeResources
-          .filter((resource) => resource.requiresEpcisEventModel)
+          .filter((resource) => resource.requiresEpcisVocabulary)
           .map(async (resource) => ({
             ...resource,
             document: await loadFixture(context.repoRoot, resource.relativePath),
           }))
       );
-      const missing = documents.flatMap(({ label, document }) =>
-        assertEpcisEventModel(label, document)
+      const evidence = documents.map(({ label, relativePath, document }) =>
+        summarizeEpcisVocabularyUsage(label, relativePath, document)
       );
+      const missing = evidence.flatMap((item) => item.missing as string[]);
+      await context.cacheOutput("epcis-vocabulary-usage.json", {
+        checkedResources: evidence,
+        missing,
+      }, {
+        contentType: "application/json",
+        label: "EPCIS vocabulary usage evidence",
+      });
 
       assert.deepEqual(
         missing,
         [],
-        `Scenario U requires representative EPCIS/GS1 event-model alignment:\n${missing.join("\n")}`
+        `Scenario U requires representative event resources to use EPCIS vocabulary:\n${missing.join("\n")}`
       );
 
       return `${documents.length} representative resources include epcis:ObjectEvent, epcis:bizStep, and epcis:disposition`;
