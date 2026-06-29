@@ -9,14 +9,14 @@ Grey \= not directly tested, through proxy
 
 | Technical aspect | DS | DG | INT | TR | LC |
 | :---- | :---- | :---- | :---- | :---- | :---- |
-| Auditability | ●C | ●D |  | ●E ← C,D | ●F |
-| Authentication | ●G | ●G,Q |  | ●I ← G,Q | ●J |
-| Authorization | ●K | ●K,Q |  | ●M ← K,Q | ●N |
-| Queryability | ○O |  | ●P |  |  |
-| Discoverability |  | ●Q | ●R |  |  |
-| Data API Interoperability (DAI) | ○ | ○ | ●S, T |  |  |
-| Data Model Interoperability (DMI) | ○ | ○ | ●U |  | ○ |
-| Verifiability | ●A | ○ V |  | ●B |  |
+| Auditability | ● C | ● D |  | ● E ← C,D | ● F |
+| Authentication | ● G | ● H |  | ● I ← G,Q | ● J |
+| Authorization | ● K | ● L |  | ● M ← K,Q | ● N |
+| Queryability | ○ O |  | ● P |  |  |
+| Discoverability |  | ● Q | ● R |  |  |
+| Data API Interoperability (DAI) | ○ | ○ | ● S, T |  |  |
+| Data Model Interoperability (DMI) | ○ | ○ | ● U |  | ○ |
+| Verifiability | ● A | ○ V |  | ● B |  |
 
 ●: strong impact; ○ partial impact
 
@@ -354,4 +354,4 @@ V-2: Not Implemented.
 
 **Supporting Requirement References.** Req08 (decentralized information) in \~\\cite{hofmeier:2024:DistINAnalysisValidation}
 
-[^1]:  [https://www.w3.org/TR/vc-data-model-2.0/\#terms-of-use](https://www.w3.org/TR/vc-data-model-2.0/#terms-of-use) 
+[^1]:  [https://www.w3.org/TR/vc-data-model-2.0/\#terms-of-use](https://www.w3.org/TR/vc-data-model-2.0/#terms-of-use)
