@@ -71,4 +71,13 @@ export const checks: ScenarioCheck[] = [
       return `${expectedIssuer} is actively accredited to issue product-origin data by ${path.relative(context.repoRoot, accreditationPath)}`;
     },
   },
+  {
+    id: "V-2",
+    scenario: "V",
+    description: "A revoked Farmer accreditation prevents acceptance of product-origin data",
+    skip: true,
+    skipCategory: "pending-implementation",
+    skipReason:
+      "The scenario catalogue defines accreditation revocation, but no revoked accreditation fixture or verifier check exists yet.",
+  },
 ];

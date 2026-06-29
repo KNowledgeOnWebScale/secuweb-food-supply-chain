@@ -76,6 +76,7 @@ assurance matrix use the shorter matrix code.
 | `U-1` | U | Product-shipment fixtures expose stable Web identifiers and shared semantic vocabularies across actors. | May pass |
 | `U-2` | U | Representative supply-chain event resources declare EPCIS vocabulary usage through `epcis:ObjectEvent`, `epcis:bizStep`, and `epcis:disposition`. | Expected failure: transporter event fixtures still lack EPCIS vocabulary usage |
 | `V-1` | V | The governance model accredits the Farmer to issue product-origin data. | May pass |
+| `V-2` | V | A revoked Farmer accreditation prevents acceptance of product-origin data. | Skipped: pending implementation |
 
 The runner validates that the result set contains all 22 catalogue scenario
 identifiers and that every included scenario has at least one included result.
