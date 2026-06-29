@@ -1,6 +1,6 @@
 # Scenarios
 
-**Version**: 202606300044  
+**Version**: 202606300117  
 Green \= implemented  
 Orange \= partially implemented  
 Purple \= not implemented but low-hanging fruit  
@@ -342,7 +342,13 @@ Purpose limitation (N-2) and data minimization (N-3) are partially supported, al
 
 **Scenario**. Packager receives product-origin data for a product batch. Before accepting the data, the Packager verifies that the issuer is effectively accredited to issue product-origin data as described by a governance model.
 
-**Test Scenario Implementation Status.** Implemented.
+**Scenario (detail)**.  
+V-1: The governance model accredits the Farmer to issue product-origin data. The packager is able to verify this accreditation.  
+V-2: A Packager rejects product-origin data because the Farmer is no longer accredited to issue it (hence, the Farmer’s accreditation has been revoked).
+
+**Test Scenario Implementation Status.**  
+V-1: Implemented.  
+V-2: Not Implemented.
 
 **Include in Analysis.** True.
 
