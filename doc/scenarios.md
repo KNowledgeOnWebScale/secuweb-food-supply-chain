@@ -166,12 +166,12 @@ A verifying actor can independently verify that the shared data is unchanged by 
 
 **Scenario**. The Packager receives a product/shipment credential or linked data resource. Before relying on it, the Packager must determine who asserted it: Farmer, Transporter, Packager, or another issuer. Authentication is therefore a prerequisite for trusting the claim.
 
-**Scenario (detail)**: I-1 tests the WebID-DID binding by resolving the VC issuer WebID and querying its profile for an RDF triple like  
-`<FarmerWebID#me>owl:sameAs  <did:secuweb:farmer> .`  
-I-1 passes only if the result is exactly did:secuweb:farmer.  
+**Scenario (detail)**: I-1 tests the WebID-DID binding by resolving the VC issuer WebID and querying its profile for an RDF triple like
+`<FarmerWebID#me> owl:sameAs <did:secuweb:farmer> .`
+I-1 passes only if the result is exactly `did:secuweb:farmer`.
 I-2 adds the on-chain controller check for did:secuweb:farmer, but the bridge between “WebID profile says sameAs DID” and “this is a trusted identity binding” is currently a profile assertion, not a verifiable attestation.
 
-**Test Scenario Implementation Status**. Partially implemented. The PoC supports authentication by enabling independent verification of an issuer’s identity, including the WebID-DID binding and on-chain DID controller check. Issuer accreditation is handled separately by Scenario V.
+**Test Scenario Implementation Status**. Partially implemented. I-1 checks that the VC issuer WebID profile contains an explicit `owl:sameAs` link to `did:secuweb:farmer`. I-2 checks that `did:secuweb:farmer` is active on-chain and controlled by the Farmer address. The WebID-DID link is currently a profile assertion, not a signed or governance-issued binding attestation.
 
 **Primary Dependency**. DS via Scenario G.
 
