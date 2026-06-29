@@ -196,7 +196,7 @@ const scenarioMetadata = {
   S: { goals: ["INT"], aspect: "Data API interoperability" },
   T: { goals: ["INT"], aspect: "Data API interoperability" },
   U: { goals: ["INT"], aspect: "Data model interoperability" },
-  V: { goals: ["DG"], aspect: "Verifiability", includeInAnalysis: false },
+  V: { goals: ["DG"], aspect: "Verifiability" },
 };
 
 function getScenarioMatrixPlacements(scenario) {

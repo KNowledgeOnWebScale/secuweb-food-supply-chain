@@ -42,7 +42,7 @@ const definedScenarios = "ABCDEFGHIJKLMNOPQRSTUV".split("");
 const analysisScenarios = [
   "A", "B", "C", "D", "E", "F", "G", "I",
   "J", "K", "M", "N", "O", "P", "Q", "R",
-  "S", "T", "U",
+  "S", "T", "U", "V",
 ];
 const excludedScenarios = definedScenarios.filter((scenario) => !analysisScenarios.includes(scenario));
 const repoRoot = process.cwd();
