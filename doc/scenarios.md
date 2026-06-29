@@ -1,62 +1,60 @@
 # Scenarios
 
-**Version**: 202606292322
-Green \= implemented
-Orange \= partially implemented
-Purple \= not implemented but low-hanging fruit
-Red \= not implemented
+**Version**: 202606300003  
+Green \= implemented  
+Orange \= partially implemented  
+Purple \= not implemented but low-hanging fruit  
+Red \= not implemented  
 Grey \= not directly tested, through proxy
 
 | Technical aspect | DS | DG | INT | TR | LC |
 | :---- | :---- | :---- | :---- | :---- | :---- |
-| Auditability | ● C | ● D |  | ● E | ● F |
-| Authentication | ● G | ● H |  | ● I | ● J |
-| Authorization | ● K | ● L |  | ● M | ● N |
-| Queryability | ○ O |  | ● P |  |  |
-| Discoverability |  | ● Q | ● R |  |  |
-| Data API Interoperability (DAI) | ○ | ○ | ● S, T |  |  |
-| Data Model Interoperability (DMI) | ○ | ○ | ● U |  | ○ |
-| Verifiability | ● A | ○ V |  | ● B |  |
+| Auditability | ●C | ●D |  | ●E ← C,D | ●F |
+| Authentication | ●G | ●G,Q |  | ●I ← G,Q | ●J |
+| Authorization | ●K | ●K,Q |  | ●M ← K,Q | ●N |
+| Queryability | ○O |  | ●P |  |  |
+| Discoverability |  | ●Q | ●R |  |  |
+| Data API Interoperability (DAI) | ○ | ○ | ●S, T |  |  |
+| Data Model Interoperability (DMI) | ○ | ○ | ●U |  | ○ |
+| Verifiability | ●A | ○ V |  | ●B |  |
 
 ●: strong impact; ○ partial impact
 
-Trust (TR) is treated as a proxy design goal. TR scenarios are placed in the
-matrix as direct TR scenarios, and they carry explicit dependency references to
-the non-TR design-goal evidence they rely on.
+**Note**: Trust (TR) is treated as a proxy design goal. TR scenarios are placed in the matrix as direct TR scenarios, and they carry explicit dependency references to the non-TR design-goal evidence they rely on.
 
 ## Design Goals
 
-**DS –** \`\`Data sovereignty refers to meaningful control, ownership, claims to data, and enforcement of fundamental rights of data subjects. \[...\] Data ecosystems can offer mechanisms, such as authentication and authorization, to ensure control and ownership \[...\].''\~\\cite{chrysakis:2026:ExploringCuttingedgeData}
-In short, data sovereignty is the ability of an actor to control data and enforce conditions on its access and use.
-**DG –** \`\`Data governance is related to decision mechanisms to mandate responsibilities for participants as they arise from different data operations. It ensures data access through specific roles, decision rights, and accountability, usually denoted through a data governance model.''\~\\cite{chrysakis:2026:ExploringCuttingedgeData}
-In short, data governance mandates the set of rules, roles, and processes that define how data is managed and used.
-**INT –**  \`\`Data interoperability refers to the mutual understanding in the use of data between or within data ecosystems and contributes positively to the evolution of data ecosystems.''\~\\cite{chrysakis:2026:ExploringCuttingedgeData}
-In short, data interoperability entails the consistency with which data is exchanged and its meaning conveyed.
-**TR –** \`\`Trust is an enabler for the data economy, and as such, data ecosystems promote trustworthy data sharing, i.e., all participants need to agree on how they share their data. Trust introduces a fundamental social requirement towards building relationships among different participants within or across different data ecosystems.''\~\\cite{chrysakis:2026:ExploringCuttingedgeData}
-In short, trust is established through collective agreements on how data is shared between participants and their ability to verify compliance with those agreements.
-**LC –** \`\`Compliance with legislation is fundamental for building trust among data ecosystem participants when sharing data, as it prevents problems that arise due to noncompliance (e.g., fines). Without adhering to these principles, ensuring the proper function of data ecosystems becomes a formidable challenge, primarily due to the absence of trust, data incompatibilities, and data anarchy.''\~\\cite{chrysakis:2026:ExploringCuttingedgeData}
+**DS –** \`\`Data sovereignty refers to meaningful control, ownership, claims to data, and enforcement of fundamental rights of data subjects. \[...\] Data ecosystems can offer mechanisms, such as authentication and authorization, to ensure control and ownership \[...\].''\~\\cite{chrysakis:2026:ExploringCuttingedgeData}  
+In short, data sovereignty is the ability of an actor to control data and enforce conditions on its access and use.  
+**DG –** \`\`Data governance is related to decision mechanisms to mandate responsibilities for participants as they arise from different data operations. It ensures data access through specific roles, decision rights, and accountability, usually denoted through a data governance model.''\~\\cite{chrysakis:2026:ExploringCuttingedgeData}  
+In short, data governance mandates the set of rules, roles, and processes that define how data is managed and used.  
+**INT –**  \`\`Data interoperability refers to the mutual understanding in the use of data between or within data ecosystems and contributes positively to the evolution of data ecosystems.''\~\\cite{chrysakis:2026:ExploringCuttingedgeData}  
+In short, data interoperability entails the consistency with which data is exchanged and its meaning conveyed.  
+**TR –** \`\`Trust is an enabler for the data economy, and as such, data ecosystems promote trustworthy data sharing, i.e., all participants need to agree on how they share their data. Trust introduces a fundamental social requirement towards building relationships among different participants within or across different data ecosystems.''\~\\cite{chrysakis:2026:ExploringCuttingedgeData}  
+In short, trust is established through collective agreements on how data is shared between participants and their ability to verify compliance with those agreements.  
+**LC –** \`\`Compliance with legislation is fundamental for building trust among data ecosystem participants when sharing data, as it prevents problems that arise due to noncompliance (e.g., fines). Without adhering to these principles, ensuring the proper function of data ecosystems becomes a formidable challenge, primarily due to the absence of trust, data incompatibilities, and data anarchy.''\~\\cite{chrysakis:2026:ExploringCuttingedgeData}  
 In short, Legal Compliance supports trust by enforcing additional constraints to Data Governance, Data Sovereignty, and Interoperability.
 
 ## Actors
 
-* Farmer
-* Transporter
-* Packager
-* Retailer
+* Farmer  
+* Transporter  
+* Packager  
+* Retailer  
 * Audit assessor
 
-##
+## 
 
 ## Scenario Structure
 
-- **Core Claim**: An abstract, high-level functional description of the scenario.
-- **Scenario**: A concrete use case scenario described in a technology-agnostic way.
-- **Scenario (detail)**: (Optional) A lower-level scenario description with technical details.
-- **Test Scenario Implementation Status**: Status description regarding the extent to which the considered test scenario has been implemented in the test framework.
-- **PoC Support**: (Optional) A side-note about the extent to which the PoC provides the functionality to support the scenario.
-- **Include in Analysis**: If True, the scenario test should be executed, and its outcome should be included in the coverage metrics. Otherwise (false), the test should be skipped.
-- **Primary Dependency**: (Optional) Design-goal and scenario reference containing the primary non-TR evidence on which a proxy TR scenario relies.
-- **Secondary Dependency**: (Optional) Design-goal and scenario reference containing additional non-TR evidence on which a proxy TR scenario relies.
+- **Core Claim**: An abstract, high-level functional description of the scenario.  
+- **Scenario**: A concrete use case scenario described in a technology-agnostic way.  
+- **Scenario (detail)**: (Optional) A lower-level scenario description with technical details.  
+- **Test Scenario Implementation Status**: Status description regarding the extent to which the considered test scenario has been implemented in the test framework.  
+- **PoC Support**: (Optional) A side-note about the extent to which the PoC provides the functionality to support the scenario.  
+- **Include in Analysis**: If True, the scenario test should be executed, and its outcome should be included in the coverage metrics. Otherwise (false), the test should be skipped.  
+- **Primary Dependency**: (Optional) Design-goal and scenario reference containing the primary non-TR evidence on which a proxy TR scenario relies.  
+- **Secondary Dependency**: (Optional) Design-goal and scenario reference containing additional non-TR evidence on which a proxy TR scenario relies.  
 - **Supporting Requirement References**: (Optional) One or more related work references containing a requirement that strongly matches the current scenario.
 
 ## Scenario A – DS x Verifiability
@@ -85,7 +83,7 @@ In short, Legal Compliance supports trust by enforcing additional constraints to
 
 **Include in Analysis.** True.
 
-**Primary Dependency.** DS via Scenario A.
+**Primary Dependency**. DS via Scenario A.
 
 **Supporting Requirement References.** Req02 (information quality), Req04 (integrity of data), Req05 (ability to verify data), Req06 (independent sources of information), Req09 (public ledger / blockchain) in \~\\cite{hofmeier:2024:DistINAnalysisValidation}
 
@@ -107,8 +105,8 @@ In short, Legal Compliance supports trust by enforcing additional constraints to
 
 **Test Scenario Implementation Status.** TODO.
 
-**PoC Support.**
-No governance rule/policy/role has been implemented in the PoC; neither are audit logs.
+**PoC Support.**  
+No governance rule/policy/role has been implemented in the PoC; neither are audit logs.  
 Access requests and decisions are not recorded (not off-chain (e.g., a Solid Pod) or on-chain), nor made available so that an auditor role has access.
 
 **Include in Analysis.** True.
@@ -121,14 +119,14 @@ Access requests and decisions are not recorded (not off-chain (e.g., a Solid Pod
 
 **Test Scenario Implementation Status.** Implemented on the data plane (i.e., domain-data). Not implemented on the control plane (i.e., actions).
 
-**PoC Support**.
+**PoC Support**.  
 A verifying actor can independently verify that the shared data is unchanged by i) verifying the digital signature of the shared data; and ii) verifying the hash of the shared data with the hash recorded on-chain.
 
 **Include in Analysis**. True.
 
-**Primary Dependency.** DS via Scenario C.
+**Primary Dependency**. DS via Scenario C.
 
-**Secondary Dependency.** DG via Scenario D.
+**Secondary Dependency**. DG via Scenario D.
 
 **Supporting Requirement References.** Req06 (independent sources of information), Req09 (public ledger / blockchain) in \~\\cite{hofmeier:2024:DistINAnalysisValidation}
 
@@ -168,13 +166,13 @@ A verifying actor can independently verify that the shared data is unchanged by 
 
 **Scenario**. The Packager receives a product/shipment credential or linked data resource. Before relying on it, the Packager must determine who asserted it: Farmer, Transporter, Packager, or another issuer. Authentication is therefore a prerequisite for trusting the claim.
 
-**Test Scenario Implementation Status.** Partially implemented. The PoC supports authentication by enabling independent verification of an issuer’s identity, including the WebID-DID binding and on-chain DID controller check. Issuer accreditation is handled separately by Scenario V.
+**Test Scenario Implementation Status**. Partially implemented. The PoC supports authentication by enabling independent verification of an issuer’s identity, including the WebID-DID binding and on-chain DID controller check. Issuer accreditation is handled separately by Scenario V.
+
+**Primary Dependency**. DS via Scenario G.
+
+**Secondary Dependency**. DG via Scenario Q.
 
 **Include in Analysis**. True.
-
-**Primary Dependency.** DS via Scenario G.
-
-**Secondary Dependency.** DG via Scenario Q.
 
 **Supporting Requirement References.** Req03 (trust attribution), Req16 (verify service response), Req17 (retrieve public keys) in \~\\cite{hofmeier:2024:DistINAnalysisValidation}
 
@@ -228,9 +226,9 @@ A third party, such as an auditor or verifier, later checks that the Packager’
 
 **Include in Analysis**. True.
 
-**Primary Dependency.** DS via Scenario K.
+**Primary Dependency**. DS via Scenario K.
 
-**Secondary Dependency.** DG via Scenario Q.
+**Secondary Dependency**. DG via Scenario Q.
 
 ## Scenario N – LC x Authorization
 
@@ -244,11 +242,11 @@ A third party, such as an auditor or verifier, later checks that the Packager’
 
 **Test Scenario Implementation Status.**
 
-- Confidentiality (N-1): Implemented.
-- Purpose limitation (N-2): Not Implemented.
+- Confidentiality (N-1): Implemented.  
+- Purpose limitation (N-2): Not Implemented.  
 - Data minimization (N-3): Implemented.
 
-**PoC Support.**
+**PoC Support.**  
 Confidentiality (N-1): A data holder can specify which actor has access to a resource using the actor’s WebID.
 
 Purpose limitation (N-2) and data minimization (N-3) are partially supported, although not explicitly implemented. Actors create and share purpose-based/minimized views of their data. This can be explicitly implemented through Verifiable Credentials, i.e., using the `termsOfUse` property[^1] (to indicate the purpose) and applying selective disclosure (for data minimization).
@@ -261,7 +259,7 @@ Purpose limitation (N-2) and data minimization (N-3) are partially supported, al
 
 **Core Claim.** The system supports data sovereignty by allowing actors to select subsets of data rather than full-resource retrieval. The query result remains constrained by the access rights granted by the data holder.
 
-**Scenario.** A Transporter stores pickup and delivery events from multiple shipments as separate resources. A Retailer needs transport information about a specific product batch, but does not need the Transporter’s complete event history in the matching event records.
+**Scenario.** A Transporter stores pickup and delivery events from multiple shipments as separate resources. A Retailer needs transport information about a specific product batch, but does not need the Transporter’s complete event history in the matching event records. 
 
 **Test Scenario Implementation Status.** Implemented.
 
@@ -345,4 +343,4 @@ Purpose limitation (N-2) and data minimization (N-3) are partially supported, al
 
 **Supporting Requirement References.** Req08 (decentralized information) in \~\\cite{hofmeier:2024:DistINAnalysisValidation}
 
-[^1]:  [https://www.w3.org/TR/vc-data-model-2.0/\#terms-of-use](https://www.w3.org/TR/vc-data-model-2.0/#terms-of-use)
+[^1]:  [https://www.w3.org/TR/vc-data-model-2.0/\#terms-of-use](https://www.w3.org/TR/vc-data-model-2.0/#terms-of-use) 
