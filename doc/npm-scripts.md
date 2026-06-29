@@ -353,7 +353,7 @@ npm run test:readme-setup:viewer -- --timeout 180
 ### `npm run test:scenarios`
 
 Runs the acceptance checks for all scenarios defined in catalogue version
-`202606292322`. CSS, Hardhat, the verifier, VC files, identity bindings,
+`202606300117`. CSS, Hardhat, the verifier, VC files, identity bindings,
 catalog, access rules, and anchors must already be set up for implementation
 checks to pass. Missing capabilities for scenarios included in analysis are
 recorded as explicit failures rather than omitted from the report. Scenarios
